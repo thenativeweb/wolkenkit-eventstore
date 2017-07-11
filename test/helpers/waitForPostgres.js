@@ -1,6 +1,7 @@
 'use strict';
 
-const pg = require('pg'),
+const parse = require('pg-connection-string').parse,
+      pg = require('pg'),
       retry = require('retry');
 
 const waitForPostgres = function (options, callback) {
@@ -14,9 +15,10 @@ const waitForPostgres = function (options, callback) {
   const { url } = options;
 
   const operation = retry.operation();
+  const pool = new pg.Pool(parse(url));
 
   operation.attempt(() => {
-    pg.connect(url, (err, db, done) => {
+    pool.connect((err, db, done) => {
       if (operation.retry(err)) {
         return;
       }
@@ -26,6 +28,7 @@ const waitForPostgres = function (options, callback) {
       }
 
       /* eslint-disable callback-return */
+      pool.end();
       done();
       callback(null);
       /* eslint-enable callback-return */
