@@ -15,7 +15,7 @@ async.series({
     waitForMongo({ url: env.MONGO_URL_PERFORMANCE }, callback);
   },
   runPostgres (callback) {
-    shell.exec('docker run -d -p 5435:5432 -e POSTGRES_USER=wolkenkit -e POSTGRES_PASSWORD=wolkenkit -e POSTGRES_DB=wolkenkit --name postgres-performance postgres:9.6.2-alpine', callback);
+    shell.exec('docker run -d -p 5435:5432 -e POSTGRES_USER=wolkenkit -e POSTGRES_PASSWORD=wolkenkit -e POSTGRES_DB=wolkenkit --name postgres-performance postgres:9.6.4-alpine', callback);
   },
   waitForPostgres (callback) {
     waitForPostgres({ url: env.POSTGRES_URL_PERFORMANCE }, callback);

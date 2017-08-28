@@ -10,7 +10,7 @@ machine:
     POSTGRES_URL_PERFORMANCE: pg://wolkenkit:wolkenkit@localhost:5435/wolkenkit
 
   node:
-    version: 6.9.5
+    version: 6.911.2
 
   services:
     - docker

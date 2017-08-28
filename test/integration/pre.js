@@ -12,7 +12,7 @@ const pre = function (done) {
       return done(errMongo);
     }
 
-    shell.exec('docker run -d -p 5434:5432 -e POSTGRES_USER=wolkenkit -e POSTGRES_PASSWORD=wolkenkit -e POSTGRES_DB=wolkenkit --name postgres-integration postgres:9.6.2-alpine', errPostgres => {
+    shell.exec('docker run -d -p 5434:5432 -e POSTGRES_USER=wolkenkit -e POSTGRES_PASSWORD=wolkenkit -e POSTGRES_DB=wolkenkit --name postgres-integration postgres:9.6.4-alpine', errPostgres => {
       if (errPostgres) {
         return done(errPostgres);
       }
