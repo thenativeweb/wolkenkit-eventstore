@@ -4,7 +4,7 @@ sparbuch is an eventstore.
 
 ## Installation
 
-```bash
+```shell
 $ npm install sparbuch
 ```
 
@@ -204,13 +204,13 @@ sparbuch.getReplay({ fromPosition: 7, toPosition: 23 }, (err, replayStream) => {
 
 To build this module use [roboter](https://www.npmjs.com/package/roboter).
 
-```bash
+```shell
 $ bot
 ```
 
 To run the performance tests use the following command.
 
-```bash
+```shell
 $ bot test-performance
 ```
 
