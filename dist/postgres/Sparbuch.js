@@ -1,14 +1,34 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _regenerator = require('babel-runtime/regenerator');
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _require = require('events'),
     EventEmitter = _require.EventEmitter,
@@ -30,20 +50,19 @@ var cloneDeep = require('lodash/cloneDeep'),
 var omitByDeep = require('../omitByDeep');
 
 var Sparbuch = function (_EventEmitter) {
-  _inherits(Sparbuch, _EventEmitter);
+  (0, _inherits3.default)(Sparbuch, _EventEmitter);
 
   function Sparbuch() {
-    _classCallCheck(this, Sparbuch);
-
-    return _possibleConstructorReturn(this, (Sparbuch.__proto__ || Object.getPrototypeOf(Sparbuch)).apply(this, arguments));
+    (0, _classCallCheck3.default)(this, Sparbuch);
+    return (0, _possibleConstructorReturn3.default)(this, (Sparbuch.__proto__ || (0, _getPrototypeOf2.default)(Sparbuch)).apply(this, arguments));
   }
 
-  _createClass(Sparbuch, [{
+  (0, _createClass3.default)(Sparbuch, [{
     key: 'getDatabase',
     value: function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         var database;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -71,13 +90,13 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'initialize',
     value: function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(_ref3) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(_ref3) {
         var _this2 = this;
 
         var url = _ref3.url,
             namespace = _ref3.namespace;
         var disconnectWatcher, database;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -124,8 +143,8 @@ var Sparbuch = function (_EventEmitter) {
                 database = _context3.sent;
                 _context3.prev = 13;
                 _context3.next = 16;
-                return retry(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-                  return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                return retry((0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+                  return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                       switch (_context2.prev = _context2.next) {
                         case 0:
@@ -167,9 +186,9 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'getLastEvent',
     value: function () {
-      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(aggregateId) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(aggregateId) {
         var database, result, event;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -235,9 +254,9 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'getEventStream',
     value: function () {
-      var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(aggregateId, options) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(aggregateId, options) {
         var fromRevision, toRevision, database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -320,9 +339,9 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'getUnpublishedEventStream',
     value: function () {
-      var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
         var database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
@@ -383,12 +402,12 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveEvents',
     value: function () {
-      var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(_ref9) {
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref9) {
         var events = _ref9.events;
 
         var database, placeholders, values, i, base, event, text, result, _i;
 
-        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
@@ -471,12 +490,12 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'markEventsAsPublished',
     value: function () {
-      var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(_ref11) {
+      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref11) {
         var aggregateId = _ref11.aggregateId,
             fromRevision = _ref11.fromRevision,
             toRevision = _ref11.toRevision;
         var database;
-        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+        return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
@@ -548,9 +567,9 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'getSnapshot',
     value: function () {
-      var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(aggregateId) {
+      var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(aggregateId) {
         var database, result;
-        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
@@ -614,12 +633,12 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveSnapshot',
     value: function () {
-      var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(_ref14) {
+      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(_ref14) {
         var aggregateId = _ref14.aggregateId,
             revision = _ref14.revision,
             state = _ref14.state;
         var database;
-        return regeneratorRuntime.wrap(function _callee10$(_context10) {
+        return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
@@ -688,9 +707,9 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'getReplay',
     value: function () {
-      var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11(options) {
+      var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(options) {
         var fromPosition, toPosition, database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return regeneratorRuntime.wrap(function _callee11$(_context11) {
+        return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
@@ -764,8 +783,8 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'destroy',
     value: function () {
-      var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
-        return regeneratorRuntime.wrap(function _callee12$(_context12) {
+      var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
+        return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
@@ -792,7 +811,6 @@ var Sparbuch = function (_EventEmitter) {
       return destroy;
     }()
   }]);
-
   return Sparbuch;
 }(EventEmitter);
 
