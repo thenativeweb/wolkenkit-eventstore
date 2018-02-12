@@ -12,16 +12,12 @@ suite('postgres/Sparbuch', () => {
     url: env.POSTGRES_URL_UNITS,
     nonExistentUrl: 'pg://localhost/non-existent',
 
-    startContainer (done) {
-      shell.exec('docker start postgres-units', statusCode => {
-        if (statusCode) {
-          return done(new Error(`Unexpected status code ${statusCode}.`));
-        }
-        waitForPostgres({ url: env.POSTGRES_URL_UNITS }, done);
-      });
+    async startContainer () {
+      shell.exec('docker start postgres-units');
+      await waitForPostgres({ url: env.POSTGRES_URL_UNITS });
     },
 
-    stopContainer () {
+    async stopContainer () {
       shell.exec('docker kill postgres-units');
     }
   });

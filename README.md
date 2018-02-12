@@ -10,28 +10,26 @@ $ npm install sparbuch
 
 ## Quick start
 
-To use sparbuch first you need to add a reference to your application. You also need to specify which database to use.
+To use sparbuch first you need to add a reference to your application. You also need to specify which database to use:
 
 ```javascript
 const sparbuch = require('sparbuch/postgres');
 ```
 
-The following table lists all currently supported databases.
+The following table lists all currently supported databases:
 
 Database                | Package
 ------------------------|--------------------
 PostgreSQL              | `sparbuch/postgres`
 MongoDB  (experimental) | `sparbuch/mongodb`
 
-Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace.
+Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace:
 
 ```javascript
-sparbuch.initialize({ url: '...', namespace: 'myApp' }, err => {
-  // ...
-});
+await sparbuch.initialize({ url: '...', namespace: 'myApp' });
 ```
 
-To handle getting disconnected from the database, subscribe to the `disconnect` event. Since sparbuch does not necessarily try to reconnect, it's probably best to restart your application.
+To handle getting disconnected from the database, subscribe to the `disconnect` event. Since sparbuch does not necessarily try to reconnect, it's probably best to restart your application:
 
 ```javascript
 sparbuch.on('disconnect', () => {
@@ -39,54 +37,46 @@ sparbuch.on('disconnect', () => {
 });
 ```
 
-To manually disconnect from the database call the `destroy` function.
+To manually disconnect from the database call the `destroy` function:
 
 ```javascript
-sparbuch.destroy(() => {
-  // ...
-});
+await sparbuch.destroy();
 ```
 
 ### Reading an event stream
 
-To read the event stream for a given topic use the `getEventStream` function and provide the id of the topic. The function returns a regular Node.js readable stream.
+To read the event stream for a given aggregate use the `getEventStream` function and provide the id of the aggregate. The function returns a regular Node.js readable stream:
 
 ```javascript
-const topicId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
+const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-sparbuch.getEventStream(topicId, (err, eventStream) => {
-  // ...
-});
+const eventStream = await sparbuch.getEventStream(aggregateId);
 ```
 
-To limit the number of events returned you may use the `fromRevision` and `toRevision` options.
+To limit the number of events returned you may use the `fromRevision` and `toRevision` options:
 
 ```javascript
-const topicId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
+const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-sparbuch.getEventStream(topicId, {
+const eventStream = await sparbuch.getEventStream(aggregateId, {
   fromRevision: 23,
   toRevision: 42
-}, (err, eventStream) => {
-  // ...
 });
 ```
 
 ### Reading the last event
 
-To read the last event for a given topic use the `getLastEvent` function and provide the id of the topic.
+To read the last event for a given aggregate use the `getLastEvent` function and provide the id of the aggregate:
 
 ```javascript
-const topicId = 'a6d18fc4-0ce3-4e3c-af43-fd451f58c0f1';
+const aggregateId = 'a6d18fc4-0ce3-4e3c-af43-fd451f58c0f1';
 
-sparbuch.getLastEvent(topicId, (err, event) => {
-  // ...
-});
+const event = await sparbuch.getLastEvent(aggregateId);
 ```
 
 ### Saving events
 
-To save events use the `saveEvents` function and hand over an array of events you want to save. To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module.
+To save events use the `saveEvents` function and hand over an array of events you want to save. To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module:
 
 ```javascript
 const eventStarted = new Event(...);
@@ -95,27 +85,25 @@ const eventJoined = new Event(...);
 eventStarted.metadata.revision = 1;
 eventJoined.metadata.revision = 2;
 
-sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]}, (err, savedEvents) => {
-  // ...
+const savedEvents = await sparbuch.saveEvents({
+  events: [ eventStarted, eventJoined ]
 });
 ```
 
-The assignment from the given events to their appropriate topics is done using the events' information. The `revision` of the events *must* be given in their `metadata` section.
+The assignment from the given events to their appropriate aggregates is done using the events' information. The `revision` of the events *must* be given in their `metadata` section.
 
 *Please note that the events are saved within a single atomic transaction. If saving fails for at least one event, the entire transaction is rolled back, so no events are saved at all.*
 
 #### Saving a single event
 
-If you only want to save a single event you may omit the brackets of the array and directly specify the event as parameter.
+If you only want to save a single event you may omit the brackets of the array and directly specify the event as parameter:
 
 ```javascript
 const eventStarted = new Event(...);
 
 eventStarted.metadata.revision = 1;
 
-sparbuch.saveEvents({ events: eventStarted }, (err, savedEvents) => {
-  // ...
-});
+const savedEvents = await sparbuch.saveEvents({ events: eventStarted });
 ```
 
 #### Respecting the event stream order
@@ -128,75 +116,66 @@ The position is available when fetching the event stream using the `getEventStre
 
 ### Reading unpublished events
 
-To read all unpublished events as a stream, call the `getUnpublishedEventStream` function. The function returns a regular Node.js readable stream.
+To read all unpublished events as a stream, call the `getUnpublishedEventStream` function. The function returns a regular Node.js readable stream:
 
 ```javascript
-sparbuch.getUnpublishedEventStream((err, eventStream) => {
-  // ...
-});
+const eventStream = await sparbuch.getUnpublishedEventStream();
 ```
 
 ### Marking events as published
 
-Once you have published events using an event publisher you may mark them as published using the `markEventsAsPublished` function. Hand over the topic id as well as the revision from which to which you would like to mark the events as published.
+Once you have published events using an event publisher you may mark them as published using the `markEventsAsPublished` function. Hand over the aggregate id as well as the revision from which to which you would like to mark the events as published:
 
 ```javascript
-const topicId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
+const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-sparbuch.markEventsAsPublished({
-  topicId,
+await sparbuch.markEventsAsPublished({
+  aggregateId,
   fromRevision: 23,
   toRevision: 42
-}, err => {
-  // ...
 });
 ```
 
 ### Reading a snapshot
 
-To read the event stream for a given topic use the `getSnapshot` function and provide the id of the topic. The function always returns the `revision` and `state` of the newest snapshot. If no snapshot exists, the function returns `undefined`.
+To read the event stream for a given aggregate use the `getSnapshot` function and provide the id of the aggregate. The function always returns the `revision` and `state` of the newest snapshot. If no snapshot exists, the function returns `undefined`:
 
 ```javascript
-const topicId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
+const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-sparbuch.getSnapshot(topicId, (err, snapshot) => {
-  // ...
-});
+const snapshot = await sparbuch.getSnapshot(aggregateId);
 ```
 
 ### Saving a snapshot
 
-To save a snapshot for a topic use the `saveSnapshot` function and hand over the topic id, the revision and the state of the topic.
+To save a snapshot for a aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
 
 ```javascript
-const topicId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
+const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 const revision = 23;
 const state = {
   // ...
 };
 
-sparbuch.saveSnapshot({ topicId, revision, state }, err => {
-  // ...
-});
+await sparbuch.saveSnapshot({ aggregateId, revision, state });
 ```
 
-*Please note that if a snapshot was already saved for the given topic id and revision, this function does nothing.*
+*Please note that if a snapshot was already saved for the given aggregate id and revision, this function does nothing.*
 
 ### Getting a replay
 
-To get a replay of events use the `getReplay` function. The function returns a regular Node.js readable stream.
+To get a replay of events use the `getReplay` function. The function returns a regular Node.js readable stream:
 
 ```javascript
-sparbuch.getReplay((err, replayStream) => {
-  // ...
-});
+const replayStream = await sparbuch.getReplay();
 ```
 
-To limit the number of events returned you may use the `fromPosition` and `toPosition` options.
+To limit the number of events returned you may use the `fromPosition` and `toPosition` options:
 
 ```javascript
-sparbuch.getReplay({ fromPosition: 7, toPosition: 23 }, (err, replayStream) => {
-  // ...
+const replayStream = await sparbuch.getReplay({
+  fromPosition: 7,
+  toPosition: 23
 });
 ```
 
@@ -216,7 +195,7 @@ $ bot test-performance
 
 ## License
 
-Copyright (c) 2015-2017 the native web.
+Copyright (c) 2015-2018 the native web.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const Sparbuch = require('./lib/postgres/Sparbuch');
+const Sparbuch = require('./dist/postgres/Sparbuch');
 
 const sparbuch = new Sparbuch();
 

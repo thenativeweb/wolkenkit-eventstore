@@ -12,16 +12,12 @@ suite('mongodb/Sparbuch', () => {
     url: env.MONGO_URL_UNITS,
     nonExistentUrl: 'mongodb://non-existent.thenativeweb/non-existent',
 
-    startContainer (done) {
-      shell.exec('docker start mongodb-units', statusCode => {
-        if (statusCode) {
-          return done(new Error(`Unexpected status code ${statusCode}.`));
-        }
-        waitForMongo({ url: env.MONGO_URL_UNITS }, done);
-      });
+    async startContainer () {
+      shell.exec('docker start mongodb-units');
+      await waitForMongo({ url: env.MONGO_URL_UNITS });
     },
 
-    stopContainer () {
+    async stopContainer () {
       shell.exec('docker kill mongodb-units');
     }
   });

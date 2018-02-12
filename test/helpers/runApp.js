@@ -14,34 +14,26 @@ const cleanUpAndExit = function () {
   /* eslint-enable no-process-exit */
 };
 
-const runApp = function (options, callback) {
-  if (!options) {
-    throw new Error('Options are missing.');
-  }
-  if (!options.app) {
-    throw new Error('App is missing.');
-  }
-  if (!callback) {
-    throw new Error('Callback is missing.');
-  }
-
-  options.env = options.env || {};
-
-  const app = fork(options.app, {
-    env: options.env
-  });
-
-  apps.push(app);
-
-  app.on('close', code => {
-    const index = apps.indexOf(app);
-
-    apps.splice(index, 1);
-
-    if (code !== 0) {
-      return callback(new Error(`Exited with status code ${code}.`));
+const runApp = function ({ app, env = {}}) {
+  return new Promise((resolve, reject) => {
+    if (!app) {
+      throw new Error('App is missing.');
     }
-    callback(null);
+
+    const childProcess = fork(app, { env });
+
+    apps.push(childProcess);
+
+    childProcess.on('close', code => {
+      const index = apps.indexOf(childProcess);
+
+      apps.splice(index, 1);
+
+      if (code !== 0) {
+        return reject(new Error(`Exited with status code ${code}.`));
+      }
+      resolve();
+    });
   });
 };
 

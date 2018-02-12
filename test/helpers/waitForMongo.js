@@ -1,40 +1,19 @@
 'use strict';
 
-const MongoClient = require('mongodb').MongoClient,
-      retry = require('retry');
+const { MongoClient } = require('mongodb'),
+      retry = require('async-retry');
 
-const waitForMongo = function (options, callback) {
-  if (!options) {
-    throw new Error('Options are missing.');
-  }
-  if (!options.url) {
+const waitForMongo = async function ({ url }) {
+  if (!url) {
     throw new Error('Url is missing.');
   }
 
-  const { url } = options;
-
-  const operation = retry.operation();
-
-  operation.attempt(() => {
+  await retry(async () => {
     /* eslint-disable id-length */
-    MongoClient.connect(url, { w: 1 }, (err, db) => {
-      /* eslint-enable id-length */
-      if (operation.retry(err)) {
-        return;
-      }
+    const client = await MongoClient.connect(url, { w: 1 });
+    /* eslint-enable id-length */
 
-      if (err) {
-        return callback(operation.mainError());
-      }
-
-      db.close(errClose => {
-        if (errClose) {
-          return callback(errClose);
-        }
-
-        callback(null);
-      });
-    });
+    await client.close();
   });
 };
 

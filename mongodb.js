@@ -1,6 +1,6 @@
 'use strict';
 
-const Sparbuch = require('./lib/mongodb/Sparbuch');
+const Sparbuch = require('./dist/mongodb/Sparbuch');
 
 const sparbuch = new Sparbuch();
 

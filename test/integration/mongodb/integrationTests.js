@@ -4,7 +4,7 @@ const env = require('../../helpers/env'),
       getTestsFor = require('../getTestsFor');
 
 suite('mongodb/integration', function () {
-  this.timeout(90 * 1000);
+  this.timeout(10 * 1000);
 
   getTestsFor({
     type: 'mongodb',

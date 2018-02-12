@@ -1,6 +1,6 @@
 'use strict';
 
-const Event = require('commands-events').Event,
+const { Event } = require('commands-events'),
       flaschenpost = require('flaschenpost'),
       processenv = require('processenv'),
       uuid = require('uuidv4');
@@ -11,11 +11,12 @@ const batchCount = processenv('BATCH_COUNT'),
       type = processenv('TYPE'),
       url = processenv('URL');
 
-const sparbuch = require(`../../${type}`);
+const Sparbuch = require(`../../lib/${type}/Sparbuch`);
 
+const sparbuch = new Sparbuch();
 const logger = flaschenpost.getLogger();
 
-const saveEventBatch = function (remaining) {
+const saveEventBatch = async function (remaining) {
   if (remaining <= 0) {
     /* eslint-disable no-process-exit */
     process.exit(0);
@@ -38,24 +39,27 @@ const saveEventBatch = function (remaining) {
     events.push(event);
   }
 
-  sparbuch.saveEvents({ events }, err => {
-    if (err) {
-      logger.error('Failed to save events.', { err });
-      /* eslint-disable no-process-exit */
-      process.exit(1);
-      /* eslint-enable no-process-exit */
-    }
-    saveEventBatch(remaining - 1);
-  });
-};
-
-sparbuch.initialize({ url, namespace }, err => {
-  if (err) {
-    logger.error('Failed to initialize sparbuch.', { type, err });
+  try {
+    await sparbuch.saveEvents({ events });
+  } catch (ex) {
+    logger.error('Failed to save events.', { ex });
     /* eslint-disable no-process-exit */
     process.exit(1);
     /* eslint-enable no-process-exit */
   }
 
-  saveEventBatch(batchCount);
-});
+  await saveEventBatch(remaining - 1);
+};
+
+(async () => {
+  try {
+    await sparbuch.initialize({ url, namespace });
+  } catch (ex) {
+    logger.error('Failed to initialize sparbuch.', { type, ex });
+    /* eslint-disable no-process-exit */
+    process.exit(1);
+    /* eslint-enable no-process-exit */
+  }
+
+  await saveEventBatch(batchCount);
+})();

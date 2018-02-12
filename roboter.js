@@ -32,6 +32,7 @@ roboter.
         '(Apache-2.0 OR MPL-1.1)',
         'BSD-3-Clause OR MIT',
         '(MIT AND CC-BY-3.0)',
+        '(MIT OR Apache-2.0)',
         '(WTFPL OR MIT)'
       ],
 

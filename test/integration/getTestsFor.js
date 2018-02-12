@@ -2,25 +2,23 @@
 
 const path = require('path');
 
-const assert = require('assertthat'),
-      async = require('async'),
-      uuid = require('uuidv4');
+const uuid = require('uuidv4');
 
 const runApp = require('../helpers/runApp');
 
-const runAppConcurrently = function (options, callback) {
+const runAppConcurrently = async function ({ app, count, env }) {
   const apps = [];
 
-  for (let i = 0; i < options.count; i++) {
-    apps.push(done => runApp({ app: options.app, env: options.env }, done));
+  for (let i = 0; i < count; i++) {
+    apps.push(runApp({ app, env }));
   }
 
-  async.parallel(apps, callback);
+  await Promise.all(apps);
 };
 
-const getTestsFor = function (options) {
+const getTestsFor = function ({ type, url }) {
   suite('saves concurrently', () => {
-    test('2 clients, 5 batches, 1 event each.', done => {
+    test('2 clients, 5 batches, 1 event each.', async () => {
       const app = path.join(__dirname, 'saveManyEvents.js');
 
       const env = {
@@ -28,17 +26,14 @@ const getTestsFor = function (options) {
         BATCH_SIZE: 1,
         FLASCHENPOST_FORMATTER: 'human',
         NAMESPACE: `store_${uuid()}`,
-        TYPE: options.type,
-        URL: options.url
+        TYPE: type,
+        URL: url
       };
 
-      runAppConcurrently({ app, count: 2, env }, err => {
-        assert.that(err).is.null();
-        done();
-      });
+      await runAppConcurrently({ app, count: 2, env });
     });
 
-    test('20 clients, 10 batches, 10 events each.', done => {
+    test('20 clients, 10 batches, 10 events each.', async () => {
       const app = path.join(__dirname, 'saveManyEvents.js');
 
       const env = {
@@ -46,14 +41,11 @@ const getTestsFor = function (options) {
         BATCH_SIZE: 10,
         FLASCHENPOST_FORMATTER: 'human',
         NAMESPACE: `store_${uuid()}`,
-        TYPE: options.type,
-        URL: options.url
+        TYPE: type,
+        URL: url
       };
 
-      runAppConcurrently({ app, count: 20, env }, err => {
-        assert.that(err).is.null();
-        done();
-      });
+      await runAppConcurrently({ app, count: 20, env });
     });
   });
 };

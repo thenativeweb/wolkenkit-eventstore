@@ -1,15 +1,6 @@
 'use strict';
 
-const processenv = require('processenv'),
-      shell = require('shelljs');
-
-if (processenv('CIRCLECI')) {
-  // On CircleCI, we are not allowed to remove Docker containers.
-
-  /* eslint-disable no-process-exit */
-  process.exit(0);
-  /* eslint-enable no-process-exit */
-}
+const shell = require('shelljs');
 
 shell.exec([
   'docker kill mongodb-performance; docker rm -v mongodb-performance',

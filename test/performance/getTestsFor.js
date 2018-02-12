@@ -1,26 +1,20 @@
 'use strict';
 
 const assert = require('assertthat'),
-      async = require('async'),
-      Event = require('commands-events').Event,
+      { Event } = require('commands-events'),
       measureTime = require('measure-time'),
       uuid = require('uuidv4');
 
-const getEventsForAggregateId = function (options) {
-  if (!options) {
-    throw new Error('Options are missing.');
-  }
-  if (!options.aggregateId) {
+const getEventsForAggregateId = function ({ aggregateId, batchCount, batchSize }) {
+  if (!aggregateId) {
     throw new Error('Aggregate id is missing.');
   }
-  if (!options.batchCount) {
+  if (!batchCount) {
     throw new Error('Batch count is missing.');
   }
-  if (!options.batchSize) {
+  if (!batchSize) {
     throw new Error('Batch size is missing.');
   }
-
-  const { aggregateId, batchCount, batchSize } = options;
 
   const batches = [];
 
@@ -46,26 +40,26 @@ const getEventsForAggregateId = function (options) {
 };
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Sparbuch, options) {
+const getTestsFor = function (Sparbuch, { url, type }) {
   let namespace,
       sparbuch;
 
-  setup(done => {
+  setup(async () => {
     namespace = uuid();
     sparbuch = new Sparbuch();
 
-    sparbuch.initialize({ url: options.url, namespace }, done);
+    await sparbuch.initialize({ url, namespace });
   });
 
-  teardown(done => {
-    sparbuch.destroy(done);
+  teardown(async () => {
+    await sparbuch.destroy();
   });
 
   suite('saveEvents', () => {
-    test('1000 events individually.', done => {
+    test('1000 events individually.', async () => {
       const expected = {
-        mongodb: 1.5,
-        postgres: 1.5
+        mongodb: 4,
+        postgres: 4
       };
 
       const batches = getEventsForAggregateId({
@@ -76,21 +70,21 @@ const getTestsFor = function (Sparbuch, options) {
 
       const getElapsed = measureTime();
 
-      async.eachSeries(batches, (events, callback) => {
-        sparbuch.saveEvents({ events }, callback);
-      }, err => {
-        const elapsed = getElapsed();
+      for (let i = 0; i < batches.length; i++) {
+        const events = batches[i];
 
-        assert.that(err).is.null();
-        assert.that(elapsed.millisecondsTotal).is.lessThan(expected[options.type] * 1000);
-        done();
-      });
+        await sparbuch.saveEvents({ events });
+      }
+
+      const elapsed = getElapsed();
+
+      assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
     });
 
-    test('10000 events individually.', done => {
+    test('10000 events individually.', async () => {
       const expected = {
-        mongodb: 15,
-        postgres: 7
+        mongodb: 16,
+        postgres: 16
       };
 
       const batches = getEventsForAggregateId({
@@ -101,21 +95,21 @@ const getTestsFor = function (Sparbuch, options) {
 
       const getElapsed = measureTime();
 
-      async.eachSeries(batches, (events, callback) => {
-        sparbuch.saveEvents({ events }, callback);
-      }, err => {
-        const elapsed = getElapsed();
+      for (let i = 0; i < batches.length; i++) {
+        const events = batches[i];
 
-        assert.that(err).is.null();
-        assert.that(elapsed.millisecondsTotal).is.lessThan(expected[options.type] * 1000);
-        done();
-      });
+        await sparbuch.saveEvents({ events });
+      }
+
+      const elapsed = getElapsed();
+
+      assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
     });
 
-    test('10000 events in batches of 10.', done => {
+    test('10000 events in batches of 10.', async () => {
       const expected = {
-        mongodb: 10,
-        postgres: 2
+        mongodb: 16,
+        postgres: 16
       };
 
       const batches = getEventsForAggregateId({
@@ -126,23 +120,23 @@ const getTestsFor = function (Sparbuch, options) {
 
       const getElapsed = measureTime();
 
-      async.eachSeries(batches, (events, callback) => {
-        sparbuch.saveEvents({ events }, callback);
-      }, err => {
-        const elapsed = getElapsed();
+      for (let i = 0; i < batches.length; i++) {
+        const events = batches[i];
 
-        assert.that(err).is.null();
-        assert.that(elapsed.millisecondsTotal).is.lessThan(expected[options.type] * 1000);
-        done();
-      });
+        await sparbuch.saveEvents({ events });
+      }
+
+      const elapsed = getElapsed();
+
+      assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
     });
   });
 
   suite('getEventStream', () => {
-    test('1000 events.', done => {
+    test('1000 events.', async () => {
       const expected = {
-        mongodb: 1,
-        postgres: 0.25
+        mongodb: 2,
+        postgres: 2
       };
 
       const aggregateId = uuid();
@@ -153,32 +147,36 @@ const getTestsFor = function (Sparbuch, options) {
         batchSize: 100
       });
 
-      async.eachSeries(batches, (events, callback) => {
-        sparbuch.saveEvents({ events }, callback);
-      }, errSaveEvents => {
-        assert.that(errSaveEvents).is.null();
+      for (let i = 0; i < batches.length; i++) {
+        const events = batches[i];
 
-        const getElapsed = measureTime();
+        await sparbuch.saveEvents({ events });
+      }
 
-        sparbuch.getEventStream(aggregateId, (errGetEventStream, eventStream) => {
-          assert.that(errGetEventStream).is.null();
+      const getElapsed = measureTime();
 
-          eventStream.once('end', () => {
+      const eventStream = await sparbuch.getEventStream(aggregateId);
+
+      await new Promise((resolve, reject) => {
+        eventStream.once('end', () => {
+          try {
             const elapsed = getElapsed();
 
-            assert.that(elapsed.millisecondsTotal).is.lessThan(expected[options.type] * 1000);
-            done();
-          });
-
-          eventStream.resume();
+            assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
+          } catch (ex) {
+            return reject(ex);
+          }
+          resolve();
         });
+
+        eventStream.resume();
       });
     });
 
-    test('10000 events.', done => {
+    test('10000 events.', async () => {
       const expected = {
-        mongodb: 10,
-        postgres: 2
+        mongodb: 16,
+        postgres: 16
       };
 
       const aggregateId = uuid();
@@ -189,25 +187,29 @@ const getTestsFor = function (Sparbuch, options) {
         batchSize: 100
       });
 
-      async.eachSeries(batches, (events, callback) => {
-        sparbuch.saveEvents({ events }, callback);
-      }, errSaveEvents => {
-        assert.that(errSaveEvents).is.null();
+      for (let i = 0; i < batches.length; i++) {
+        const events = batches[i];
 
-        const getElapsed = measureTime();
+        await sparbuch.saveEvents({ events });
+      }
 
-        sparbuch.getEventStream(aggregateId, (errGetEventStream, eventStream) => {
-          assert.that(errGetEventStream).is.null();
+      const getElapsed = measureTime();
 
-          eventStream.once('end', () => {
+      const eventStream = await sparbuch.getEventStream(aggregateId);
+
+      await new Promise((resolve, reject) => {
+        eventStream.once('end', () => {
+          try {
             const elapsed = getElapsed();
 
-            assert.that(elapsed.millisecondsTotal).is.lessThan(expected[options.type] * 1000);
-            done();
-          });
-
-          eventStream.resume();
+            assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
+          } catch (ex) {
+            return reject(ex);
+          }
+          resolve();
         });
+
+        eventStream.resume();
       });
     });
   });
