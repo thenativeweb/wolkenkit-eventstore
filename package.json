@@ -14,10 +14,15 @@
     {
       "name": "Christian Nolte",
       "email": "christian.nolte@thenativeweb.io"
+    },
+    {
+      "name": "Jan-Hendrik Grundhöfer",
+      "email": "jan-hendrik.grundhoefer@thenativeweb.io"
     }
   ],
   "dependencies": {
     "async-retry": "1.1.4",
+    "babel-runtime": "6.26.0",
     "commands-events": "1.0.1",
     "limit-alphanumeric": "1.0.0",
     "lodash": "4.17.5",
@@ -32,8 +37,8 @@
     "flaschenpost": "1.0.0",
     "measure-time": "3.1.1",
     "processenv": "1.0.0",
-    "roboter": "0.15.6",
-    "roboter-server": "0.15.6",
+    "roboter": "0.16.0",
+    "roboter-server": "0.16.0",
     "shelljs": "0.8.1",
     "streamtoarray": "1.0.0"
   },
