@@ -6,7 +6,11 @@ roboter.
   workOn('server').
   equipWith(task => {
     task('universal/analyze', {
-      src: [ '**/*.js', '!node_modules/**/*.js', '!coverage/**/*.js' ]
+      src: [ '**/*.js', '!node_modules/**/*.js', '!coverage/**/*.js', '!dist/**/*.js' ]
+    });
+
+    task('universal/release', {
+      createDistribution: true
     });
 
     task('universal/shell', {
