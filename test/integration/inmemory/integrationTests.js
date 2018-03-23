@@ -8,6 +8,6 @@ suite('inmemory/integration', function () {
 
   getTestsFor({
     type: 'inmemory',
-    url: env.POSTGRES_URL_INTEGRATION
+    url: env.INMEMORY_URL_INTEGRATION
   });
 });
