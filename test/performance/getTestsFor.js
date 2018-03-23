@@ -59,7 +59,8 @@ const getTestsFor = function (Sparbuch, { url, type }) {
     test('1000 events individually.', async () => {
       const expected = {
         mongodb: 4,
-        postgres: 4
+        postgres: 4,
+        inmemory: 4
       };
 
       const batches = getEventsForAggregateId({
@@ -84,7 +85,8 @@ const getTestsFor = function (Sparbuch, { url, type }) {
     test('10000 events individually.', async () => {
       const expected = {
         mongodb: 16,
-        postgres: 16
+        postgres: 16,
+        inmemory: 16
       };
 
       const batches = getEventsForAggregateId({
@@ -109,7 +111,8 @@ const getTestsFor = function (Sparbuch, { url, type }) {
     test('10000 events in batches of 10.', async () => {
       const expected = {
         mongodb: 16,
-        postgres: 16
+        postgres: 16,
+        inmemory: 16
       };
 
       const batches = getEventsForAggregateId({
@@ -136,7 +139,8 @@ const getTestsFor = function (Sparbuch, { url, type }) {
     test('1000 events.', async () => {
       const expected = {
         mongodb: 2,
-        postgres: 2
+        postgres: 2,
+        inmemory: 2
       };
 
       const aggregateId = uuid();
@@ -176,7 +180,8 @@ const getTestsFor = function (Sparbuch, { url, type }) {
     test('10000 events.', async () => {
       const expected = {
         mongodb: 16,
-        postgres: 16
+        postgres: 16,
+        inmemory: 16
       };
 
       const aggregateId = uuid();
