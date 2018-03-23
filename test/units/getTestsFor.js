@@ -281,7 +281,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
-    test('returns undefined for a aggregate without events.', async () => {
+    test('returns undefined for an aggregate without events.', async () => {
       await sparbuch.initialize({ url, namespace });
 
       const event = await sparbuch.getLastEvent(uuid());
@@ -670,7 +670,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
-    test('returns undefined for a aggregate without a snapshot.', async () => {
+    test('returns undefined for an aggregate without a snapshot.', async () => {
       await sparbuch.initialize({ url, namespace });
 
       const snapshot = await sparbuch.getSnapshot(uuid());

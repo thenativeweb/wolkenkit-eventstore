@@ -148,7 +148,7 @@ const snapshot = await sparbuch.getSnapshot(aggregateId);
 
 ### Saving a snapshot
 
-To save a snapshot for a aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
+To save a snapshot for an aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
 
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
