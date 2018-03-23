@@ -7,9 +7,9 @@ const env = require('../../helpers/env'),
 suite('inmemory/Sparbuch', () => {
   getTestsFor(Sparbuch, {
     url: env.INMEMORY_URL_UNITS,
+    type: 'inmemory',
     nonExistentUrl: '/dev/null',
 
-    /* eslint-disable */
     async startContainer () {
       return true;
     },
@@ -17,6 +17,5 @@ suite('inmemory/Sparbuch', () => {
     async stopContainer () {
       return true;
     }
-    /* eslint-enable */
   });
 });

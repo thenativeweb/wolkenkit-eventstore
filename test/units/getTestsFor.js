@@ -8,7 +8,7 @@ const assert = require('assertthat'),
       uuid = require('uuidv4');
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, stopContainer }) {
+const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContainer, stopContainer }) {
   let namespace,
       sparbuch;
 
@@ -29,28 +29,30 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
     assert.that(sparbuch).is.instanceOf(EventEmitter);
   });
 
-  test('emits a disconnect event when the connection to the database becomes lost.', async function () {
-    this.timeout(15 * 1000);
+  if (type !== 'inmemory') {
+    test('emits a disconnect event when the connection to the database becomes lost.', async function () {
+      this.timeout(15 * 1000);
 
-    await sparbuch.initialize({ url, namespace });
+      await sparbuch.initialize({ url, namespace });
 
-    await new Promise(async (resolve, reject) => {
-      sparbuch.once('disconnect', async () => {
+      await new Promise(async (resolve, reject) => {
+        sparbuch.once('disconnect', async () => {
+          try {
+            await startContainer();
+          } catch (ex) {
+            return reject(ex);
+          }
+          resolve();
+        });
+
         try {
-          await startContainer();
+          await stopContainer();
         } catch (ex) {
-          return reject(ex);
+          reject(ex);
         }
-        resolve();
       });
-
-      try {
-        await stopContainer();
-      } catch (ex) {
-        reject(ex);
-      }
     });
-  });
+  }
 
   suite('initialize', () => {
     test('is a function.', async () => {
@@ -69,11 +71,13 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
       }).is.throwingAsync('Namespace is missing.');
     });
 
-    test('returns an error if the database is not reachable.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({ url: nonExistentUrl, namespace });
-      }).is.throwingAsync();
-    });
+    if (type !== 'inmemory') {
+      test('returns an error if the database is not reachable.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({ url: nonExistentUrl, namespace });
+        }).is.throwingAsync();
+      });
+    }
 
     test('does not throw an error if the database is reachable.', async () => {
       await assert.that(async () => {
