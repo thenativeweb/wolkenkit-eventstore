@@ -30,7 +30,11 @@ Once you have created a reference, you need to initialize the instance by runnin
 await sparbuch.initialize({ url: '...', namespace: 'myApp' });
 ```
 
-For the in-memory database there is no need to hand over the connection string and the namespace.
+For the in-memory database there is no need to hand over the connection string and the namespace, so in this case you only need the following call:
+
+```javascript
+await sparbuch.initialize();
+```
 
 To handle getting disconnected from the database, subscribe to the `disconnect` event. Since sparbuch does not necessarily try to reconnect, it's probably best to restart your application:
 
@@ -40,7 +44,7 @@ sparbuch.on('disconnect', () => {
 });
 ```
 
-Since the in-memory database does not make use of an external system to store the data there is no need to subscribe to the `disconnect` event.
+Please note that since the in-memory database does not make use of an external data source it does not support the `disconnect` event.
 
 To manually disconnect from the database call the `destroy` function:
 
@@ -48,7 +52,7 @@ To manually disconnect from the database call the `destroy` function:
 await sparbuch.destroy();
 ```
 
-By calling the `destroy` function, the in-memory data is resetted.
+If you are using the in-memory database, calling `destroy` clears all events and snapshots.
 
 ### Reading an event stream
 

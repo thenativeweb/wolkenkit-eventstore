@@ -25,12 +25,12 @@
     }
   ],
   "dependencies": {
-    "async-retry": "1.1.4",
+    "async-retry": "1.2.1",
     "babel-runtime": "6.26.0",
     "commands-events": "1.0.1",
     "limit-alphanumeric": "1.0.0",
     "lodash": "4.17.5",
-    "mongodb": "3.0.2",
+    "mongodb": "3.0.5",
     "pg": "7.4.1",
     "pg-connection-string": "2.0.0",
     "pg-query-stream": "1.1.1",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "assertthat": "1.0.0",
-    "flaschenpost": "1.0.0",
+    "flaschenpost": "1.1.1",
     "measure-time": "3.1.1",
     "processenv": "1.0.0",
     "roboter": "0.16.0",
