@@ -59,11 +59,13 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       assert.that(sparbuch.initialize).is.ofType('function');
     });
 
-    test('throws an error if url is missing.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({});
-      }).is.throwingAsync('Url is missing.');
-    });
+    if (type !== 'inmemory') {
+      test('throws an error if url is missing.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({});
+        }).is.throwingAsync('Url is missing.');
+      });
+    }
 
     test('throws an error if namespace is missing.', async () => {
       await assert.that(async () => {
