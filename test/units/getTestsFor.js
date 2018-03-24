@@ -8,7 +8,7 @@ const assert = require('assertthat'),
       uuid = require('uuidv4');
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, stopContainer }) {
+const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContainer, stopContainer }) {
   let namespace,
       sparbuch;
 
@@ -29,51 +29,59 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
     assert.that(sparbuch).is.instanceOf(EventEmitter);
   });
 
-  test('emits a disconnect event when the connection to the database becomes lost.', async function () {
-    this.timeout(15 * 1000);
+  if (type !== 'inmemory') {
+    test('emits a disconnect event when the connection to the database becomes lost.', async function () {
+      this.timeout(15 * 1000);
 
-    await sparbuch.initialize({ url, namespace });
+      await sparbuch.initialize({ url, namespace });
 
-    await new Promise(async (resolve, reject) => {
-      sparbuch.once('disconnect', async () => {
+      await new Promise(async (resolve, reject) => {
+        sparbuch.once('disconnect', async () => {
+          try {
+            await startContainer();
+          } catch (ex) {
+            return reject(ex);
+          }
+          resolve();
+        });
+
         try {
-          await startContainer();
+          await stopContainer();
         } catch (ex) {
-          return reject(ex);
+          reject(ex);
         }
-        resolve();
       });
-
-      try {
-        await stopContainer();
-      } catch (ex) {
-        reject(ex);
-      }
     });
-  });
+  }
 
   suite('initialize', () => {
     test('is a function.', async () => {
       assert.that(sparbuch.initialize).is.ofType('function');
     });
 
-    test('throws an error if url is missing.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({});
-      }).is.throwingAsync('Url is missing.');
-    });
+    if (type !== 'inmemory') {
+      test('throws an error if url is missing.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({});
+        }).is.throwingAsync('Url is missing.');
+      });
+    }
 
-    test('throws an error if namespace is missing.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({ url });
-      }).is.throwingAsync('Namespace is missing.');
-    });
+    if (type !== 'inmemory') {
+      test('throws an error if namespace is missing.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({ url });
+        }).is.throwingAsync('Namespace is missing.');
+      });
+    }
 
-    test('returns an error if the database is not reachable.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({ url: nonExistentUrl, namespace });
-      }).is.throwingAsync();
-    });
+    if (type !== 'inmemory') {
+      test('returns an error if the database is not reachable.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({ url: nonExistentUrl, namespace });
+        }).is.throwingAsync();
+      });
+    }
 
     test('does not throw an error if the database is reachable.', async () => {
       await assert.that(async () => {
@@ -277,7 +285,7 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
-    test('returns undefined for a aggregate without events.', async () => {
+    test('returns undefined for an aggregate without events.', async () => {
       await sparbuch.initialize({ url, namespace });
 
       const event = await sparbuch.getLastEvent(uuid());
@@ -652,6 +660,13 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
         fromRevision: 1,
         toRevision: 2
       });
+
+      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+      const aggregateEvents = await toArray(eventStream);
+
+      assert.that(aggregateEvents[0].metadata.published).is.true();
+      assert.that(aggregateEvents[1].metadata.published).is.true();
+      assert.that(aggregateEvents[2].metadata.published).is.false();
     });
   });
 
@@ -666,7 +681,7 @@ const getTestsFor = function (Sparbuch, { url, nonExistentUrl, startContainer, s
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
-    test('returns undefined for a aggregate without a snapshot.', async () => {
+    test('returns undefined for an aggregate without a snapshot.', async () => {
       await sparbuch.initialize({ url, namespace });
 
       const snapshot = await sparbuch.getSnapshot(uuid());

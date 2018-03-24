@@ -22,12 +22,15 @@ Database                | Package
 ------------------------|--------------------
 PostgreSQL              | `sparbuch/postgres`
 MongoDB  (experimental) | `sparbuch/mongodb`
+In-memory               | `sparbuch/inmemory`
 
 Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace:
 
 ```javascript
 await sparbuch.initialize({ url: '...', namespace: 'myApp' });
 ```
+
+For the in-memory database there is no need to hand over the connection string and the namespace.
 
 To handle getting disconnected from the database, subscribe to the `disconnect` event. Since sparbuch does not necessarily try to reconnect, it's probably best to restart your application:
 
@@ -37,11 +40,15 @@ sparbuch.on('disconnect', () => {
 });
 ```
 
+Since the in-memory database does not make use of an external system to store the data there is no need to subscribe to the `disconnect` event.
+
 To manually disconnect from the database call the `destroy` function:
 
 ```javascript
 await sparbuch.destroy();
 ```
+
+By calling the `destroy` function, the in-memory data is resetted.
 
 ### Reading an event stream
 
@@ -148,7 +155,7 @@ const snapshot = await sparbuch.getSnapshot(aggregateId);
 
 ### Saving a snapshot
 
-To save a snapshot for a aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
+To save a snapshot for an aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
 
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
