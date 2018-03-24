@@ -288,7 +288,7 @@ var Sparbuch = function (_EventEmitter) {
               case 9:
                 database = _context5.sent;
                 passThrough = new PassThrough({ objectMode: true });
-                eventStream = database.query(new QueryStream('\n        SELECT "event", "position"\n          FROM "' + this.namespace + '_events"\n          WHERE "aggregateId" = $1\n            AND "revision" >= $2\n            AND "revision" <= $3\n          ORDER BY "revision"', [aggregateId, fromRevision, toRevision]));
+                eventStream = database.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "aggregateId" = $1\n            AND "revision" >= $2\n            AND "revision" <= $3\n          ORDER BY "revision"', [aggregateId, fromRevision, toRevision]));
                 onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
@@ -302,6 +302,8 @@ var Sparbuch = function (_EventEmitter) {
                   var event = Event.wrap(data.event);
 
                   event.metadata.position = Number(data.position);
+                  event.metadata.published = data.hasBeenPublished;
+
                   passThrough.write(event);
                 };
 
@@ -351,7 +353,7 @@ var Sparbuch = function (_EventEmitter) {
               case 2:
                 database = _context6.sent;
                 passThrough = new PassThrough({ objectMode: true });
-                eventStream = database.query(new QueryStream('\n        SELECT "event", "position"\n          FROM "' + this.namespace + '_events"\n          WHERE "hasBeenPublished" = false\n          ORDER BY "position"'));
+                eventStream = database.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "hasBeenPublished" = false\n          ORDER BY "position"'));
                 onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
@@ -365,6 +367,7 @@ var Sparbuch = function (_EventEmitter) {
                   var event = Event.wrap(data.event);
 
                   event.metadata.position = Number(data.position);
+                  event.metadata.published = data.hasBeenPublished;
                   passThrough.write(event);
                 };
 
