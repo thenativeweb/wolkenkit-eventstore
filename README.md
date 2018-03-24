@@ -48,7 +48,7 @@ To manually disconnect from the database call the `destroy` function:
 await sparbuch.destroy();
 ```
 
-By calling the `destroy` function on the in-memory eventstore, the in-memory data is resetted.
+By calling the `destroy` function, the in-memory data is resetted.
 
 ### Reading an event stream
 
