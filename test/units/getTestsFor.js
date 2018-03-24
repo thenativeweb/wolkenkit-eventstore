@@ -67,11 +67,13 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       });
     }
 
-    test('throws an error if namespace is missing.', async () => {
-      await assert.that(async () => {
-        await sparbuch.initialize({ url });
-      }).is.throwingAsync('Namespace is missing.');
-    });
+    if (type !== 'inmemory') {
+      test('throws an error if namespace is missing.', async () => {
+        await assert.that(async () => {
+          await sparbuch.initialize({ url });
+        }).is.throwingAsync('Namespace is missing.');
+      });
+    }
 
     if (type !== 'inmemory') {
       test('returns an error if the database is not reachable.', async () => {
