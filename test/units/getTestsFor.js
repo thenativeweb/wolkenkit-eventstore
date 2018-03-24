@@ -656,6 +656,13 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         fromRevision: 1,
         toRevision: 2
       });
+
+      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+      const aggregateEvents = await toArray(eventStream);
+
+      assert.that(aggregateEvents[0].metadata.published).is.true();
+      assert.that(aggregateEvents[1].metadata.published).is.true();
+      assert.that(aggregateEvents[2].metadata.published).is.false();
     });
   });
 
