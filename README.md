@@ -1,6 +1,6 @@
 # sparbuch
 
-sparbuch is an eventstore.
+sparbuch is an open-source eventstore for Node.js that is used by wolkenkit.
 
 ## Installation
 
