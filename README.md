@@ -21,6 +21,7 @@ The following table lists all currently supported databases:
 Database                | Package
 ------------------------|--------------------
 PostgreSQL              | `sparbuch/postgres`
+MariaDB / MySQL         | `sparbuch/mariadb`
 MongoDB  (experimental) | `sparbuch/mongodb`
 In-memory               | `sparbuch/inmemory`
 

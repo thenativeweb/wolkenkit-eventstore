@@ -58,6 +58,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
   suite('saveEvents', () => {
     test('1000 events individually.', async () => {
       const expected = {
+        mariadb: 4,
         mongodb: 4,
         postgres: 4,
         inmemory: 4
@@ -84,6 +85,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events individually.', async () => {
       const expected = {
+        mariadb: 16,
         mongodb: 16,
         postgres: 16,
         inmemory: 16
@@ -110,6 +112,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events in batches of 10.', async () => {
       const expected = {
+        mariadb: 16,
         mongodb: 16,
         postgres: 16,
         inmemory: 16
@@ -138,6 +141,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
   suite('getEventStream', () => {
     test('1000 events.', async () => {
       const expected = {
+        mariadb: 2,
         mongodb: 2,
         postgres: 2,
         inmemory: 2
@@ -179,6 +183,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events.', async () => {
       const expected = {
+        mariadb: 16,
         mongodb: 16,
         postgres: 16,
         inmemory: 16

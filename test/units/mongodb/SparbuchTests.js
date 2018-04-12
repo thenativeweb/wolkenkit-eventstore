@@ -7,7 +7,7 @@ const env = require('../../helpers/env'),
       Sparbuch = require('../../../lib/mongodb/Sparbuch'),
       waitForMongo = require('../../helpers/waitForMongo');
 
-suite('mongodb/Sparbuch', () => {
+suite.skip('mongodb/Sparbuch', () => {
   getTestsFor(Sparbuch, {
     url: env.MONGO_URL_UNITS,
     nonExistentUrl: 'mongodb://non-existent.thenativeweb/non-existent',
