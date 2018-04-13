@@ -22,8 +22,7 @@ Database                | Package
 ------------------------|--------------------
 PostgreSQL              | `sparbuch/postgres`
 MariaDB                 | `sparbuch/mariadb`
-MySQL (experime
-  ntal)    | `sparbuch/mysql`
+MySQL (experimental)    | `sparbuch/mysql`
 MongoDB  (experimental) | `sparbuch/mongodb`
 In-memory               | `sparbuch/inmemory`
 
