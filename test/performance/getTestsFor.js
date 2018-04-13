@@ -60,6 +60,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       const expected = {
         mariadb: 4,
         mongodb: 4,
+        mysql: 4,
         postgres: 4,
         inmemory: 4
       };
@@ -87,6 +88,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       const expected = {
         mariadb: 16,
         mongodb: 16,
+        mysql: 16,
         postgres: 16,
         inmemory: 16
       };
@@ -114,6 +116,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       const expected = {
         mariadb: 16,
         mongodb: 16,
+        mysql: 16,
         postgres: 16,
         inmemory: 16
       };
@@ -143,6 +146,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       const expected = {
         mariadb: 2,
         mongodb: 2,
+        mysql: 2,
         postgres: 2,
         inmemory: 2
       };
@@ -185,6 +189,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       const expected = {
         mariadb: 16,
         mongodb: 16,
+        mysql: 16,
         postgres: 16,
         inmemory: 16
       };
