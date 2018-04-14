@@ -2,10 +2,10 @@
 
 const shell = require('shelljs');
 
-const env = require('../../helpers/env'),
+const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/mariadb/Sparbuch'),
-      waitForMaria = require('../../helpers/waitForMaria');
+      waitForMaria = require('../../shared/waitForMaria');
 
 suite('mariadb/Sparbuch', () => {
   getTestsFor(Sparbuch, {

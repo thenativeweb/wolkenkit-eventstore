@@ -1,6 +1,6 @@
 'use strict';
 
-const env = require('../../helpers/env'),
+const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/mongodb/Sparbuch');
 

@@ -2,10 +2,10 @@
 
 const shell = require('shelljs');
 
-const env = require('../../helpers/env'),
+const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/mysql/Sparbuch'),
-      waitForMaria = require('../../helpers/waitForMysql');
+      waitForMaria = require('../../shared/waitForMysql');
 
 suite('mysql/Sparbuch', () => {
   getTestsFor(Sparbuch, {

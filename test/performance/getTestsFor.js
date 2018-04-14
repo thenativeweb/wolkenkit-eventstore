@@ -58,11 +58,11 @@ const getTestsFor = function (Sparbuch, { url, type }) {
   suite('saveEvents', () => {
     test('1000 events individually.', async () => {
       const expected = {
-        mariadb: 4,
-        mongodb: 4,
-        mysql: 4,
-        postgres: 4,
-        inmemory: 4
+        mariadb: 15,
+        mongodb: 15,
+        mysql: 15,
+        postgres: 15,
+        inmemory: 15
       };
 
       const batches = getEventsForAggregateId({
@@ -86,11 +86,11 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events individually.', async () => {
       const expected = {
-        mariadb: 16,
-        mongodb: 16,
-        mysql: 16,
-        postgres: 16,
-        inmemory: 16
+        mariadb: 90,
+        mongodb: 90,
+        mysql: 90,
+        postgres: 90,
+        inmemory: 90
       };
 
       const batches = getEventsForAggregateId({
@@ -114,11 +114,11 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events in batches of 10.', async () => {
       const expected = {
-        mariadb: 16,
-        mongodb: 16,
-        mysql: 16,
-        postgres: 16,
-        inmemory: 16
+        mariadb: 90,
+        mongodb: 90,
+        mysql: 90,
+        postgres: 90,
+        inmemory: 90
       };
 
       const batches = getEventsForAggregateId({
@@ -144,11 +144,11 @@ const getTestsFor = function (Sparbuch, { url, type }) {
   suite('getEventStream', () => {
     test('1000 events.', async () => {
       const expected = {
-        mariadb: 2,
-        mongodb: 2,
-        mysql: 2,
-        postgres: 2,
-        inmemory: 2
+        mariadb: 15,
+        mongodb: 15,
+        mysql: 15,
+        postgres: 15,
+        inmemory: 15
       };
 
       const aggregateId = uuid();
@@ -187,11 +187,11 @@ const getTestsFor = function (Sparbuch, { url, type }) {
 
     test('10000 events.', async () => {
       const expected = {
-        mariadb: 16,
-        mongodb: 16,
-        mysql: 16,
-        postgres: 16,
-        inmemory: 16
+        mariadb: 90,
+        mongodb: 90,
+        mysql: 90,
+        postgres: 90,
+        inmemory: 90
       };
 
       const aggregateId = uuid();

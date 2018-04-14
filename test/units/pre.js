@@ -2,11 +2,11 @@
 
 const shell = require('shelljs');
 
-const env = require('../helpers/env'),
-      waitForMaria = require('../helpers/waitForMaria'),
-      waitForMongo = require('../helpers/waitForMongo'),
-      waitForMysql = require('../helpers/waitForMysql'),
-      waitForPostgres = require('../helpers/waitForPostgres');
+const env = require('../shared/env'),
+      waitForMaria = require('../shared/waitForMaria'),
+      waitForMongo = require('../shared/waitForMongo'),
+      waitForMysql = require('../shared/waitForMysql'),
+      waitForPostgres = require('../shared/waitForPostgres');
 
 const pre = async function () {
   shell.exec('docker run -d -p 3307:3306 -e MYSQL_ROOT_PASSWORD=wolkenkit -e MYSQL_USER=wolkenkit -e MYSQL_PASSWORD=wolkenkit -e MYSQL_DATABASE=wolkenkit --name mariadb-units mariadb:10.3.5 --bind-address=0.0.0.0');
