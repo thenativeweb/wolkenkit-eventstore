@@ -4,7 +4,7 @@ const env = require('../../helpers/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/mysql/Sparbuch');
 
-suite.only('mysql/Sparbuch', function () {
+suite('mysql/Sparbuch', function () {
   this.timeout(15 * 1000);
 
   getTestsFor(Sparbuch, {

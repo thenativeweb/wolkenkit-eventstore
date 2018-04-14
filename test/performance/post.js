@@ -2,9 +2,17 @@
 
 const shell = require('shelljs');
 
-shell.exec([
-  'docker kill mariadb-performance; docker rm -v mariadb-performance',
-  'docker kill mongodb-performance; docker rm -v mongodb-performance',
-  'docker kill mysql-performance; docker rm -v mysql-performance',
-  'docker kill postgres-performance; docker rm -v postgres-performance'
-].join(';'));
+const post = async function () {
+  shell.exec([
+    'docker kill mariadb-performance',
+    'docker kill mongodb-performance',
+    'docker kill mysql-performance',
+    'docker kill postgres-performance',
+    'docker rm -v mariadb-performance',
+    'docker rm -v mongodb-performance',
+    'docker rm -v mysql-performance',
+    'docker rm -v postgres-performance'
+  ].join(';'));
+};
+
+module.exports = post;

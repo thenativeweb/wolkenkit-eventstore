@@ -18,13 +18,13 @@ const sparbuch = require('sparbuch/postgres');
 
 The following table lists all currently supported databases:
 
-Database                | Package
-------------------------|--------------------
-PostgreSQL              | `sparbuch/postgres`
-MariaDB                 | `sparbuch/mariadb`
-MySQL (experimental)    | `sparbuch/mysql`
-MongoDB  (experimental) | `sparbuch/mongodb`
-In-memory               | `sparbuch/inmemory`
+Database               | Package
+-----------------------|--------------------
+PostgreSQL             | `sparbuch/postgres`
+MariaDB                | `sparbuch/mariadb`
+MySQL                  | `sparbuch/mysql`
+MongoDB (experimental) | `sparbuch/mongodb`
+In-memory              | `sparbuch/inmemory`
 
 Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace:
 
@@ -197,13 +197,7 @@ const replayStream = await sparbuch.getReplay({
 To build this module use [roboter](https://www.npmjs.com/package/roboter).
 
 ```shell
-$ bot
-```
-
-To run the performance tests use the following command.
-
-```shell
-$ bot test-performance
+$ npx roboter
 ```
 
 ## License
