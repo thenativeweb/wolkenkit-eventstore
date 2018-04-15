@@ -90,11 +90,11 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'initialize',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(_ref3) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(_ref2) {
         var _this2 = this;
 
-        var url = _ref3.url,
-            namespace = _ref3.namespace;
+        var url = _ref2.url,
+            namespace = _ref2.namespace;
         var disconnectWatcher, database;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -178,7 +178,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function initialize(_x) {
-        return _ref2.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       }
 
       return initialize;
@@ -405,8 +405,8 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveEvents',
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref9) {
-        var events = _ref9.events;
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref8) {
+        var events = _ref8.events;
 
         var database, placeholders, values, i, base, event, text, result, _i;
 
@@ -485,7 +485,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveEvents(_x5) {
-        return _ref8.apply(this, arguments);
+        return _ref9.apply(this, arguments);
       }
 
       return saveEvents;
@@ -493,10 +493,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'markEventsAsPublished',
     value: function () {
-      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref11) {
-        var aggregateId = _ref11.aggregateId,
-            fromRevision = _ref11.fromRevision,
-            toRevision = _ref11.toRevision;
+      var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref10) {
+        var aggregateId = _ref10.aggregateId,
+            fromRevision = _ref10.fromRevision,
+            toRevision = _ref10.toRevision;
         var database;
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
@@ -562,7 +562,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function markEventsAsPublished(_x6) {
-        return _ref10.apply(this, arguments);
+        return _ref11.apply(this, arguments);
       }
 
       return markEventsAsPublished;
@@ -636,10 +636,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveSnapshot',
     value: function () {
-      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(_ref14) {
-        var aggregateId = _ref14.aggregateId,
-            revision = _ref14.revision,
-            state = _ref14.state;
+      var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(_ref13) {
+        var aggregateId = _ref13.aggregateId,
+            revision = _ref13.revision,
+            state = _ref13.state;
         var database;
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
@@ -702,7 +702,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveSnapshot(_x8) {
-        return _ref13.apply(this, arguments);
+        return _ref14.apply(this, arguments);
       }
 
       return saveSnapshot;

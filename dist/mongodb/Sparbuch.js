@@ -65,11 +65,11 @@ var Sparbuch = function (_EventEmitter) {
   (0, _createClass3.default)(Sparbuch, [{
     key: 'initialize',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref2) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref) {
         var _this2 = this;
 
-        var url = _ref2.url,
-            namespace = _ref2.namespace;
+        var url = _ref.url,
+            namespace = _ref.namespace;
         var databaseName;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -163,7 +163,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function initialize(_x) {
-        return _ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       }
 
       return initialize;
@@ -416,8 +416,8 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveEvents',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_ref8) {
-        var events = _ref8.events;
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_ref7) {
+        var events = _ref7.events;
         var i, event, seq;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -496,7 +496,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveEvents(_x6) {
-        return _ref7.apply(this, arguments);
+        return _ref8.apply(this, arguments);
       }
 
       return saveEvents;
@@ -504,10 +504,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'markEventsAsPublished',
     value: function () {
-      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref10) {
-        var aggregateId = _ref10.aggregateId,
-            fromRevision = _ref10.fromRevision,
-            toRevision = _ref10.toRevision;
+      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref9) {
+        var aggregateId = _ref9.aggregateId,
+            fromRevision = _ref9.fromRevision,
+            toRevision = _ref9.toRevision;
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
@@ -568,7 +568,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function markEventsAsPublished(_x7) {
-        return _ref9.apply(this, arguments);
+        return _ref10.apply(this, arguments);
       }
 
       return markEventsAsPublished;
@@ -625,10 +625,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveSnapshot',
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(_ref13) {
-        var aggregateId = _ref13.aggregateId,
-            revision = _ref13.revision,
-            state = _ref13.state;
+      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(_ref12) {
+        var aggregateId = _ref12.aggregateId,
+            revision = _ref12.revision,
+            state = _ref12.state;
         return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
@@ -682,7 +682,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveSnapshot(_x9) {
-        return _ref12.apply(this, arguments);
+        return _ref13.apply(this, arguments);
       }
 
       return saveSnapshot;

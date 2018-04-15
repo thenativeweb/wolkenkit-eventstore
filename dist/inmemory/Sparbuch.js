@@ -250,10 +250,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveEvents',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(_ref6) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(_ref5) {
         var _this2 = this;
 
-        var events = _ref6.events;
+        var events = _ref5.events;
         var eventsInDatabase;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -301,7 +301,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveEvents(_x4) {
-        return _ref5.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       }
 
       return saveEvents;
@@ -309,10 +309,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'markEventsAsPublished',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_ref8) {
-        var aggregateId = _ref8.aggregateId,
-            fromRevision = _ref8.fromRevision,
-            toRevision = _ref8.toRevision;
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_ref7) {
+        var aggregateId = _ref7.aggregateId,
+            fromRevision = _ref7.fromRevision,
+            toRevision = _ref7.toRevision;
         var eventsFromDatabase, shouldEventBeMarkedAsPublished, i, event, eventToUpdate;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -378,7 +378,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function markEventsAsPublished(_x5) {
-        return _ref7.apply(this, arguments);
+        return _ref8.apply(this, arguments);
       }
 
       return markEventsAsPublished;
@@ -440,10 +440,10 @@ var Sparbuch = function (_EventEmitter) {
   }, {
     key: 'saveSnapshot',
     value: function () {
-      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref11) {
-        var aggregateId = _ref11.aggregateId,
-            revision = _ref11.revision,
-            state = _ref11.state;
+      var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref10) {
+        var aggregateId = _ref10.aggregateId,
+            revision = _ref10.revision,
+            state = _ref10.state;
         var snapshot;
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
@@ -496,7 +496,7 @@ var Sparbuch = function (_EventEmitter) {
       }));
 
       function saveSnapshot(_x7) {
-        return _ref10.apply(this, arguments);
+        return _ref11.apply(this, arguments);
       }
 
       return saveSnapshot;
