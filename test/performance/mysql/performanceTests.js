@@ -2,13 +2,13 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/mongodb/Sparbuch');
+      Sparbuch = require('../../../lib/mysql/Sparbuch');
 
-suite('mongodb/Sparbuch', function () {
+suite('mysql/Sparbuch', function () {
   this.timeout(90 * 1000);
 
   getTestsFor(Sparbuch, {
-    url: env.MONGO_URL_PERFORMANCE,
-    type: 'mongodb'
+    url: env.MYSQL_URL_PERFORMANCE,
+    type: 'mysql'
   });
 });

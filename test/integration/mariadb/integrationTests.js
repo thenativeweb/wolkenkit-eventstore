@@ -3,11 +3,11 @@
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor');
 
-suite('postgres/integration', function () {
+suite('mariadb/integration', function () {
   this.timeout(10 * 1000);
 
   getTestsFor({
-    type: 'postgres',
-    url: env.POSTGRES_URL_INTEGRATION
+    type: 'mariadb',
+    url: env.MARIA_URL_INTEGRATION
   });
 });

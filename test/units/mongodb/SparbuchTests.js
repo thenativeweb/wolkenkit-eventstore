@@ -2,10 +2,10 @@
 
 const shell = require('shelljs');
 
-const env = require('../../helpers/env'),
+const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/mongodb/Sparbuch'),
-      waitForMongo = require('../../helpers/waitForMongo');
+      waitForMongo = require('../../shared/waitForMongo');
 
 suite('mongodb/Sparbuch', () => {
   getTestsFor(Sparbuch, {

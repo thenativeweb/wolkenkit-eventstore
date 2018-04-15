@@ -4,7 +4,7 @@ const path = require('path');
 
 const uuid = require('uuidv4');
 
-const runApp = require('../helpers/runApp');
+const runApp = require('../shared/runApp');
 
 const runAppConcurrently = async function ({ app, count, env }) {
   const apps = [];

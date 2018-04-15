@@ -2,10 +2,10 @@
 
 const shell = require('shelljs');
 
-const env = require('../../helpers/env'),
+const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       Sparbuch = require('../../../lib/postgres/Sparbuch'),
-      waitForPostgres = require('../../helpers/waitForPostgres');
+      waitForPostgres = require('../../shared/waitForPostgres');
 
 suite('postgres/Sparbuch', () => {
   getTestsFor(Sparbuch, {

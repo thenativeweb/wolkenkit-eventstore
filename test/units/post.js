@@ -2,15 +2,17 @@
 
 const shell = require('shelljs');
 
-const post = function (done) {
-  (async () => {
-    try {
-      shell.exec('docker kill mongodb-units; docker rm -v mongodb-units; docker kill postgres-units; docker rm -v postgres-units');
-    } catch (ex) {
-      return done(ex);
-    }
-    done();
-  })();
+const post = async function () {
+  shell.exec([
+    'docker kill mariadb-units',
+    'docker kill mongodb-units',
+    'docker kill mysql-units',
+    'docker kill postgres-units',
+    'docker rm -v mariadb-units',
+    'docker rm -v mongodb-units',
+    'docker rm -v mysql-units',
+    'docker rm -v postgres-units'
+  ].join(';'));
 };
 
 module.exports = post;
