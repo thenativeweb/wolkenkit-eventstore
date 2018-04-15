@@ -4,7 +4,7 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/postgres/Sparbuch'),
+      Sparbuch = require('../../../src/postgres/Sparbuch'),
       waitForPostgres = require('../../shared/waitForPostgres');
 
 suite('postgres/Sparbuch', () => {

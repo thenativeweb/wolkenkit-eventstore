@@ -11,7 +11,7 @@ const batchCount = processenv('BATCH_COUNT'),
       type = processenv('TYPE'),
       url = processenv('URL');
 
-const Sparbuch = require(`../../lib/${type}/Sparbuch`);
+const Sparbuch = require(`../../src/${type}/Sparbuch`);
 
 const sparbuch = new Sparbuch();
 const logger = flaschenpost.getLogger();

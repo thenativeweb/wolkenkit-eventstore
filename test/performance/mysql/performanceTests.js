@@ -2,7 +2,7 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/mysql/Sparbuch');
+      Sparbuch = require('../../../src/mysql/Sparbuch');
 
 suite('mysql/Sparbuch', function () {
   this.timeout(90 * 1000);

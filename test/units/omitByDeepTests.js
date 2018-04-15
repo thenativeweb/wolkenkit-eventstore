@@ -2,7 +2,7 @@
 
 const assert = require('assertthat');
 
-const omitByDeep = require('../../lib/omitByDeep');
+const omitByDeep = require('../../src/omitByDeep');
 
 suite('omitByDeep', () => {
   test('is a function.', async () => {

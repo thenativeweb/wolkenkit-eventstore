@@ -4,7 +4,7 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/mariadb/Sparbuch'),
+      Sparbuch = require('../../../src/mariadb/Sparbuch'),
       waitForMaria = require('../../shared/waitForMaria');
 
 suite('mariadb/Sparbuch', () => {

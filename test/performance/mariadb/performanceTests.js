@@ -2,7 +2,7 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/mariadb/Sparbuch');
+      Sparbuch = require('../../../src/mariadb/Sparbuch');
 
 suite('mariadb/Sparbuch', function () {
   this.timeout(90 * 1000);

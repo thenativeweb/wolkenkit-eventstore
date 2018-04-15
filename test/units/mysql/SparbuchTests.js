@@ -4,7 +4,7 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../lib/mysql/Sparbuch'),
+      Sparbuch = require('../../../src/mysql/Sparbuch'),
       waitForMaria = require('../../shared/waitForMysql');
 
 suite('mysql/Sparbuch', () => {
