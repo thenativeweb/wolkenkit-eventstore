@@ -1,8 +1,8 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      getTestsFor = require('../getTestsFor'),
-      Eventstore = require('../../../src/mariadb/Eventstore');
+      Eventstore = require('../../../src/mariadb/Eventstore'),
+      getTestsFor = require('../getTestsFor');
 
 suite('mariadb/Eventstore', function () {
   this.timeout(90 * 1000);

@@ -1,8 +1,8 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      getTestsFor = require('../getTestsFor'),
-      Eventstore = require('../../../src/mysql/Eventstore');
+      Eventstore = require('../../../src/mysql/Eventstore'),
+      getTestsFor = require('../getTestsFor');
 
 suite('mysql/Eventstore', function () {
   this.timeout(90 * 1000);

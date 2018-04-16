@@ -41,8 +41,8 @@ const getEventsForAggregateId = function ({ aggregateId, batchCount, batchSize }
 
 /* eslint-disable mocha/max-top-level-suites */
 const getTestsFor = function (Eventstore, { url, type }) {
-  let namespace,
-      eventstore;
+  let eventstore,
+      namespace;
 
   setup(async () => {
     namespace = uuid();

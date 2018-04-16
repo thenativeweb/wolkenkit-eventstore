@@ -9,8 +9,8 @@ const assert = require('assertthat'),
 
 /* eslint-disable mocha/max-top-level-suites */
 const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startContainer, stopContainer }) {
-  let namespace,
-      eventstore;
+  let eventstore,
+      namespace;
 
   setup(() => {
     eventstore = new Eventstore();

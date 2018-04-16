@@ -1,7 +1,7 @@
 'use strict';
 
-const getTestsFor = require('../getTestsFor'),
-      Eventstore = require('../../../src/inmemory/Eventstore');
+const Eventstore = require('../../../src/inmemory/Eventstore'),
+      getTestsFor = require('../getTestsFor');
 
 suite('inmemory/Eventstore', () => {
   getTestsFor(Eventstore, {

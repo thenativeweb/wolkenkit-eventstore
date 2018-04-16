@@ -1,8 +1,8 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      getTestsFor = require('../getTestsFor'),
-      Eventstore = require('../../../src/postgres/Eventstore');
+      Eventstore = require('../../../src/postgres/Eventstore'),
+      getTestsFor = require('../getTestsFor');
 
 suite('postgres/Eventstore', function () {
   this.timeout(90 * 1000);

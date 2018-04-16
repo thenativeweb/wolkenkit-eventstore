@@ -3,8 +3,8 @@
 const shell = require('shelljs');
 
 const env = require('../../shared/env'),
-      getTestsFor = require('../getTestsFor'),
       Eventstore = require('../../../src/mariadb/Eventstore'),
+      getTestsFor = require('../getTestsFor'),
       waitForMaria = require('../../shared/waitForMaria');
 
 suite('mariadb/Eventstore', () => {
