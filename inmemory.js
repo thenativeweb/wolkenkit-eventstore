@@ -1,7 +1,7 @@
 'use strict';
 
-const Sparbuch = require('./dist/inmemory/Sparbuch');
+const Eventstore = require('./dist/inmemory/Eventstore');
 
-const sparbuch = new Sparbuch();
+const eventstore = new Eventstore();
 
-module.exports = sparbuch;
+module.exports = eventstore;

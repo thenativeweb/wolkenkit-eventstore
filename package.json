@@ -1,7 +1,7 @@
 {
-  "name": "sparbuch",
+  "name": "wolkenkit-eventstore",
   "version": "2.2.0",
-  "description": "sparbuch is an open-source eventstore for Node.js that is used by wolkenkit.",
+  "description": "wolkenkit-eventstore is an open-source eventstore for Node.js that is used by wolkenkit.",
   "contributors": [
     {
       "name": "Golo Roden",
@@ -42,18 +42,20 @@
     "flaschenpost": "1.1.1",
     "measure-time": "3.1.1",
     "processenv": "1.0.0",
-    "roboter": "thenativeweb/roboter#vnext",
+    "roboter": "1.0.0",
     "shelljs": "0.8.1",
     "streamtoarray": "1.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/thenativeweb/sparbuch.git"
+    "url": "git://github.com/thenativeweb/wolkenkit-eventstore.git"
   },
   "keywords": [
     "cqrs",
     "events",
-    "eventstore"
+    "eventsourcing",
+    "eventstore",
+    "wolkenkit"
   ],
   "license": "AGPL-3.0"
 }

@@ -2,12 +2,12 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/postgres/Sparbuch');
+      Eventstore = require('../../../src/postgres/Eventstore');
 
-suite('postgres/Sparbuch', function () {
+suite('postgres/Eventstore', function () {
   this.timeout(90 * 1000);
 
-  getTestsFor(Sparbuch, {
+  getTestsFor(Eventstore, {
     url: env.POSTGRES_URL_PERFORMANCE,
     type: 'postgres'
   });

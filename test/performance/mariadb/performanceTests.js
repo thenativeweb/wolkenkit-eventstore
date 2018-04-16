@@ -2,12 +2,12 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/mariadb/Sparbuch');
+      Eventstore = require('../../../src/mariadb/Eventstore');
 
-suite('mariadb/Sparbuch', function () {
+suite('mariadb/Eventstore', function () {
   this.timeout(90 * 1000);
 
-  getTestsFor(Sparbuch, {
+  getTestsFor(Eventstore, {
     url: env.MARIA_URL_PERFORMANCE,
     type: 'mariadb'
   });

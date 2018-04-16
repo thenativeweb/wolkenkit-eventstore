@@ -4,11 +4,11 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/mariadb/Sparbuch'),
+      Eventstore = require('../../../src/mariadb/Eventstore'),
       waitForMaria = require('../../shared/waitForMaria');
 
-suite('mariadb/Sparbuch', () => {
-  getTestsFor(Sparbuch, {
+suite('mariadb/Eventstore', () => {
+  getTestsFor(Eventstore, {
     url: env.MARIA_URL_UNITS,
     nonExistentUrl: 'mariadb://localhost/non-existent',
 

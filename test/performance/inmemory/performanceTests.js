@@ -1,12 +1,12 @@
 'use strict';
 
 const getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/inmemory/Sparbuch');
+      Eventstore = require('../../../src/inmemory/Eventstore');
 
-suite('inmemory/Sparbuch', function () {
+suite('inmemory/Eventstore', function () {
   this.timeout(90 * 1000);
 
-  getTestsFor(Sparbuch, {
+  getTestsFor(Eventstore, {
     type: 'inmemory'
   });
 });

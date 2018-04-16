@@ -1,47 +1,47 @@
-# sparbuch
+# wolkenkit-eventstore
 
-sparbuch is an open-source eventstore for Node.js that is used by wolkenkit.
+wolkenkit-eventstore is an open-source eventstore for Node.js that is used by wolkenkit.
 
 ## Installation
 
 ```shell
-$ npm install sparbuch
+$ npm install wolkenkit-eventstore
 ```
 
 ## Quick start
 
-To use sparbuch first you need to add a reference to your application. You also need to specify which database to use:
+To use wolkenkit-eventstore first you need to add a reference to your application. You also need to specify which database to use:
 
 ```javascript
-const sparbuch = require('sparbuch/postgres');
+const eventstore = require('wolkenkit-eventstore/postgres');
 ```
 
 The following table lists all currently supported databases:
 
 Database               | Package
 -----------------------|--------------------
-PostgreSQL             | `sparbuch/postgres`
-MariaDB                | `sparbuch/mariadb`
-MySQL                  | `sparbuch/mysql`
-MongoDB (experimental) | `sparbuch/mongodb`
-In-memory              | `sparbuch/inmemory`
+PostgreSQL             | `wolkenkit-eventstore/postgres`
+MariaDB                | `wolkenkit-eventstore/mariadb`
+MySQL                  | `wolkenkit-eventstore/mysql`
+MongoDB (experimental) | `wolkenkit-eventstore/mongodb`
+In-memory              | `wolkenkit-eventstore/inmemory`
 
 Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace:
 
 ```javascript
-await sparbuch.initialize({ url: '...', namespace: 'myApp' });
+await eventstore.initialize({ url: '...', namespace: 'myApp' });
 ```
 
 For the in-memory database there is no need to hand over the connection string and the namespace, so in this case you only need the following call:
 
 ```javascript
-await sparbuch.initialize();
+await eventstore.initialize();
 ```
 
-To handle getting disconnected from the database, subscribe to the `disconnect` event. Since sparbuch does not necessarily try to reconnect, it's probably best to restart your application:
+To handle getting disconnected from the database, subscribe to the `disconnect` event. Since wolkenkit-eventstore does not necessarily try to reconnect, it's probably best to restart your application:
 
 ```javascript
-sparbuch.on('disconnect', () => {
+eventstore.on('disconnect', () => {
   // ...
 });
 ```
@@ -51,7 +51,7 @@ Please note that since the in-memory database does not make use of an external d
 To manually disconnect from the database call the `destroy` function:
 
 ```javascript
-await sparbuch.destroy();
+await eventstore.destroy();
 ```
 
 If you are using the in-memory database, calling `destroy` clears all events and snapshots.
@@ -63,7 +63,7 @@ To read the event stream for a given aggregate use the `getEventStream` function
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-const eventStream = await sparbuch.getEventStream(aggregateId);
+const eventStream = await eventstore.getEventStream(aggregateId);
 ```
 
 To limit the number of events returned you may use the `fromRevision` and `toRevision` options:
@@ -71,7 +71,7 @@ To limit the number of events returned you may use the `fromRevision` and `toRev
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-const eventStream = await sparbuch.getEventStream(aggregateId, {
+const eventStream = await eventstore.getEventStream(aggregateId, {
   fromRevision: 23,
   toRevision: 42
 });
@@ -84,7 +84,7 @@ To read the last event for a given aggregate use the `getLastEvent` function and
 ```javascript
 const aggregateId = 'a6d18fc4-0ce3-4e3c-af43-fd451f58c0f1';
 
-const event = await sparbuch.getLastEvent(aggregateId);
+const event = await eventstore.getLastEvent(aggregateId);
 ```
 
 ### Saving events
@@ -98,7 +98,7 @@ const eventJoined = new Event(...);
 eventStarted.metadata.revision = 1;
 eventJoined.metadata.revision = 2;
 
-const savedEvents = await sparbuch.saveEvents({
+const savedEvents = await eventstore.saveEvents({
   events: [ eventStarted, eventJoined ]
 });
 ```
@@ -116,7 +116,7 @@ const eventStarted = new Event(...);
 
 eventStarted.metadata.revision = 1;
 
-const savedEvents = await sparbuch.saveEvents({ events: eventStarted });
+const savedEvents = await eventstore.saveEvents({ events: eventStarted });
 ```
 
 #### Respecting the event stream order
@@ -132,7 +132,7 @@ The position is available when fetching the event stream using the `getEventStre
 To read all unpublished events as a stream, call the `getUnpublishedEventStream` function. The function returns a regular Node.js readable stream:
 
 ```javascript
-const eventStream = await sparbuch.getUnpublishedEventStream();
+const eventStream = await eventstore.getUnpublishedEventStream();
 ```
 
 ### Marking events as published
@@ -142,7 +142,7 @@ Once you have published events using an event publisher you may mark them as pub
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-await sparbuch.markEventsAsPublished({
+await eventstore.markEventsAsPublished({
   aggregateId,
   fromRevision: 23,
   toRevision: 42
@@ -156,7 +156,7 @@ To read the event stream for a given aggregate use the `getSnapshot` function an
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-const snapshot = await sparbuch.getSnapshot(aggregateId);
+const snapshot = await eventstore.getSnapshot(aggregateId);
 ```
 
 ### Saving a snapshot
@@ -170,7 +170,7 @@ const state = {
   // ...
 };
 
-await sparbuch.saveSnapshot({ aggregateId, revision, state });
+await eventstore.saveSnapshot({ aggregateId, revision, state });
 ```
 
 *Please note that if a snapshot was already saved for the given aggregate id and revision, this function does nothing.*
@@ -180,13 +180,13 @@ await sparbuch.saveSnapshot({ aggregateId, revision, state });
 To get a replay of events use the `getReplay` function. The function returns a regular Node.js readable stream:
 
 ```javascript
-const replayStream = await sparbuch.getReplay();
+const replayStream = await eventstore.getReplay();
 ```
 
 To limit the number of events returned you may use the `fromPosition` and `toPosition` options:
 
 ```javascript
-const replayStream = await sparbuch.getReplay({
+const replayStream = await eventstore.getReplay({
   fromPosition: 7,
   toPosition: 23
 });

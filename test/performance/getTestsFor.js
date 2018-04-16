@@ -40,19 +40,19 @@ const getEventsForAggregateId = function ({ aggregateId, batchCount, batchSize }
 };
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Sparbuch, { url, type }) {
+const getTestsFor = function (Eventstore, { url, type }) {
   let namespace,
-      sparbuch;
+      eventstore;
 
   setup(async () => {
     namespace = uuid();
-    sparbuch = new Sparbuch();
+    eventstore = new Eventstore();
 
-    await sparbuch.initialize({ url, namespace });
+    await eventstore.initialize({ url, namespace });
   });
 
   teardown(async () => {
-    await sparbuch.destroy();
+    await eventstore.destroy();
   });
 
   suite('saveEvents', () => {
@@ -76,7 +76,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       for (let i = 0; i < batches.length; i++) {
         const events = batches[i];
 
-        await sparbuch.saveEvents({ events });
+        await eventstore.saveEvents({ events });
       }
 
       const elapsed = getElapsed();
@@ -104,7 +104,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       for (let i = 0; i < batches.length; i++) {
         const events = batches[i];
 
-        await sparbuch.saveEvents({ events });
+        await eventstore.saveEvents({ events });
       }
 
       const elapsed = getElapsed();
@@ -132,7 +132,7 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       for (let i = 0; i < batches.length; i++) {
         const events = batches[i];
 
-        await sparbuch.saveEvents({ events });
+        await eventstore.saveEvents({ events });
       }
 
       const elapsed = getElapsed();
@@ -162,12 +162,12 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       for (let i = 0; i < batches.length; i++) {
         const events = batches[i];
 
-        await sparbuch.saveEvents({ events });
+        await eventstore.saveEvents({ events });
       }
 
       const getElapsed = measureTime();
 
-      const eventStream = await sparbuch.getEventStream(aggregateId);
+      const eventStream = await eventstore.getEventStream(aggregateId);
 
       await new Promise((resolve, reject) => {
         eventStream.once('end', () => {
@@ -205,12 +205,12 @@ const getTestsFor = function (Sparbuch, { url, type }) {
       for (let i = 0; i < batches.length; i++) {
         const events = batches[i];
 
-        await sparbuch.saveEvents({ events });
+        await eventstore.saveEvents({ events });
       }
 
       const getElapsed = measureTime();
 
-      const eventStream = await sparbuch.getEventStream(aggregateId);
+      const eventStream = await eventstore.getEventStream(aggregateId);
 
       await new Promise((resolve, reject) => {
         eventStream.once('end', () => {

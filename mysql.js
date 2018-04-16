@@ -1,7 +1,7 @@
 'use strict';
 
-const Sparbuch = require('./dist/mysql/Sparbuch');
+const Eventstore = require('./dist/mysql/Eventstore');
 
-const sparbuch = new Sparbuch();
+const eventstore = new Eventstore();
 
-module.exports = sparbuch;
+module.exports = eventstore;

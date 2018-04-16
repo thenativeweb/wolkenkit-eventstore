@@ -2,12 +2,12 @@
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/mongodb/Sparbuch');
+      Eventstore = require('../../../src/mongodb/Eventstore');
 
-suite('mongodb/Sparbuch', function () {
+suite('mongodb/Eventstore', function () {
   this.timeout(90 * 1000);
 
-  getTestsFor(Sparbuch, {
+  getTestsFor(Eventstore, {
     url: env.MONGO_URL_PERFORMANCE,
     type: 'mongodb'
   });

@@ -1,7 +1,7 @@
 'use strict';
 
-const Sparbuch = require('./dist/mongodb/Sparbuch');
+const Eventstore = require('./dist/mongodb/Eventstore');
 
-const sparbuch = new Sparbuch();
+const eventstore = new Eventstore();
 
-module.exports = sparbuch;
+module.exports = eventstore;

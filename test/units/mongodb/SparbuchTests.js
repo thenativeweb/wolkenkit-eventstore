@@ -4,11 +4,11 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/mongodb/Sparbuch'),
+      Eventstore = require('../../../src/mongodb/Eventstore'),
       waitForMongo = require('../../shared/waitForMongo');
 
-suite('mongodb/Sparbuch', () => {
-  getTestsFor(Sparbuch, {
+suite('mongodb/Eventstore', () => {
+  getTestsFor(Eventstore, {
     url: env.MONGO_URL_UNITS,
     nonExistentUrl: 'mongodb://non-existent.thenativeweb/non-existent',
 

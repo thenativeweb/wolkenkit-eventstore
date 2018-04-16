@@ -9,7 +9,7 @@ const cloneDeep = require('lodash/cloneDeep'),
 
 const omitByDeep = require('../omitByDeep');
 
-class Sparbuch extends EventEmitter {
+class Eventstore extends EventEmitter {
   async initialize () {
     this.database = {
       events: [],
@@ -243,4 +243,4 @@ class Sparbuch extends EventEmitter {
   /* eslint-enable*/
 }
 
-module.exports = Sparbuch;
+module.exports = Eventstore;

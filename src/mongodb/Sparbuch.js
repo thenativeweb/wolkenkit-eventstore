@@ -12,7 +12,7 @@ const cloneDeep = require('lodash/cloneDeep'),
 
 const omitByDeep = require('../omitByDeep');
 
-class Sparbuch extends EventEmitter {
+class Eventstore extends EventEmitter {
   constructor () {
     super();
 
@@ -135,7 +135,7 @@ class Sparbuch extends EventEmitter {
       unsubscribe();
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call eventStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -146,7 +146,7 @@ class Sparbuch extends EventEmitter {
       passThrough.emit('error', err);
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call eventStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -186,7 +186,7 @@ class Sparbuch extends EventEmitter {
       unsubscribe();
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call eventStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -197,7 +197,7 @@ class Sparbuch extends EventEmitter {
       passThrough.emit('error', err);
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call eventStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -350,7 +350,7 @@ class Sparbuch extends EventEmitter {
       unsubscribe();
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call replayStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -361,7 +361,7 @@ class Sparbuch extends EventEmitter {
       passThrough.emit('error', err);
       passThrough.end();
 
-      // In the PostgreSQL sparbuch, we call replayStream.end() here. In MongoDB,
+      // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
       // this function apparently is not implemented. This note is just for
       // informational purposes to ensure that you are aware that the two
       // implementations differ here.
@@ -381,4 +381,4 @@ class Sparbuch extends EventEmitter {
   }
 }
 
-module.exports = Sparbuch;
+module.exports = Eventstore;

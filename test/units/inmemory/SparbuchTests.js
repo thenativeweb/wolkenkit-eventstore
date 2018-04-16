@@ -1,10 +1,10 @@
 'use strict';
 
 const getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/inmemory/Sparbuch');
+      Eventstore = require('../../../src/inmemory/Eventstore');
 
-suite('inmemory/Sparbuch', () => {
-  getTestsFor(Sparbuch, {
+suite('inmemory/Eventstore', () => {
+  getTestsFor(Eventstore, {
     type: 'inmemory'
   });
 });

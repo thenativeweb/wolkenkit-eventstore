@@ -8,35 +8,35 @@ const assert = require('assertthat'),
       uuid = require('uuidv4');
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContainer, stopContainer }) {
+const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startContainer, stopContainer }) {
   let namespace,
-      sparbuch;
+      eventstore;
 
   setup(() => {
-    sparbuch = new Sparbuch();
+    eventstore = new Eventstore();
     namespace = uuid();
   });
 
   teardown(async () => {
-    await sparbuch.destroy();
+    await eventstore.destroy();
   });
 
   test('is a function.', async () => {
-    assert.that(Sparbuch).is.ofType('function');
+    assert.that(Eventstore).is.ofType('function');
   });
 
   test('is an event emitter.', async () => {
-    assert.that(sparbuch).is.instanceOf(EventEmitter);
+    assert.that(eventstore).is.instanceOf(EventEmitter);
   });
 
   if (type !== 'inmemory') {
     test('emits a disconnect event when the connection to the database becomes lost.', async function () {
       this.timeout(15 * 1000);
 
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
       await new Promise(async (resolve, reject) => {
-        sparbuch.once('disconnect', async () => {
+        eventstore.once('disconnect', async () => {
           try {
             await startContainer();
           } catch (ex) {
@@ -56,13 +56,13 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('initialize', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.initialize).is.ofType('function');
+      assert.that(eventstore.initialize).is.ofType('function');
     });
 
     if (type !== 'inmemory') {
       test('throws an error if url is missing.', async () => {
         await assert.that(async () => {
-          await sparbuch.initialize({});
+          await eventstore.initialize({});
         }).is.throwingAsync('Url is missing.');
       });
     }
@@ -70,7 +70,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
     if (type !== 'inmemory') {
       test('throws an error if namespace is missing.', async () => {
         await assert.that(async () => {
-          await sparbuch.initialize({ url });
+          await eventstore.initialize({ url });
         }).is.throwingAsync('Namespace is missing.');
       });
     }
@@ -78,21 +78,21 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
     if (type !== 'inmemory') {
       test('returns an error if the database is not reachable.', async () => {
         await assert.that(async () => {
-          await sparbuch.initialize({ url: nonExistentUrl, namespace });
+          await eventstore.initialize({ url: nonExistentUrl, namespace });
         }).is.throwingAsync();
       });
     }
 
     test('does not throw an error if the database is reachable.', async () => {
       await assert.that(async () => {
-        await sparbuch.initialize({ url, namespace });
+        await eventstore.initialize({ url, namespace });
       }).is.not.throwingAsync();
     });
 
     test('does not throw an error if tables, indexes & co. do already exist.', async () => {
       await assert.that(async () => {
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.initialize({ url, namespace });
+        await eventstore.initialize({ url, namespace });
+        await eventstore.initialize({ url, namespace });
       }).is.not.throwingAsync();
     });
 
@@ -107,11 +107,11 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
       event.metadata.revision = 1;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: event });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: event });
 
       await assert.that(async () => {
-        await sparbuch.saveEvents({ events: event });
+        await eventstore.saveEvents({ events: event });
       }).is.throwingAsync('Aggregate id and revision already exist.');
     });
 
@@ -127,10 +127,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
         event.metadata.revision = 1;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: event });
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: event });
 
-        const eventStream = await sparbuch.getEventStream(event.aggregate.id);
+        const eventStream = await eventstore.getEventStream(event.aggregate.id);
         const aggregateEvents = await toArray(eventStream);
 
         assert.that(aggregateEvents.length).is.equalTo(1);
@@ -157,10 +157,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         eventStarted.metadata.revision = 1;
         eventJoined.metadata.revision = 2;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-        const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+        const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id);
         const aggregateEvents = await toArray(eventStream);
 
         assert.that(aggregateEvents.length).is.equalTo(2);
@@ -188,11 +188,11 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         eventStarted.metadata.revision = 1;
         eventJoined.metadata.revision = 2;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: eventStarted });
-        await sparbuch.saveEvents({ events: eventJoined });
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: eventStarted });
+        await eventstore.saveEvents({ events: eventJoined });
 
-        const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+        const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id);
         const aggregateEvents = await toArray(eventStream);
 
         assert.that(aggregateEvents.length).is.equalTo(2);
@@ -220,17 +220,17 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         eventStarted1.metadata.revision = 1;
         eventStarted2.metadata.revision = 1;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: eventStarted1 });
-        await sparbuch.saveEvents({ events: eventStarted2 });
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: eventStarted1 });
+        await eventstore.saveEvents({ events: eventStarted2 });
 
-        const eventStream1 = await sparbuch.getEventStream(eventStarted1.aggregate.id);
+        const eventStream1 = await eventstore.getEventStream(eventStarted1.aggregate.id);
         const aggregateEvents1 = await toArray(eventStream1);
 
         assert.that(aggregateEvents1.length).is.equalTo(1);
         assert.that(aggregateEvents1[0].metadata.position).is.equalTo(1);
 
-        const eventStream2 = await sparbuch.getEventStream(eventStarted2.aggregate.id);
+        const eventStream2 = await eventstore.getEventStream(eventStarted2.aggregate.id);
         const aggregateEvents2 = await toArray(eventStream2);
 
         assert.that(aggregateEvents2.length).is.equalTo(1);
@@ -248,8 +248,8 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
         event.metadata.revision = 1;
 
-        await sparbuch.initialize({ url, namespace });
-        const savedEvents = await sparbuch.saveEvents({ events: event });
+        await eventstore.initialize({ url, namespace });
+        const savedEvents = await eventstore.saveEvents({ events: event });
 
         assert.that(savedEvents.length).is.equalTo(1);
         assert.that(savedEvents[0].metadata.position).is.equalTo(1);
@@ -266,8 +266,8 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
         event.metadata.revision = 1;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: event });
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: event });
 
         assert.that(event.metadata.position).is.undefined();
       });
@@ -276,19 +276,19 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('getLastEvent', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.getLastEvent).is.ofType('function');
+      assert.that(eventstore.getLastEvent).is.ofType('function');
     });
 
     test('throws an error if aggregate id is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.getLastEvent();
+        await eventstore.getLastEvent();
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
     test('returns undefined for an aggregate without events.', async () => {
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
-      const event = await sparbuch.getLastEvent(uuid());
+      const event = await eventstore.getLastEvent(uuid());
 
       assert.that(event).is.undefined();
     });
@@ -315,10 +315,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.revision = 1;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const event = await sparbuch.getLastEvent(aggregateId);
+      const event = await eventstore.getLastEvent(aggregateId);
 
       assert.that(event.name).is.equalTo('joined');
       assert.that(event.metadata.revision).is.equalTo(2);
@@ -341,10 +341,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
       eventJoined.metadata.revision = 1;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventJoined ]});
 
-      const event = await sparbuch.getLastEvent(aggregateId);
+      const event = await eventstore.getLastEvent(aggregateId);
 
       assert.that(event.data.initiator).is.null();
       assert.that(event.data.participants).is.equalTo([]);
@@ -353,25 +353,25 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('getEventStream', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.getEventStream).is.ofType('function');
+      assert.that(eventstore.getEventStream).is.ofType('function');
     });
 
     test('throws an error if aggregate id is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.getEventStream();
+        await eventstore.getEventStream();
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
     test('throws an error if from revision is greater than to revision.', async () => {
       await assert.that(async () => {
-        await sparbuch.getEventStream(uuid(), { fromRevision: 42, toRevision: 23 });
+        await eventstore.getEventStream(uuid(), { fromRevision: 42, toRevision: 23 });
       }).is.throwingAsync('From revision is greater than to revision.');
     });
 
     test('returns an empty stream for a non-existent aggregate.', async () => {
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
-      const eventStream = await sparbuch.getEventStream(uuid());
+      const eventStream = await eventstore.getEventStream(uuid());
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(0);
@@ -397,10 +397,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.revision = 1;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+      const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id);
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(2);
@@ -428,10 +428,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.revision = 1;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id, { fromRevision: 2 });
+      const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id, { fromRevision: 2 });
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(1);
@@ -458,10 +458,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.revision = 1;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id, { toRevision: 1 });
+      const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id, { toRevision: 1 });
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(1);
@@ -471,13 +471,13 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('getUnpublishedEventStream', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.getUnpublishedEventStream).is.ofType('function');
+      assert.that(eventstore.getUnpublishedEventStream).is.ofType('function');
     });
 
     test('returns an empty stream if there are no unpublished events.', async () => {
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
-      const eventStream = await sparbuch.getUnpublishedEventStream();
+      const eventStream = await eventstore.getUnpublishedEventStream();
       const unpublishedEvents = await toArray(eventStream);
 
       assert.that(unpublishedEvents.length).is.equalTo(0);
@@ -504,10 +504,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.published = true;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const eventStream = await sparbuch.getUnpublishedEventStream();
+      const eventStream = await eventstore.getUnpublishedEventStream();
       const unpublishedEvents = await toArray(eventStream);
 
       assert.that(unpublishedEvents.length).is.equalTo(1);
@@ -517,12 +517,12 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('saveEvents', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.saveEvents).is.ofType('function');
+      assert.that(eventstore.saveEvents).is.ofType('function');
     });
 
     test('throws an error if events are missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.saveEvents({});
+        await eventstore.saveEvents({});
       }).is.throwingAsync('Events are missing.');
     });
 
@@ -537,10 +537,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
       event.metadata.revision = 1;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: event });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: event });
 
-      const eventStream = await sparbuch.getEventStream(event.aggregate.id);
+      const eventStream = await eventstore.getEventStream(event.aggregate.id);
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(1);
@@ -567,10 +567,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventStarted.metadata.revision = 1;
       eventJoined.metadata.revision = 2;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoined ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
 
-      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+      const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id);
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(2);
@@ -589,10 +589,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
       event.metadata.revision = 1;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: event });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: event });
 
-      const eventStream = await sparbuch.getEventStream(event.aggregate.id);
+      const eventStream = await eventstore.getEventStream(event.aggregate.id);
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents.length).is.equalTo(1);
@@ -602,24 +602,24 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('markEventsAsPublished', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.markEventsAsPublished).is.ofType('function');
+      assert.that(eventstore.markEventsAsPublished).is.ofType('function');
     });
 
     test('throws an error if aggregate id is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.markEventsAsPublished({});
+        await eventstore.markEventsAsPublished({});
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
     test('throws an error if from revision is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.markEventsAsPublished({ aggregateId: uuid() });
+        await eventstore.markEventsAsPublished({ aggregateId: uuid() });
       }).is.throwingAsync('From revision is missing.');
     });
 
     test('throws an error if to revision is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.markEventsAsPublished({ aggregateId: uuid(), fromRevision: 5 });
+        await eventstore.markEventsAsPublished({ aggregateId: uuid(), fromRevision: 5 });
       }).is.throwingAsync('To revision is missing.');
     });
 
@@ -652,16 +652,16 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       eventJoinedFirst.metadata.revision = 2;
       eventJoinedSecond.metadata.revision = 3;
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveEvents({ events: [ eventStarted, eventJoinedFirst, eventJoinedSecond ]});
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveEvents({ events: [ eventStarted, eventJoinedFirst, eventJoinedSecond ]});
 
-      await sparbuch.markEventsAsPublished({
+      await eventstore.markEventsAsPublished({
         aggregateId: eventStarted.aggregate.id,
         fromRevision: 1,
         toRevision: 2
       });
 
-      const eventStream = await sparbuch.getEventStream(eventStarted.aggregate.id);
+      const eventStream = await eventstore.getEventStream(eventStarted.aggregate.id);
       const aggregateEvents = await toArray(eventStream);
 
       assert.that(aggregateEvents[0].metadata.published).is.true();
@@ -672,19 +672,19 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('getSnapshot', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.getSnapshot).is.ofType('function');
+      assert.that(eventstore.getSnapshot).is.ofType('function');
     });
 
     test('throws an error if aggregate id is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.getSnapshot();
+        await eventstore.getSnapshot();
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
     test('returns undefined for an aggregate without a snapshot.', async () => {
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
-      const snapshot = await sparbuch.getSnapshot(uuid());
+      const snapshot = await eventstore.getSnapshot(uuid());
 
       assert.that(snapshot).is.undefined();
     });
@@ -698,10 +698,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: [ 'Jane Doe' ]
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 5, state });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 5, state });
 
-      const snapshot = await sparbuch.getSnapshot(aggregateId);
+      const snapshot = await eventstore.getSnapshot(aggregateId);
 
       assert.that(snapshot).is.equalTo({
         revision: 5,
@@ -718,10 +718,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: []
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 5, state });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 5, state });
 
-      const snapshot = await sparbuch.getSnapshot(aggregateId);
+      const snapshot = await eventstore.getSnapshot(aggregateId);
 
       assert.that(snapshot.revision).is.equalTo(5);
       assert.that(snapshot.state).is.equalTo({
@@ -745,11 +745,11 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: [ 'Jane Doe', 'Jenny Doe' ]
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 5, state: stateOld });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 10, state: stateNew });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 5, state: stateOld });
+      await eventstore.saveSnapshot({ aggregateId, revision: 10, state: stateNew });
 
-      const snapshot = await sparbuch.getSnapshot(aggregateId);
+      const snapshot = await eventstore.getSnapshot(aggregateId);
 
       assert.that(snapshot).is.equalTo({
         revision: 10,
@@ -760,24 +760,24 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('saveSnapshot', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.saveSnapshot).is.ofType('function');
+      assert.that(eventstore.saveSnapshot).is.ofType('function');
     });
 
     test('throws an error if aggregate id is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.saveSnapshot({});
+        await eventstore.saveSnapshot({});
       }).is.throwingAsync('Aggregate id is missing.');
     });
 
     test('throws an error if revision is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.saveSnapshot({ aggregateId: uuid() });
+        await eventstore.saveSnapshot({ aggregateId: uuid() });
       }).is.throwingAsync('Revision is missing.');
     });
 
     test('throws an error if state is missing.', async () => {
       await assert.that(async () => {
-        await sparbuch.saveSnapshot({ aggregateId: uuid(), revision: 10 });
+        await eventstore.saveSnapshot({ aggregateId: uuid(), revision: 10 });
       }).is.throwingAsync('State is missing.');
     });
 
@@ -789,10 +789,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: [ 'Jane Doe' ]
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 10, state });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 10, state });
 
-      const snapshot = await sparbuch.getSnapshot(aggregateId);
+      const snapshot = await eventstore.getSnapshot(aggregateId);
 
       assert.that(snapshot).is.equalTo({
         revision: 10,
@@ -808,10 +808,10 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: []
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 10, state });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 10, state });
 
-      const snapshot = await sparbuch.getSnapshot(aggregateId);
+      const snapshot = await eventstore.getSnapshot(aggregateId);
 
       assert.that(snapshot).is.equalTo({
         revision: 10,
@@ -830,27 +830,27 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         participants: [ 'Jane Doe' ]
       };
 
-      await sparbuch.initialize({ url, namespace });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 10, state });
-      await sparbuch.saveSnapshot({ aggregateId, revision: 10, state });
+      await eventstore.initialize({ url, namespace });
+      await eventstore.saveSnapshot({ aggregateId, revision: 10, state });
+      await eventstore.saveSnapshot({ aggregateId, revision: 10, state });
     });
   });
 
   suite('getReplay', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.getReplay).is.ofType('function');
+      assert.that(eventstore.getReplay).is.ofType('function');
     });
 
     test('throws an error if fromPosition is greater than toPosition.', async () => {
       await assert.that(async () => {
-        await sparbuch.getReplay({ fromPosition: 23, toPosition: 7 });
+        await eventstore.getReplay({ fromPosition: 23, toPosition: 7 });
       }).is.throwingAsync('From position is greater than to position.');
     });
 
     test('returns an empty stream.', async () => {
-      await sparbuch.initialize({ url, namespace });
+      await eventstore.initialize({ url, namespace });
 
-      const replayStream = await sparbuch.getReplay();
+      const replayStream = await eventstore.getReplay();
       const replayEvents = await toArray(replayStream);
 
       assert.that(replayEvents.length).is.equalTo(0);
@@ -886,12 +886,12 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
         eventJoinedFirst.metadata.revision = 2;
         eventJoinedSecond.metadata.revision = 3;
 
-        await sparbuch.initialize({ url, namespace });
-        await sparbuch.saveEvents({ events: [ eventStarted, eventJoinedFirst, eventJoinedSecond ]});
+        await eventstore.initialize({ url, namespace });
+        await eventstore.saveEvents({ events: [ eventStarted, eventJoinedFirst, eventJoinedSecond ]});
       });
 
       test('returns all events if no options are given.', async () => {
-        const replayStream = await sparbuch.getReplay();
+        const replayStream = await eventstore.getReplay();
         const replayEvents = await toArray(replayStream);
 
         assert.that(replayEvents.length).is.equalTo(3);
@@ -904,7 +904,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       });
 
       test('returns all events from the given position.', async () => {
-        const replayStream = await sparbuch.getReplay({ fromPosition: 2 });
+        const replayStream = await eventstore.getReplay({ fromPosition: 2 });
         const replayEvents = await toArray(replayStream);
 
         assert.that(replayEvents.length).is.equalTo(2);
@@ -915,7 +915,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       });
 
       test('returns all events to the given position.', async () => {
-        const replayStream = await sparbuch.getReplay({ toPosition: 2 });
+        const replayStream = await eventstore.getReplay({ toPosition: 2 });
         const replayEvents = await toArray(replayStream);
 
         assert.that(replayEvents.length).is.equalTo(2);
@@ -926,7 +926,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
       });
 
       test('returns all events between the given positions.', async () => {
-        const replayStream = await sparbuch.getReplay({ fromPosition: 2, toPosition: 2 });
+        const replayStream = await eventstore.getReplay({ fromPosition: 2, toPosition: 2 });
         const replayEvents = await toArray(replayStream);
 
         assert.that(replayEvents.length).is.equalTo(1);
@@ -938,7 +938,7 @@ const getTestsFor = function (Sparbuch, { url, type, nonExistentUrl, startContai
 
   suite('destroy', () => {
     test('is a function.', async () => {
-      assert.that(sparbuch.destroy).is.ofType('function');
+      assert.that(eventstore.destroy).is.ofType('function');
     });
   });
 };

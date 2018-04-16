@@ -4,11 +4,11 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/mysql/Sparbuch'),
+      Eventstore = require('../../../src/mysql/Eventstore'),
       waitForMaria = require('../../shared/waitForMysql');
 
-suite('mysql/Sparbuch', () => {
-  getTestsFor(Sparbuch, {
+suite('mysql/Eventstore', () => {
+  getTestsFor(Eventstore, {
     url: env.MYSQL_URL_UNITS,
     nonExistentUrl: 'mysql://localhost/non-existent',
 

@@ -11,9 +11,9 @@ const batchCount = processenv('BATCH_COUNT'),
       type = processenv('TYPE'),
       url = processenv('URL');
 
-const Sparbuch = require(`../../src/${type}/Sparbuch`);
+const Eventstore = require(`../../src/${type}/Eventstore`);
 
-const sparbuch = new Sparbuch();
+const eventstore = new Eventstore();
 const logger = flaschenpost.getLogger();
 
 const saveEventBatch = async function (remaining) {
@@ -40,7 +40,7 @@ const saveEventBatch = async function (remaining) {
   }
 
   try {
-    await sparbuch.saveEvents({ events });
+    await eventstore.saveEvents({ events });
   } catch (ex) {
     logger.error('Failed to save events.', { ex });
     /* eslint-disable no-process-exit */
@@ -53,9 +53,9 @@ const saveEventBatch = async function (remaining) {
 
 (async () => {
   try {
-    await sparbuch.initialize({ url, namespace });
+    await eventstore.initialize({ url, namespace });
   } catch (ex) {
-    logger.error('Failed to initialize sparbuch.', { type, ex });
+    logger.error('Failed to initialize eventstore.', { type, ex });
     /* eslint-disable no-process-exit */
     process.exit(1);
     /* eslint-enable no-process-exit */

@@ -1,7 +1,7 @@
 'use strict';
 
-const Sparbuch = require('./dist/mariadb/Sparbuch');
+const Eventstore = require('./dist/mariadb/Eventstore');
 
-const sparbuch = new Sparbuch();
+const eventstore = new Eventstore();
 
-module.exports = sparbuch;
+module.exports = eventstore;

@@ -14,7 +14,7 @@ const cloneDeep = require('lodash/cloneDeep'),
 
 const omitByDeep = require('../omitByDeep');
 
-class Sparbuch extends EventEmitter {
+class Eventstore extends EventEmitter {
   async getDatabase () {
     const database = await this.pool.connect();
 
@@ -439,4 +439,4 @@ class Sparbuch extends EventEmitter {
   }
 }
 
-module.exports = Sparbuch;
+module.exports = Eventstore;

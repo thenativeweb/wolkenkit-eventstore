@@ -4,11 +4,11 @@ const shell = require('shelljs');
 
 const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
-      Sparbuch = require('../../../src/postgres/Sparbuch'),
+      Eventstore = require('../../../src/postgres/Eventstore'),
       waitForPostgres = require('../../shared/waitForPostgres');
 
-suite('postgres/Sparbuch', () => {
-  getTestsFor(Sparbuch, {
+suite('postgres/Eventstore', () => {
+  getTestsFor(Eventstore, {
     url: env.POSTGRES_URL_UNITS,
     nonExistentUrl: 'pg://localhost/non-existent',
 
