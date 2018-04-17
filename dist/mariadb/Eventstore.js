@@ -401,7 +401,7 @@ var Eventstore = function (_EventEmitter) {
       var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(_ref9) {
         var events = _ref9.events;
 
-        var connection, i, event, _ref11, _ref12, rows;
+        var connection, placeholders, values, i, event, text, _ref11, _ref12, rows, _i;
 
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -423,18 +423,21 @@ var Eventstore = function (_EventEmitter) {
 
               case 5:
                 connection = _context6.sent;
-                _context6.prev = 6;
-                i = 0;
+                placeholders = [], values = [];
 
-              case 8:
-                if (!(i < events.length)) {
-                  _context6.next = 21;
-                  break;
+
+                for (i = 0; i < events.length; i++) {
+                  event = events[i];
+
+
+                  placeholders.push('(UuidToBin(?), ?, ?, ?)');
+                  values.push(event.aggregate.id, event.metadata.revision, (0, _stringify2.default)(event), event.metadata.published);
                 }
 
-                event = events[i];
+                text = '\n      INSERT INTO ' + this.namespace + '_events\n        (aggregateId, revision, event, hasBeenPublished)\n      VALUES\n        ' + placeholders.join(',') + ';\n    ';
+                _context6.prev = 9;
                 _context6.next = 12;
-                return connection.execute('\n          INSERT INTO ' + this.namespace + '_events\n            (aggregateId, revision, event, hasBeenPublished)\n            VALUES (UuidToBin(?), ?, ?, ?);\n        ', [event.aggregate.id, event.metadata.revision, (0, _stringify2.default)(event), event.metadata.published]);
+                return connection.execute(text, values);
 
               case 12:
                 _context6.next = 14;
@@ -446,44 +449,38 @@ var Eventstore = function (_EventEmitter) {
                 rows = _ref12[0];
 
 
-                events[i].metadata.position = Number(rows[0].position);
+                for (_i = 0; _i < rows.length; _i++) {
+                  events[_i].metadata.position = Number(rows[_i].position);
+                }
 
-              case 18:
-                i++;
-                _context6.next = 8;
-                break;
-
-              case 21:
                 return _context6.abrupt('return', events);
 
-              case 24:
-                _context6.prev = 24;
-                _context6.t0 = _context6['catch'](6);
+              case 21:
+                _context6.prev = 21;
+                _context6.t0 = _context6['catch'](9);
 
                 if (!(_context6.t0.code === 'ER_DUP_ENTRY' && _context6.t0.sqlMessage.endsWith('for key \'aggregateId\''))) {
-                  _context6.next = 28;
+                  _context6.next = 25;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 28:
+              case 25:
                 throw _context6.t0;
 
+              case 26:
+                _context6.prev = 26;
+
+                connection.release();
+                return _context6.finish(26);
+
               case 29:
-                _context6.prev = 29;
-                _context6.next = 32;
-                return connection.release();
-
-              case 32:
-                return _context6.finish(29);
-
-              case 33:
               case 'end':
                 return _context6.stop();
             }
           }
-        }, _callee6, this, [[6, 24, 29, 33]]);
+        }, _callee6, this, [[9, 21, 26, 29]]);
       }));
 
       function saveEvents(_x5) {
