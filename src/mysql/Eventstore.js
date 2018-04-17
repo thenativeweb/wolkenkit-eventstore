@@ -278,19 +278,30 @@ class Eventstore extends EventEmitter {
 
     const connection = await this.getDatabase();
 
+    const placeholders = [],
+          values = [];
+
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+
+      placeholders.push('(UuidToBin(?), ?, ?, ?)');
+      values.push(event.aggregate.id, event.metadata.revision, JSON.stringify(event), event.metadata.published);
+    }
+
+    const text = `
+      INSERT INTO ${this.namespace}_events
+        (aggregateId, revision, event, hasBeenPublished)
+      VALUES
+        ${placeholders.join(',')};
+    `;
+
     try {
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
+      await connection.execute(text, values);
 
-        await connection.execute(`
-          INSERT INTO ${this.namespace}_events
-            (aggregateId, revision, event, hasBeenPublished)
-            VALUES (UuidToBin(?), ?, ?, ?);
-        `, [ event.aggregate.id, event.metadata.revision, JSON.stringify(event), event.metadata.published ]);
+      const [ rows ] = await connection.execute('SELECT LAST_INSERT_ID() AS position;');
 
-        const [ rows ] = await connection.execute('SELECT LAST_INSERT_ID() AS position;');
-
-        events[i].metadata.position = Number(rows[0].position);
+      for (let i = 0; i < rows.length; i++) {
+        events[i].metadata.position = Number(rows[i].position);
       }
 
       return events;
@@ -301,7 +312,7 @@ class Eventstore extends EventEmitter {
 
       throw ex;
     } finally {
-      await connection.release();
+      connection.release();
     }
   }
 
