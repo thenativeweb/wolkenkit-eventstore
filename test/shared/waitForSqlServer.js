@@ -14,7 +14,9 @@ const createDatabase = async function ({ connection, database }) {
 
   const createDatabaseQuery = `
     IF NOT EXISTS(SELECT * from sys.databases WHERE name='${database}')
-      CREATE DATABASE ${database}`;
+      BEGIN
+        CREATE DATABASE ${database};
+      END`;
 
   await new Promise((resolve, reject) => {
     const createDatabaseRequest = new Request(createDatabaseQuery, err => {
@@ -22,7 +24,6 @@ const createDatabase = async function ({ connection, database }) {
         return reject(err);
       }
 
-      console.log('database created');
       resolve();
     });
 
@@ -53,25 +54,22 @@ const waitForSqlServer = async function ({ url }) {
     await new Promise((resolve, reject) => {
       connection = new Connection(config);
 
-      let handleConnect,
-          handleEnd;
-
       const removeListeners = () => {
-        connection.removeListener('connect', handleConnect);
-        connection.removeListener('end', handleEnd);
+        connection.removeAllListeners('connect');
+        connection.removeAllListeners('end');
       };
 
-      handleConnect = err => {
+      const handleConnect = err => {
         removeListeners();
 
         if (err) {
-          return reject(new Error('Could not connect.'));
+          return reject(err);
         }
 
         resolve();
       };
 
-      handleEnd = () => {
+      const handleEnd = () => {
         removeListeners();
 
         reject(new Error('Could not connect.'));

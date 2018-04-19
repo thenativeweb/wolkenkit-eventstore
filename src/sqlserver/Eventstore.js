@@ -36,18 +36,55 @@ class Eventstore extends EventEmitter {
     this.pool = createPool({ host, port, user, password, database });
 
     this.pool.on('error', () => {
-      console.log('poool error');
       this.emit('disconnect');
     });
 
     this.pool.on('disconnect', () => {
-      console.log('poool disconnect');
       this.emit('disconnect');
     });
 
-    this.keepAliveConnection = await this.getDatabase();
+    const connection = await this.getDatabase();
 
-    await this.pool.release(this.keepAliveConnection);
+    const query = `
+      IF NOT EXISTS (SELECT [name] FROM sys.tables WHERE [name] = '${this.namespace}_events')
+        BEGIN
+          CREATE TABLE [${this.namespace}_events] (
+            [position] BIGINT IDENTITY(1,1),
+            [aggregateId] UNIQUEIDENTIFIER NOT NULL,
+            [revision] INT NOT NULL,
+            [event] NVARCHAR(4000) NOT NULL,
+            [hasBeenPublished] BIT NOT NULL,
+
+            CONSTRAINT [${this.namespace}_events_pk] PRIMARY KEY([position]),
+            CONSTRAINT [${this.namespace}_aggregateId_revision] UNIQUE ([aggregateId], [revision])
+          );
+        END
+
+      IF NOT EXISTS (SELECT [name] FROM sys.tables WHERE [name] = '${this.namespace}_snapshots')
+        BEGIN
+          CREATE TABLE [${this.namespace}_snapshots] (
+            [aggregateId] UNIQUEIDENTIFIER NOT NULL,
+            [revision] INT NOT NULL,
+            [state] NVARCHAR(4000) NOT NULL,
+
+            CONSTRAINT [${this.namespace}_snapshots_pk] PRIMARY KEY([aggregateId], [revision])
+          );
+        END
+    `;
+
+    await new Promise((resolve, reject) => {
+      const request = new Request(query, err => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve();
+      });
+
+      connection.execSql(request);
+    });
+
+    await this.pool.release(connection);
   }
 
   async getLastEvent (aggregateId) {
@@ -81,7 +118,6 @@ class Eventstore extends EventEmitter {
 
   async destroy () {
     if (this.pool) {
-      await this.pool.drain();
       await this.pool.clear();
     }
   }

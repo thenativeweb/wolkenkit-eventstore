@@ -25,8 +25,6 @@ const createPool = function (config) {
 
   const { host, port, user, password, database } = config;
 
-  console.log(config);
-
   const pool = genericPool.createPool({
     create () {
       return new Promise((resolve, reject) => {
@@ -56,14 +54,11 @@ const createPool = function (config) {
         };
 
         handleConnect = err => {
-          console.log('##### connect', err.stack, err.message);
           if (err) {
             removeAllListeners();
 
-            return reject(new Error('Could not connect to database.'));
+            return reject(err);
           }
-
-          console.log('##### connected');
 
           hasBeenConnected = true;
           removeOnlySetupListeners();
@@ -71,17 +66,13 @@ const createPool = function (config) {
         };
 
         handleError = err => {
-          console.log('##### error');
           removeAllListeners();
-
 
           pool.emit('error', err);
         };
 
         handleEnd = () => {
-          console.log('##### end');
           removeAllListeners();
-
 
           if (!hasBeenConnected) {
             return reject(new Error('Could not connect to database.'));
@@ -93,24 +84,33 @@ const createPool = function (config) {
         connection.on('connect', handleConnect);
         connection.on('error', handleError);
         connection.on('end', handleEnd);
-
-        resolve(connection);
       });
     },
 
     destroy (connection) {
+      if (connection.closed) {
+        return Promise.resolve();
+      }
+
       return new Promise(resolve => {
         connection.removeAllListeners('end');
+        connection.removeAllListeners('error');
 
         connection.once('end', () => {
-          connection.removeAllListeners('error');
-
           resolve();
         });
 
         connection.close();
       });
     }
+  });
+
+  pool.on('factoryCreateError', err => {
+    throw err;
+  });
+
+  pool.on('factoryDestroyError', err => {
+    throw err;
   });
 
   return pool;
