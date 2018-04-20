@@ -470,7 +470,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   });
 
-  suite.skip('getUnpublishedEventStream', () => {
+  suite('getUnpublishedEventStream', () => {
     test('is a function.', async () => {
       assert.that(eventstore.getUnpublishedEventStream).is.ofType('function');
     });

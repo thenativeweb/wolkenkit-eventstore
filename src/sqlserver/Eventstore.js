@@ -160,7 +160,6 @@ class Eventstore extends EventEmitter {
         request;
 
     const unsubscribe = () => {
-      // TODO: Can this be done with await?
       this.pool.release(database);
       request.removeListener('row', onRow);
       request.removeListener('error', onError);
@@ -201,8 +200,8 @@ class Eventstore extends EventEmitter {
     request.addParameter('fromRevision', TYPES.Int, fromRevision);
     request.addParameter('toRevision', TYPES.Int, toRevision);
 
-    request.on('row', onRow);
     request.on('error', onError);
+    request.on('row', onRow);
 
     database.execSql(request);
 
@@ -210,6 +209,55 @@ class Eventstore extends EventEmitter {
   }
 
   async getUnpublishedEventStream () {
+    const database = await this.getDatabase();
+
+    const passThrough = new PassThrough({ objectMode: true });
+
+    let onError,
+        onRow,
+        request;
+
+    const unsubscribe = () => {
+      this.pool.release(database);
+      request.removeListener('error', onError);
+      request.removeListener('row', onRow);
+    };
+
+    onError = err => {
+      unsubscribe();
+      passThrough.emit('error', err);
+      passThrough.end();
+    };
+
+    onRow = cols => {
+      const event = Event.wrap(JSON.parse(cols[0].value));
+
+      event.metadata.position = Number(cols[1].value);
+      event.metadata.published = cols[2].value;
+
+      passThrough.write(event);
+    };
+
+    request = new Request(`
+      SELECT [event], [position], [hasBeenPublished]
+        FROM [${this.namespace}_events]
+        WHERE [hasBeenPublished] = 0
+        ORDER BY [position]`, err => {
+      unsubscribe();
+
+      if (err) {
+        passThrough.emit('error', err);
+      }
+
+      passThrough.end();
+    });
+
+    request.on('error', onError);
+    request.on('row', onRow);
+
+    database.execSql(request);
+
+    return passThrough;
   }
 
   async saveEvents ({ events }) {
