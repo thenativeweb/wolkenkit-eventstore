@@ -206,7 +206,7 @@ class Eventstore extends EventEmitter {
       VALUES ${placeholders.join(',')};`;
 
     try {
-      await new Promise((resolve, reject) => {
+      const updatedEvents = await new Promise((resolve, reject) => {
         const request = new Request(text, err => {
           if (err) {
             return reject(err);
@@ -229,6 +229,8 @@ class Eventstore extends EventEmitter {
 
         database.execSql(request);
       });
+
+      return updatedEvents;
     } catch (ex) {
       if (ex.code === 'EREQUEST' && ex.number === 2627 && ex.message.includes('_aggregateId_revision')) {
         throw new Error('Aggregate id and revision already exist.');
