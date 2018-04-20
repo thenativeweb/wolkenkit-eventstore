@@ -51,6 +51,8 @@ class Eventstore extends EventEmitter {
     const connection = await this.getDatabase();
 
     const query = `
+      BEGIN TRANSACTION setupTables;
+
       IF NOT EXISTS (SELECT [name] FROM sys.tables WHERE [name] = '${this.namespace}_events')
         BEGIN
           CREATE TABLE [${this.namespace}_events] (
@@ -75,6 +77,8 @@ class Eventstore extends EventEmitter {
             CONSTRAINT [${this.namespace}_snapshots_pk] PRIMARY KEY([aggregateId], [revision])
           );
         END
+
+      COMMIT TRANSACTION setupTables;
     `;
 
     await new Promise((resolve, reject) => {
