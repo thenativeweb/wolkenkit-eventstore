@@ -93,7 +93,48 @@ class Eventstore extends EventEmitter {
   }
 
   async getLastEvent (aggregateId) {
+    if (!aggregateId) {
+      throw new Error('Aggregate id is missing.');
+    }
 
+    const database = await this.getDatabase();
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        let resultEvent;
+
+        const request = new Request(`
+          SELECT TOP(1) [event], [position]
+            FROM ${this.namespace}_events
+            WHERE [aggregateId]=@aggregateId
+            ORDER BY [revision] DESC
+          ;`, err => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(resultEvent);
+        });
+
+        request.once('row', cols => {
+          resultEvent = Event.wrap(JSON.parse(cols[0].value));
+
+          resultEvent.metadata.position = Number(cols[1].value);
+        });
+
+        request.addParameter('aggregateId', TYPES.UniqueIdentifier, aggregateId);
+
+        database.execSql(request);
+      });
+
+      if (!result) {
+        return;
+      }
+
+      return result;
+    } finally {
+      await this.pool.release(database);
+    }
   }
 
   async getEventStream (aggregateId, options) {
@@ -207,7 +248,11 @@ class Eventstore extends EventEmitter {
 
     try {
       const updatedEvents = await new Promise((resolve, reject) => {
+        let onRow;
+
         const request = new Request(text, err => {
+          request.removeListener('row', onRow);
+
           if (err) {
             return reject(err);
           }
@@ -221,11 +266,13 @@ class Eventstore extends EventEmitter {
           request.addParameter(value.key, value.type, value.value, value.options);
         }
 
-        request.on('row', cols => {
+        onRow = cols => {
           events[resultCount].metadata.position = Number(cols[0].value);
 
           resultCount += 1;
-        });
+        };
+
+        request.on('row', onRow);
 
         database.execSql(request);
       });

@@ -55,7 +55,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   }
 
-  suite.skip('initialize', () => {
+  suite('initialize', () => {
     test('is a function.', async () => {
       assert.that(eventstore.initialize).is.ofType('function');
     });
@@ -275,7 +275,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   });
 
-  suite.skip('getLastEvent', () => {
+  suite('getLastEvent', () => {
     test('is a function.', async () => {
       assert.that(eventstore.getLastEvent).is.ofType('function');
     });
