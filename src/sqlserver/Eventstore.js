@@ -287,10 +287,91 @@ class Eventstore extends EventEmitter {
   }
 
   async getSnapshot (aggregateId) {
+    if (!aggregateId) {
+      throw new Error('Aggregate id is missing.');
+    }
+
+    const database = await this.getDatabase();
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        let resultRow;
+
+        const request = new Request(`
+          SELECT TOP(1) [state], [revision]
+            FROM ${this.namespace}_snapshots
+            WHERE [aggregateId]=@aggregateId
+            ORDER BY [revision] DESC
+          ;`, err => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(resultRow);
+        });
+
+        request.once('row', cols => {
+          resultRow = {
+            state: JSON.parse(cols[0].value),
+            revision: Number(cols[1].value)
+          };
+        });
+
+        request.addParameter('aggregateId', TYPES.UniqueIdentifier, aggregateId);
+
+        database.execSql(request);
+      });
+
+      if (!result) {
+        return;
+      }
+
+      return result;
+    } finally {
+      await this.pool.release(database);
+    }
   }
 
   async saveSnapshot ({ aggregateId, revision, state }) {
+    if (!aggregateId) {
+      throw new Error('Aggregate id is missing.');
+    }
+    if (!revision) {
+      throw new Error('Revision is missing.');
+    }
+    if (!state) {
+      throw new Error('State is missing.');
+    }
 
+    state = omitByDeep(state, value => value === undefined);
+
+    const database = await this.getDatabase();
+
+    try {
+      await new Promise((resolve, reject) => {
+        const request = new Request(`
+          IF NOT EXISTS (SELECT TOP(1) * FROM ${this.namespace}_snapshots WHERE [aggregateId]=@aggregateId and [revision]=@revision)
+            BEGIN
+              INSERT INTO [${this.namespace}_snapshots] ([aggregateId], [revision], [state])
+              VALUES (@aggregateId, @revision, @state);
+            END
+          `, err => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve();
+        });
+
+        request.addParameter('aggregateId', TYPES.UniqueIdentifier, aggregateId);
+        request.addParameter('revision', TYPES.Int, revision);
+        request.addParameter('state', TYPES.NVarChar, JSON.stringify(state), { length: 4000 });
+
+        database.execSql(request);
+      });
+    } finally {
+      await this.pool.release(database);
+    }
   }
 
   async getReplay (options) {
