@@ -47,7 +47,6 @@ const getTestsFor = function (Eventstore, { url, type }) {
   setup(async () => {
     namespace = uuid();
     eventstore = new Eventstore();
-
     await eventstore.initialize({ url, namespace });
   });
 
@@ -62,6 +61,7 @@ const getTestsFor = function (Eventstore, { url, type }) {
         mongodb: 15,
         mysql: 15,
         postgres: 15,
+        sqlserver: 15,
         inmemory: 15
       };
 
@@ -90,6 +90,7 @@ const getTestsFor = function (Eventstore, { url, type }) {
         mongodb: 90,
         mysql: 90,
         postgres: 90,
+        sqlserver: 90,
         inmemory: 90
       };
 
@@ -118,6 +119,7 @@ const getTestsFor = function (Eventstore, { url, type }) {
         mongodb: 90,
         mysql: 90,
         postgres: 90,
+        sqlserver: 90,
         inmemory: 90
       };
 
@@ -148,6 +150,7 @@ const getTestsFor = function (Eventstore, { url, type }) {
         mongodb: 15,
         mysql: 15,
         postgres: 15,
+        sqlserver: 15,
         inmemory: 15
       };
 
@@ -191,6 +194,7 @@ const getTestsFor = function (Eventstore, { url, type }) {
         mongodb: 90,
         mysql: 90,
         postgres: 90,
+        sqlserver: 90,
         inmemory: 90
       };
 

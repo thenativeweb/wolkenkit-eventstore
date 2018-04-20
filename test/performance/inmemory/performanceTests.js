@@ -3,7 +3,7 @@
 const Eventstore = require('../../../src/inmemory/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
-suite('inmemory/Eventstore', function () {
+suite.skip('inmemory/Eventstore', function () {
   this.timeout(90 * 1000);
 
   getTestsFor(Eventstore, {

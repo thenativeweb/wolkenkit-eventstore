@@ -4,7 +4,7 @@ const env = require('../../shared/env'),
       Eventstore = require('../../../src/mariadb/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
-suite('mariadb/Eventstore', function () {
+suite.skip('mariadb/Eventstore', function () {
   this.timeout(90 * 1000);
 
   getTestsFor(Eventstore, {

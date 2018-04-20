@@ -4,7 +4,7 @@ const env = require('../../shared/env'),
       Eventstore = require('../../../src/mongodb/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
-suite('mongodb/Eventstore', function () {
+suite.skip('mongodb/Eventstore', function () {
   this.timeout(90 * 1000);
 
   getTestsFor(Eventstore, {
