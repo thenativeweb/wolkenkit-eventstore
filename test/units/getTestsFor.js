@@ -31,7 +31,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
   });
 
   if (type !== 'inmemory') {
-    test('emits a disconnect event when the connection to the database becomes lost.', async function () {
+    test.skip('emits a disconnect event when the connection to the database becomes lost.', async function () {
       this.timeout(15 * 1000);
 
       await eventstore.initialize({ url, namespace });
@@ -55,7 +55,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   }
 
-  suite('initialize', () => {
+  suite.skip('initialize', () => {
     test('is a function.', async () => {
       assert.that(eventstore.initialize).is.ofType('function');
     });
@@ -77,7 +77,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     }
 
     if (type !== 'inmemory') {
-      test.skip('returns an error if the database is not reachable.', async () => {
+      test('returns an error if the database is not reachable.', async () => {
         await assert.that(async () => {
           await eventstore.initialize({ url: nonExistentUrl, namespace });
         }).is.throwingAsync();
@@ -275,7 +275,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   });
 
-  suite('getLastEvent', () => {
+  suite.skip('getLastEvent', () => {
     test('is a function.', async () => {
       assert.that(eventstore.getLastEvent).is.ofType('function');
     });
@@ -352,7 +352,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   });
 
-  suite('getEventStream', () => {
+  suite.skip('getEventStream', () => {
     test('is a function.', async () => {
       assert.that(eventstore.getEventStream).is.ofType('function');
     });
@@ -470,7 +470,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     });
   });
 
-  suite('getUnpublishedEventStream', () => {
+  suite.skip('getUnpublishedEventStream', () => {
     test('is a function.', async () => {
       assert.that(eventstore.getUnpublishedEventStream).is.ofType('function');
     });

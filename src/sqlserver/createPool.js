@@ -1,7 +1,7 @@
 'use strict';
 
 const { Connection } = require('tedious'),
-      genericPool = require('generic-pool');
+      { Pool } = require('tarn');
 
 const createPool = function (config) {
   if (!config) {
@@ -23,9 +23,34 @@ const createPool = function (config) {
     throw new Error('Database is missing.');
   }
 
-  const { host, port, user, password, database } = config;
+  const { host,
+    port,
+    user,
+    password,
+    database,
+    onError = () => {
+      // noop
+    },
+    onDisconnect = () => {
+      // noop
+    } } = config;
 
-  const pool = genericPool.createPool({
+  const pool = new Pool({
+    min: 2,
+    max: 10,
+    acquireTimeoutMillis: 1000,
+    createTimeoutMillis: 1000,
+    idleTimeoutMillis: 1000,
+    propagateCreateError: true,
+
+    validate (connection) {
+      if (connection.closed) {
+        return false;
+      }
+
+      return true;
+    },
+
     create () {
       return new Promise((resolve, reject) => {
         const connection = new Connection({
@@ -68,7 +93,7 @@ const createPool = function (config) {
         handleError = err => {
           removeAllListeners();
 
-          pool.emit('error', err);
+          onError(err);
         };
 
         handleEnd = () => {
@@ -78,7 +103,7 @@ const createPool = function (config) {
             return reject(new Error('Could not connect to database.'));
           }
 
-          pool.emit('disconnect');
+          onDisconnect();
         };
 
         connection.on('connect', handleConnect);
@@ -89,28 +114,14 @@ const createPool = function (config) {
 
     destroy (connection) {
       if (connection.closed) {
-        return Promise.resolve();
+        return;
       }
 
-      return new Promise(resolve => {
-        connection.removeAllListeners('end');
-        connection.removeAllListeners('error');
+      connection.removeAllListeners('end');
+      connection.removeAllListeners('error');
 
-        connection.once('end', () => {
-          resolve();
-        });
-
-        connection.close();
-      });
+      connection.close();
     }
-  });
-
-  pool.on('factoryCreateError', err => {
-    throw err;
-  });
-
-  pool.on('factoryDestroyError', err => {
-    throw err;
   });
 
   return pool;
