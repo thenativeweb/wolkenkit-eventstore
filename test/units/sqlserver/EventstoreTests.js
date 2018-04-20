@@ -7,7 +7,7 @@ const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       waitForSqlServer = require('../../shared/waitForSqlServer');
 
-suite.only('sqlserver/Eventstore', () => {
+suite('sqlserver/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.SQLSERVER_URL_UNITS,
     nonExistentUrl: 'mssql://user:password@localhost:1433/non-existent',
