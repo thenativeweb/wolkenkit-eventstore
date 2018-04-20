@@ -106,7 +106,7 @@ class Eventstore extends EventEmitter {
         const request = new Request(`
           SELECT TOP(1) [event], [position]
             FROM ${this.namespace}_events
-            WHERE [aggregateId]=@aggregateId
+            WHERE [aggregateId] = @aggregateId
             ORDER BY [revision] DESC
           ;`, err => {
           if (err) {
@@ -292,7 +292,8 @@ class Eventstore extends EventEmitter {
     const text = `
       INSERT INTO [${this.namespace}_events] ([aggregateId], [revision], [event], [hasBeenPublished])
         OUTPUT INSERTED.position
-      VALUES ${placeholders.join(',')};`;
+      VALUES ${placeholders.join(',')};
+    `;
 
     try {
       const updatedEvents = await new Promise((resolve, reject) => {
@@ -395,7 +396,7 @@ class Eventstore extends EventEmitter {
         const request = new Request(`
           SELECT TOP(1) [state], [revision]
             FROM ${this.namespace}_snapshots
-            WHERE [aggregateId]=@aggregateId
+            WHERE [aggregateId] = @aggregateId
             ORDER BY [revision] DESC
           ;`, err => {
           if (err) {
@@ -445,7 +446,7 @@ class Eventstore extends EventEmitter {
     try {
       await new Promise((resolve, reject) => {
         const request = new Request(`
-          IF NOT EXISTS (SELECT TOP(1) * FROM ${this.namespace}_snapshots WHERE [aggregateId]=@aggregateId and [revision]=@revision)
+          IF NOT EXISTS (SELECT TOP(1) * FROM ${this.namespace}_snapshots WHERE [aggregateId] = @aggregateId and [revision] = @revision)
             BEGIN
               INSERT INTO [${this.namespace}_snapshots] ([aggregateId], [revision], [state])
               VALUES (@aggregateId, @revision, @state);
