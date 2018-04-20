@@ -57,9 +57,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
   suite('saveEvents', () => {
     test('1000 events individually.', async () => {
       const expected = {
-        mariadb: 15,
+        mariadb: 30,
         mongodb: 15,
-        mysql: 15,
+        mysql: 30,
         postgres: 15,
         sqlserver: 15,
         inmemory: 15
@@ -84,11 +84,13 @@ const getTestsFor = function (Eventstore, { url, type }) {
       assert.that(elapsed.millisecondsTotal).is.lessThan(expected[type] * 1000);
     });
 
-    test('10000 events individually.', async () => {
+    test('10000 events individually.', async function () {
+      this.timeout(180 * 1000);
+
       const expected = {
-        mariadb: 90,
+        mariadb: 180,
         mongodb: 90,
-        mysql: 90,
+        mysql: 180,
         postgres: 90,
         sqlserver: 90,
         inmemory: 90
@@ -115,9 +117,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
 
     test('10000 events in batches of 10.', async () => {
       const expected = {
-        mariadb: 90,
+        mariadb: 180,
         mongodb: 90,
-        mysql: 90,
+        mysql: 180,
         postgres: 90,
         sqlserver: 90,
         inmemory: 90
@@ -146,9 +148,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
   suite('getEventStream', () => {
     test('1000 events.', async () => {
       const expected = {
-        mariadb: 15,
+        mariadb: 30,
         mongodb: 15,
-        mysql: 15,
+        mysql: 30,
         postgres: 15,
         sqlserver: 15,
         inmemory: 15
@@ -190,9 +192,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
 
     test('10000 events.', async () => {
       const expected = {
-        mariadb: 90,
+        mariadb: 180,
         mongodb: 90,
-        mysql: 90,
+        mysql: 180,
         postgres: 90,
         sqlserver: 90,
         inmemory: 90
