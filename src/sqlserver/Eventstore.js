@@ -470,7 +470,67 @@ class Eventstore extends EventEmitter {
   }
 
   async getReplay (options) {
+    options = options || {};
 
+    const fromPosition = options.fromPosition || 1;
+    const toPosition = options.toPosition || 2 ** 31 - 1;
+
+    if (fromPosition > toPosition) {
+      throw new Error('From position is greater than to position.');
+    }
+
+    const database = await this.getDatabase();
+
+    const passThrough = new PassThrough({ objectMode: true });
+
+    let onError,
+        onRow,
+        request;
+
+    const unsubscribe = () => {
+      this.pool.release(database);
+      request.removeListener('error', onError);
+      request.removeListener('row', onRow);
+    };
+
+    onError = err => {
+      unsubscribe();
+      passThrough.emit('error', err);
+      passThrough.end();
+    };
+
+    onRow = cols => {
+      const event = Event.wrap(JSON.parse(cols[0].value));
+
+      event.metadata.position = Number(cols[1].value);
+
+      passThrough.write(event);
+    };
+
+    request = new Request(`
+      SELECT [event], [position]
+        FROM [${this.namespace}_events]
+        WHERE [position] >= @fromPosition
+          AND [position] <= @toPosition
+        ORDER BY [position]`, err => {
+      unsubscribe();
+
+      if (err) {
+        passThrough.emit('error', err);
+      }
+
+      passThrough.end();
+    });
+
+    request.addParameter('fromPosition', TYPES.BigInt, fromPosition);
+    request.addParameter('toPosition', TYPES.BigInt, toPosition);
+
+    request.on('error', onError);
+    request.on('row', onRow);
+
+    database.execSql(request);
+
+    return passThrough;
   }
 
   async destroy () {

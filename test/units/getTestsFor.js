@@ -31,7 +31,7 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
   });
 
   if (type !== 'inmemory') {
-    test.skip('emits a disconnect event when the connection to the database becomes lost.', async function () {
+    test('emits a disconnect event when the connection to the database becomes lost.', async function () {
       this.timeout(15 * 1000);
 
       await eventstore.initialize({ url, namespace });
