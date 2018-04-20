@@ -180,39 +180,34 @@ class Eventstore extends EventEmitter {
 
     const database = await this.getDatabase();
 
-    // TODO: wrap this in transaction
+    const placeholders = [],
+          values = [];
+    let resultCount = 0;
+
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i],
+            rowId = i + 1;
+
+      const row = [
+        { key: `aggregateId${rowId}`, value: event.aggregate.id, type: TYPES.UniqueIdentifier },
+        { key: `revision${rowId}`, value: event.metadata.revision, type: TYPES.Int },
+        { key: `event${rowId}`, value: JSON.stringify(event), type: TYPES.NVarChar, options: { length: 4000 }},
+        { key: `hasBeenPublished${rowId}`, value: event.metadata.published, type: TYPES.Bit }
+      ];
+
+      placeholders.push(`(@${row[0].key}, @${row[1].key}, @${row[2].key}, @${row[3].key})`);
+
+      values.push(...row);
+    }
+
+    const text = `
+      INSERT INTO [${this.namespace}_events] ([aggregateId], [revision], [event], [hasBeenPublished])
+        OUTPUT INSERTED.position
+      VALUES ${placeholders.join(',')};`;
 
     try {
       await new Promise((resolve, reject) => {
-        const bulkLoad = database.newBulkLoad(`${this.namespace}_events`, { tableLock: true }, (err, rowCount) => {
-          if (err) {
-            return reject(err);
-          }
-
-          resolve();
-        });
-
-        bulkLoad.addColumn('aggregateId', TYPES.UniqueIdentifier, { nullable: false });
-        bulkLoad.addColumn('revision', TYPES.Int, { nullable: false });
-        bulkLoad.addColumn('event', TYPES.NVarChar, { length: 4000, nullable: false });
-        bulkLoad.addColumn('hasBeenPublished', TYPES.Bit, { nullable: false });
-
-        for (let i = 0; i < events.length; i++) {
-          const event = events[i];
-
-          bulkLoad.addRow({
-            aggregateId: event.aggregate.id,
-            revision: event.metadata.revision,
-            event: JSON.stringify(event),
-            hasBeenPublished: event.metadata.published
-          });
-        }
-
-        database.execBulkLoad(bulkLoad);
-      });
-
-      await new Promise((resolve, reject) => {
-        const request = new Request(`SELECT TOP(${events.length}) position, aggregateId FROM ${this.namespace}_events ORDER BY position ASC`, err => {
+        const request = new Request(text, err => {
           if (err) {
             return reject(err);
           }
@@ -220,13 +215,16 @@ class Eventstore extends EventEmitter {
           resolve(events);
         });
 
+        for (let i = 0; i < values.length; i++) {
+          const value = values[i];
+
+          request.addParameter(value.key, value.type, value.value, value.options);
+        }
+
         request.on('row', cols => {
-          const position = Number(cols[0].value);
-          const aggregateId = cols[1].value.toLowerCase();
+          events[resultCount].metadata.position = Number(cols[0].value);
 
-          const foundEvent = events.find(event => event.aggregate.id === aggregateId);
-
-          foundEvent.metadata.position = position;
+          resultCount += 1;
         });
 
         database.execSql(request);
