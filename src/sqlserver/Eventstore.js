@@ -84,6 +84,12 @@ class Eventstore extends EventEmitter {
     await new Promise((resolve, reject) => {
       const request = new Request(query, err => {
         if (err) {
+          // When multiple clients initialize at the same time, e.g. during integration tests,
+          // SQL Server might throw an error. In this case we can simply ignore it.
+          if (err.message.match(/There is already an object named.*_events/)) {
+            return resolve();
+          }
+
           return reject(err);
         }
 
