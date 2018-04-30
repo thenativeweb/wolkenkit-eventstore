@@ -7,7 +7,7 @@ const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       waitForMaria = require('../../shared/waitForMysql');
 
-suite.skip('mysql/Eventstore', () => {
+suite('mysql/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.MYSQL_URL_UNITS,
     nonExistentUrl: 'mysql://localhost/non-existent',

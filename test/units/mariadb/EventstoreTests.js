@@ -7,7 +7,7 @@ const env = require('../../shared/env'),
       getTestsFor = require('../getTestsFor'),
       waitForMaria = require('../../shared/waitForMaria');
 
-suite.skip('mariadb/Eventstore', () => {
+suite('mariadb/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.MARIA_URL_UNITS,
     nonExistentUrl: 'mariadb://localhost/non-existent',
