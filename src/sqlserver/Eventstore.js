@@ -84,8 +84,9 @@ class Eventstore extends EventEmitter {
     await new Promise((resolve, reject) => {
       const request = new Request(query, err => {
         if (err) {
-          // When multiple clients initialize at the same time, e.g. during integration tests,
-          // SQL Server might throw an error. In this case we can simply ignore it.
+          // When multiple clients initialize at the same time, e.g. during
+          // integration tests, SQL Server might throw an error. In this case
+          // we simply ignore it.
           if (err.message.match(/There is already an object named.*_events/)) {
             return resolve();
           }
@@ -118,7 +119,8 @@ class Eventstore extends EventEmitter {
             FROM ${this.namespace}_events
             WHERE [aggregateId] = @aggregateId
             ORDER BY [revision] DESC
-          ;`, err => {
+          ;
+        `, err => {
           if (err) {
             return reject(err);
           }
@@ -126,10 +128,10 @@ class Eventstore extends EventEmitter {
           resolve(resultEvent);
         });
 
-        request.once('row', cols => {
-          resultEvent = Event.wrap(JSON.parse(cols[0].value));
+        request.once('row', columns => {
+          resultEvent = Event.wrap(JSON.parse(columns[0].value));
 
-          resultEvent.metadata.position = Number(cols[1].value);
+          resultEvent.metadata.position = Number(columns[1].value);
         });
 
         request.addParameter('aggregateId', TYPES.UniqueIdentifier, aggregateId);
@@ -181,11 +183,11 @@ class Eventstore extends EventEmitter {
       passThrough.end();
     };
 
-    onRow = cols => {
-      const event = Event.wrap(JSON.parse(cols[0].value));
+    onRow = columns => {
+      const event = Event.wrap(JSON.parse(columns[0].value));
 
-      event.metadata.position = Number(cols[1].value);
-      event.metadata.published = cols[2].value;
+      event.metadata.position = Number(columns[1].value);
+      event.metadata.published = columns[2].value;
 
       passThrough.write(event);
     };
@@ -239,11 +241,11 @@ class Eventstore extends EventEmitter {
       passThrough.end();
     };
 
-    onRow = cols => {
-      const event = Event.wrap(JSON.parse(cols[0].value));
+    onRow = columns => {
+      const event = Event.wrap(JSON.parse(columns[0].value));
 
-      event.metadata.position = Number(cols[1].value);
-      event.metadata.published = cols[2].value;
+      event.metadata.position = Number(columns[1].value);
+      event.metadata.published = columns[2].value;
 
       passThrough.write(event);
     };
@@ -252,7 +254,8 @@ class Eventstore extends EventEmitter {
       SELECT [event], [position], [hasBeenPublished]
         FROM [${this.namespace}_events]
         WHERE [hasBeenPublished] = 0
-        ORDER BY [position]`, err => {
+        ORDER BY [position]
+      `, err => {
       unsubscribe();
 
       if (err) {
@@ -281,6 +284,7 @@ class Eventstore extends EventEmitter {
 
     const placeholders = [],
           values = [];
+
     let resultCount = 0;
 
     for (let i = 0; i < events.length; i++) {
@@ -325,8 +329,8 @@ class Eventstore extends EventEmitter {
           request.addParameter(value.key, value.type, value.value, value.options);
         }
 
-        onRow = cols => {
-          events[resultCount].metadata.position = Number(cols[0].value);
+        onRow = columns => {
+          events[resultCount].metadata.position = Number(columns[0].value);
 
           resultCount += 1;
         };
@@ -416,10 +420,10 @@ class Eventstore extends EventEmitter {
           resolve(resultRow);
         });
 
-        request.once('row', cols => {
+        request.once('row', columns => {
           resultRow = {
-            state: JSON.parse(cols[0].value),
-            revision: Number(cols[1].value)
+            state: JSON.parse(columns[0].value),
+            revision: Number(columns[1].value)
           };
         });
 
@@ -510,10 +514,10 @@ class Eventstore extends EventEmitter {
       passThrough.end();
     };
 
-    onRow = cols => {
-      const event = Event.wrap(JSON.parse(cols[0].value));
+    onRow = columns => {
+      const event = Event.wrap(JSON.parse(columns[0].value));
 
-      event.metadata.position = Number(cols[1].value);
+      event.metadata.position = Number(columns[1].value);
 
       passThrough.write(event);
     };

@@ -3,37 +3,30 @@
 const { Connection } = require('tedious'),
       { Pool } = require('tarn');
 
-const createPool = function (config) {
-  if (!config) {
-    throw new Error('Config is missing.');
-  }
-  if (!config.host) {
+const createPool = function ({ host, port, user, password, database, onError, onDisconnect }) {
+  if (!host) {
     throw new Error('Host is missing.');
   }
-  if (!config.port) {
+  if (!port) {
     throw new Error('Port is missing.');
   }
-  if (!config.user) {
+  if (!user) {
     throw new Error('User is missing.');
   }
-  if (!config.password) {
+  if (!password) {
     throw new Error('Password is missing.');
   }
-  if (!config.database) {
+  if (!database) {
     throw new Error('Database is missing.');
   }
 
-  const { host,
-    port,
-    user,
-    password,
-    database,
-    onError = () => {
-      // noop
-    },
-    onDisconnect = () => {
-      // noop
-    } } = config;
+  onError = onError || (() => {
+    // Intentionally left blank.
+  });
+
+  onDisconnect = onDisconnect || (() => {
+    // Intentionally left blank.
+  });
 
   const pool = new Pool({
     min: 2,
@@ -44,20 +37,14 @@ const createPool = function (config) {
     propagateCreateError: true,
 
     validate (connection) {
-      if (connection.closed) {
-        return false;
-      }
-
-      return true;
+      return !connection.closed;
     },
 
     create () {
       return new Promise((resolve, reject) => {
         const connection = new Connection({
           server: host,
-          options: {
-            port
-          },
+          options: { port },
           userName: user,
           password,
           database
@@ -68,36 +55,36 @@ const createPool = function (config) {
             handleError,
             hasBeenConnected = false;
 
-        const removeAllListeners = () => {
+        const unsubscribe = () => {
           connection.removeListener('connect', handleConnect);
           connection.removeListener('error', handleError);
           connection.removeListener('end', handleEnd);
         };
 
-        const removeOnlySetupListeners = () => {
+        const unsubscribeSetup = () => {
           connection.removeListener('connect', handleConnect);
         };
 
         handleConnect = err => {
           if (err) {
-            removeAllListeners();
+            unsubscribe();
 
             return reject(err);
           }
 
           hasBeenConnected = true;
-          removeOnlySetupListeners();
+          unsubscribeSetup();
           resolve(connection);
         };
 
         handleError = err => {
-          removeAllListeners();
+          unsubscribe();
 
           onError(err);
         };
 
         handleEnd = () => {
-          removeAllListeners();
+          unsubscribe();
 
           if (!hasBeenConnected) {
             return reject(new Error('Could not connect to database.'));
