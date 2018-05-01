@@ -14,7 +14,7 @@ const pre = async function () {
   shell.exec('docker run -d -p 27019:27017 --name mongodb-integration mongo:3.4.2');
   shell.exec('docker run -d -p 3311:3306 -e MYSQL_ROOT_PASSWORD=wolkenkit -e MYSQL_USER=wolkenkit -e MYSQL_PASSWORD=wolkenkit -e MYSQL_DATABASE=wolkenkit --name mysql-integration mysql:5.7.21 --bind-address=0.0.0.0');
   shell.exec('docker run -d -p 5434:5432 -e POSTGRES_USER=wolkenkit -e POSTGRES_PASSWORD=wolkenkit -e POSTGRES_DB=wolkenkit --name postgres-integration postgres:9.6.4-alpine');
-  shell.exec('docker run -d -p 1434:1433 -e ACCEPT_EULA=Y -e SA_PASSWORD=Wolkenkit123 --name sqlserver-integration microsoft/mssql-server-linux:2017-CU5');
+  shell.exec('docker run -d -p 1434:1433 -e ACCEPT_EULA=Y -e SA_PASSWORD=Wolkenkit123 --name sqlserver-integration microsoft/mssql-server-linux:2017-CU6');
 
   await waitForMaria({ url: env.MARIA_URL_INTEGRATION });
   await waitForMongo({ url: env.MONGO_URL_INTEGRATION });
