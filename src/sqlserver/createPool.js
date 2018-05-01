@@ -3,7 +3,7 @@
 const { Connection } = require('tedious'),
       { Pool } = require('tarn');
 
-const createPool = function ({ host, port, user, password, database, onError, onDisconnect }) {
+const createPool = function ({ host, port, user, password, database, encrypt, onError, onDisconnect }) {
   if (!host) {
     throw new Error('Host is missing.');
   }
@@ -18,6 +18,9 @@ const createPool = function ({ host, port, user, password, database, onError, on
   }
   if (!database) {
     throw new Error('Database is missing.');
+  }
+  if (encrypt === undefined) {
+    throw new Error('Encrypt is missing.');
   }
 
   onError = onError || (() => {
@@ -44,7 +47,7 @@ const createPool = function ({ host, port, user, password, database, onError, on
       return new Promise((resolve, reject) => {
         const connection = new Connection({
           server: host,
-          options: { port },
+          options: { port, encrypt },
           userName: user,
           password,
           database

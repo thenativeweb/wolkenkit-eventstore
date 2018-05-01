@@ -30,7 +30,7 @@ class Eventstore extends EventEmitter {
 
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
-    const { host, port, user, password, database } = parse(url);
+    const { host, port, user, password, database, encrypt = false } = parse(url);
 
     this.pool = createPool({
       host,
@@ -38,6 +38,7 @@ class Eventstore extends EventEmitter {
       user,
       password,
       database,
+      encrypt,
 
       onError: () => {
         this.emit('error');
