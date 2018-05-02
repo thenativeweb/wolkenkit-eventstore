@@ -1,7 +1,7 @@
 'use strict';
 
-const { parse } = require('pg-connection-string'),
-      { Connection, Request } = require('tedious'),
+const { Connection, Request } = require('tedious'),
+      DsnParser = require('dsn-parser'),
       retry = require('async-retry');
 
 const createDatabase = async function ({ connection, database }) {
@@ -36,13 +36,11 @@ const waitForSqlServer = async function ({ url }) {
     throw new Error('Url is missing.');
   }
 
-  const { host, port, user, password, database } = parse(url);
+  const { host, port, user, password, database } = new DsnParser(url).getParts();
 
   const config = {
     server: host,
-    options: {
-      port
-    },
+    options: { port },
     userName: user,
     password,
     database: 'master'

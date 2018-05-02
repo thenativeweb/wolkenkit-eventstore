@@ -1,6 +1,6 @@
 'use strict';
 
-const { parse } = require('pg-connection-string'),
+const DsnParser = require('dsn-parser'),
       mysql = require('mysql2/promise'),
       retry = require('async-retry');
 
@@ -9,7 +9,7 @@ const waitForMysql = async function ({ url }) {
     throw new Error('Url is missing.');
   }
 
-  const { host, port, user, password, database } = parse(url);
+  const { host, port, user, password, database } = new DsnParser(url).getParts();
 
   const pool = mysql.createPool({
     host,

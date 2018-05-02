@@ -4,10 +4,10 @@ const { EventEmitter } = require('events'),
       { PassThrough } = require('stream');
 
 const cloneDeep = require('lodash/cloneDeep'),
+      DsnParser = require('dsn-parser'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
-      { parse } = require('pg-connection-string'),
       pg = require('pg'),
       QueryStream = require('pg-query-stream'),
       retry = require('async-retry');
@@ -31,7 +31,9 @@ class Eventstore extends EventEmitter {
 
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
-    const disconnectWatcher = new pg.Client(parse(url));
+    const { host, port, user, password, database } = new DsnParser(url).getParts();
+
+    const disconnectWatcher = new pg.Client({ host, port, user, password, database });
 
     disconnectWatcher.on('error', () => {
       this.emit('disconnect');
@@ -42,16 +44,16 @@ class Eventstore extends EventEmitter {
       });
     });
 
-    this.pool = new pg.Pool(parse(url));
+    this.pool = new pg.Pool({ host, port, user, password, database });
     this.pool.on('error', () => {
       this.emit('disconnect');
     });
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     try {
       await retry(async () => {
-        await database.query(`
+        await connection.query(`
           CREATE TABLE IF NOT EXISTS "${this.namespace}_events" (
             "position" bigserial NOT NULL,
             "aggregateId" uuid NOT NULL,
@@ -76,7 +78,7 @@ class Eventstore extends EventEmitter {
         factor: 1
       });
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -85,10 +87,10 @@ class Eventstore extends EventEmitter {
       throw new Error('Aggregate id is missing.');
     }
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     try {
-      const result = await database.query({
+      const result = await connection.query({
         name: 'get last event',
         text: `
           SELECT "event", "position"
@@ -110,7 +112,7 @@ class Eventstore extends EventEmitter {
 
       return event;
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -128,10 +130,10 @@ class Eventstore extends EventEmitter {
       throw new Error('From revision is greater than to revision.');
     }
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     const passThrough = new PassThrough({ objectMode: true });
-    const eventStream = database.query(
+    const eventStream = connection.query(
       new QueryStream(`
         SELECT "event", "position", "hasBeenPublished"
           FROM "${this.namespace}_events"
@@ -147,7 +149,7 @@ class Eventstore extends EventEmitter {
         onError;
 
     const unsubscribe = function () {
-      database.release();
+      connection.release();
       eventStream.removeListener('data', onData);
       eventStream.removeListener('end', onEnd);
       eventStream.removeListener('error', onError);
@@ -181,10 +183,10 @@ class Eventstore extends EventEmitter {
   }
 
   async getUnpublishedEventStream () {
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     const passThrough = new PassThrough({ objectMode: true });
-    const eventStream = database.query(
+    const eventStream = connection.query(
       new QueryStream(`
         SELECT "event", "position", "hasBeenPublished"
           FROM "${this.namespace}_events"
@@ -197,7 +199,7 @@ class Eventstore extends EventEmitter {
         onError;
 
     const unsubscribe = function () {
-      database.release();
+      connection.release();
       eventStream.removeListener('data', onData);
       eventStream.removeListener('end', onEnd);
       eventStream.removeListener('error', onError);
@@ -236,7 +238,7 @@ class Eventstore extends EventEmitter {
 
     events = cloneDeep(flatten([ events ]));
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     const placeholders = [],
           values = [];
@@ -257,7 +259,7 @@ class Eventstore extends EventEmitter {
     `;
 
     try {
-      const result = await database.query({ name: `save events ${events.length}`, text, values });
+      const result = await connection.query({ name: `save events ${events.length}`, text, values });
 
       for (let i = 0; i < result.rows.length; i++) {
         events[i].metadata.position = Number(result.rows[i].position);
@@ -271,7 +273,7 @@ class Eventstore extends EventEmitter {
 
       throw ex;
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -290,10 +292,10 @@ class Eventstore extends EventEmitter {
       throw new Error('From revision is greater than to revision.');
     }
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     try {
-      await database.query({
+      await connection.query({
         name: 'mark events as published',
         text: `
           UPDATE "${this.namespace}_events"
@@ -305,7 +307,7 @@ class Eventstore extends EventEmitter {
         values: [ aggregateId, fromRevision, toRevision ]
       });
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -314,10 +316,10 @@ class Eventstore extends EventEmitter {
       throw new Error('Aggregate id is missing.');
     }
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     try {
-      const result = await database.query({
+      const result = await connection.query({
         name: 'get snapshot',
         text: `
           SELECT "state", "revision"
@@ -338,7 +340,7 @@ class Eventstore extends EventEmitter {
         state: result.rows[0].state
       };
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -355,10 +357,10 @@ class Eventstore extends EventEmitter {
 
     state = omitByDeep(state, value => value === undefined);
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     try {
-      await database.query({
+      await connection.query({
         name: 'save snapshot',
         text: `
         INSERT INTO "${this.namespace}_snapshots" (
@@ -369,7 +371,7 @@ class Eventstore extends EventEmitter {
         values: [ aggregateId, revision, state ]
       });
     } finally {
-      database.release();
+      connection.release();
     }
   }
 
@@ -383,10 +385,10 @@ class Eventstore extends EventEmitter {
       throw new Error('From position is greater than to position.');
     }
 
-    const database = await this.getDatabase();
+    const connection = await this.getDatabase();
 
     const passThrough = new PassThrough({ objectMode: true });
-    const eventStream = database.query(
+    const eventStream = connection.query(
       new QueryStream(`
         SELECT "event", "position"
           FROM "${this.namespace}_events"
@@ -401,7 +403,7 @@ class Eventstore extends EventEmitter {
         onError;
 
     const unsubscribe = function () {
-      database.release();
+      connection.release();
       eventStream.removeListener('data', onData);
       eventStream.removeListener('end', onEnd);
       eventStream.removeListener('error', onError);
