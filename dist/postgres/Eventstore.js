@@ -36,12 +36,11 @@ var _require = require('events'),
     PassThrough = _require2.PassThrough;
 
 var cloneDeep = require('lodash/cloneDeep'),
+    DsnParser = require('dsn-parser'),
     _require3 = require('commands-events'),
     Event = _require3.Event,
     flatten = require('lodash/flatten'),
     limitAlphanumeric = require('limit-alphanumeric'),
-    _require4 = require('pg-connection-string'),
-    parse = _require4.parse,
     pg = require('pg'),
     QueryStream = require('pg-query-stream'),
     retry = require('async-retry');
@@ -95,7 +94,9 @@ var Eventstore = function (_EventEmitter) {
 
         var url = _ref2.url,
             namespace = _ref2.namespace;
-        var disconnectWatcher, database;
+
+        var _getParts, host, port, user, password, database, disconnectWatcher, connection;
+
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -119,7 +120,8 @@ var Eventstore = function (_EventEmitter) {
 
                 this.namespace = 'store_' + limitAlphanumeric(namespace);
 
-                disconnectWatcher = new pg.Client(parse(url));
+                _getParts = new DsnParser(url).getParts(), host = _getParts.host, port = _getParts.port, user = _getParts.user, password = _getParts.password, database = _getParts.database;
+                disconnectWatcher = new pg.Client({ host: host, port: port, user: user, password: password, database: database });
 
 
                 disconnectWatcher.on('error', function () {
@@ -131,25 +133,25 @@ var Eventstore = function (_EventEmitter) {
                   });
                 });
 
-                this.pool = new pg.Pool(parse(url));
+                this.pool = new pg.Pool({ host: host, port: port, user: user, password: password, database: database });
                 this.pool.on('error', function () {
                   _this2.emit('disconnect');
                 });
 
-                _context3.next = 12;
+                _context3.next = 13;
                 return this.getDatabase();
 
-              case 12:
-                database = _context3.sent;
-                _context3.prev = 13;
-                _context3.next = 16;
+              case 13:
+                connection = _context3.sent;
+                _context3.prev = 14;
+                _context3.next = 17;
                 return retry((0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
                   return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                       switch (_context2.prev = _context2.next) {
                         case 0:
                           _context2.next = 2;
-                          return database.query('\n          CREATE TABLE IF NOT EXISTS "' + _this2.namespace + '_events" (\n            "position" bigserial NOT NULL,\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "event" jsonb NOT NULL,\n            "hasBeenPublished" boolean NOT NULL,\n\n            CONSTRAINT "' + _this2.namespace + '_events_pk" PRIMARY KEY("position"),\n            CONSTRAINT "' + _this2.namespace + '_aggregateId_revision" UNIQUE ("aggregateId", "revision")\n          );\n          CREATE TABLE IF NOT EXISTS "' + _this2.namespace + '_snapshots" (\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "state" jsonb NOT NULL,\n\n            CONSTRAINT "' + _this2.namespace + '_snapshots_pk" PRIMARY KEY("aggregateId", "revision")\n          );\n        ');
+                          return connection.query('\n          CREATE TABLE IF NOT EXISTS "' + _this2.namespace + '_events" (\n            "position" bigserial NOT NULL,\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "event" jsonb NOT NULL,\n            "hasBeenPublished" boolean NOT NULL,\n\n            CONSTRAINT "' + _this2.namespace + '_events_pk" PRIMARY KEY("position"),\n            CONSTRAINT "' + _this2.namespace + '_aggregateId_revision" UNIQUE ("aggregateId", "revision")\n          );\n          CREATE TABLE IF NOT EXISTS "' + _this2.namespace + '_snapshots" (\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "state" jsonb NOT NULL,\n\n            CONSTRAINT "' + _this2.namespace + '_snapshots_pk" PRIMARY KEY("aggregateId", "revision")\n          );\n        ');
 
                         case 2:
                         case 'end':
@@ -163,18 +165,18 @@ var Eventstore = function (_EventEmitter) {
                   factor: 1
                 });
 
-              case 16:
-                _context3.prev = 16;
+              case 17:
+                _context3.prev = 17;
 
-                database.release();
-                return _context3.finish(16);
+                connection.release();
+                return _context3.finish(17);
 
-              case 19:
+              case 20:
               case 'end':
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[13,, 16, 19]]);
+        }, _callee3, this, [[14,, 17, 20]]);
       }));
 
       function initialize(_x) {
@@ -187,7 +189,7 @@ var Eventstore = function (_EventEmitter) {
     key: 'getLastEvent',
     value: function () {
       var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(aggregateId) {
-        var database, result, event;
+        var connection, result, event;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -204,10 +206,10 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 4:
-                database = _context4.sent;
+                connection = _context4.sent;
                 _context4.prev = 5;
                 _context4.next = 8;
-                return database.query({
+                return connection.query({
                   name: 'get last event',
                   text: '\n          SELECT "event", "position"\n            FROM "' + this.namespace + '_events"\n            WHERE "aggregateId" = $1\n            ORDER BY "revision" DESC\n            LIMIT 1\n        ',
                   values: [aggregateId]
@@ -234,7 +236,7 @@ var Eventstore = function (_EventEmitter) {
               case 14:
                 _context4.prev = 14;
 
-                database.release();
+                connection.release();
                 return _context4.finish(14);
 
               case 17:
@@ -255,7 +257,7 @@ var Eventstore = function (_EventEmitter) {
     key: 'getEventStream',
     value: function () {
       var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(aggregateId, options) {
-        var fromRevision, toRevision, database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
+        var fromRevision, toRevision, connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -286,13 +288,13 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 9:
-                database = _context5.sent;
+                connection = _context5.sent;
                 passThrough = new PassThrough({ objectMode: true });
-                eventStream = database.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "aggregateId" = $1\n            AND "revision" >= $2\n            AND "revision" <= $3\n          ORDER BY "revision"', [aggregateId, fromRevision, toRevision]));
+                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "aggregateId" = $1\n            AND "revision" >= $2\n            AND "revision" <= $3\n          ORDER BY "revision"', [aggregateId, fromRevision, toRevision]));
                 onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
-                  database.release();
+                  connection.release();
                   eventStream.removeListener('data', onData);
                   eventStream.removeListener('end', onEnd);
                   eventStream.removeListener('error', onError);
@@ -342,7 +344,7 @@ var Eventstore = function (_EventEmitter) {
     key: 'getUnpublishedEventStream',
     value: function () {
       var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
-        var database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
+        var connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -351,13 +353,13 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 2:
-                database = _context6.sent;
+                connection = _context6.sent;
                 passThrough = new PassThrough({ objectMode: true });
-                eventStream = database.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "hasBeenPublished" = false\n          ORDER BY "position"'));
+                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "hasBeenPublished" = false\n          ORDER BY "position"'));
                 onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
-                  database.release();
+                  connection.release();
                   eventStream.removeListener('data', onData);
                   eventStream.removeListener('end', onEnd);
                   eventStream.removeListener('error', onError);
@@ -408,7 +410,7 @@ var Eventstore = function (_EventEmitter) {
       var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref8) {
         var events = _ref8.events;
 
-        var database, placeholders, values, i, base, event, text, result, _i;
+        var connection, placeholders, values, i, base, event, text, result, _i;
 
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
@@ -429,7 +431,7 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 5:
-                database = _context7.sent;
+                connection = _context7.sent;
                 placeholders = [], values = [];
 
 
@@ -444,7 +446,7 @@ var Eventstore = function (_EventEmitter) {
                 text = '\n      INSERT INTO "' + this.namespace + '_events"\n        ("aggregateId", "revision", "event", "hasBeenPublished")\n      VALUES\n        ' + placeholders.join(',') + ' RETURNING position;\n    ';
                 _context7.prev = 9;
                 _context7.next = 12;
-                return database.query({ name: 'save events ' + events.length, text: text, values: values });
+                return connection.query({ name: 'save events ' + events.length, text: text, values: values });
 
               case 12:
                 result = _context7.sent;
@@ -473,7 +475,7 @@ var Eventstore = function (_EventEmitter) {
               case 22:
                 _context7.prev = 22;
 
-                database.release();
+                connection.release();
                 return _context7.finish(22);
 
               case 25:
@@ -497,7 +499,7 @@ var Eventstore = function (_EventEmitter) {
         var aggregateId = _ref10.aggregateId,
             fromRevision = _ref10.fromRevision,
             toRevision = _ref10.toRevision;
-        var database;
+        var connection;
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
@@ -538,10 +540,10 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 10:
-                database = _context8.sent;
+                connection = _context8.sent;
                 _context8.prev = 11;
                 _context8.next = 14;
-                return database.query({
+                return connection.query({
                   name: 'mark events as published',
                   text: '\n          UPDATE "' + this.namespace + '_events"\n            SET "hasBeenPublished" = true\n            WHERE "aggregateId" = $1\n              AND "revision" >= $2\n              AND "revision" <= $3\n        ',
                   values: [aggregateId, fromRevision, toRevision]
@@ -550,7 +552,7 @@ var Eventstore = function (_EventEmitter) {
               case 14:
                 _context8.prev = 14;
 
-                database.release();
+                connection.release();
                 return _context8.finish(14);
 
               case 17:
@@ -571,7 +573,7 @@ var Eventstore = function (_EventEmitter) {
     key: 'getSnapshot',
     value: function () {
       var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(aggregateId) {
-        var database, result;
+        var connection, result;
         return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
@@ -588,10 +590,10 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 4:
-                database = _context9.sent;
+                connection = _context9.sent;
                 _context9.prev = 5;
                 _context9.next = 8;
-                return database.query({
+                return connection.query({
                   name: 'get snapshot',
                   text: '\n          SELECT "state", "revision"\n            FROM "' + this.namespace + '_snapshots"\n            WHERE "aggregateId" = $1\n            ORDER BY "revision" DESC\n            LIMIT 1\n        ',
                   values: [aggregateId]
@@ -616,7 +618,7 @@ var Eventstore = function (_EventEmitter) {
               case 12:
                 _context9.prev = 12;
 
-                database.release();
+                connection.release();
                 return _context9.finish(12);
 
               case 15:
@@ -640,7 +642,7 @@ var Eventstore = function (_EventEmitter) {
         var aggregateId = _ref13.aggregateId,
             revision = _ref13.revision,
             state = _ref13.state;
-        var database;
+        var connection;
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
@@ -678,10 +680,10 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 9:
-                database = _context10.sent;
+                connection = _context10.sent;
                 _context10.prev = 10;
                 _context10.next = 13;
-                return database.query({
+                return connection.query({
                   name: 'save snapshot',
                   text: '\n        INSERT INTO "' + this.namespace + '_snapshots" (\n          "aggregateId", revision, state\n        ) VALUES ($1, $2, $3)\n        ON CONFLICT DO NOTHING;\n        ',
                   values: [aggregateId, revision, state]
@@ -690,7 +692,7 @@ var Eventstore = function (_EventEmitter) {
               case 13:
                 _context10.prev = 13;
 
-                database.release();
+                connection.release();
                 return _context10.finish(13);
 
               case 16:
@@ -711,7 +713,7 @@ var Eventstore = function (_EventEmitter) {
     key: 'getReplay',
     value: function () {
       var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(options) {
-        var fromPosition, toPosition, database, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
+        var fromPosition, toPosition, connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
         return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
@@ -733,13 +735,13 @@ var Eventstore = function (_EventEmitter) {
                 return this.getDatabase();
 
               case 7:
-                database = _context11.sent;
+                connection = _context11.sent;
                 passThrough = new PassThrough({ objectMode: true });
-                eventStream = database.query(new QueryStream('\n        SELECT "event", "position"\n          FROM "' + this.namespace + '_events"\n          WHERE "position" >= $1\n            AND "position" <= $2\n          ORDER BY "position"', [fromPosition, toPosition]));
+                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position"\n          FROM "' + this.namespace + '_events"\n          WHERE "position" >= $1\n            AND "position" <= $2\n          ORDER BY "position"', [fromPosition, toPosition]));
                 onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
-                  database.release();
+                  connection.release();
                   eventStream.removeListener('data', onData);
                   eventStream.removeListener('end', onEnd);
                   eventStream.removeListener('error', onError);

@@ -44,12 +44,11 @@ var _require = require('events'),
     PassThrough = _require2.PassThrough;
 
 var cloneDeep = require('lodash/cloneDeep'),
+    DsnParser = require('dsn-parser'),
     _require3 = require('commands-events'),
     Event = _require3.Event,
     flatten = require('lodash/flatten'),
     limitAlphanumeric = require('limit-alphanumeric'),
-    _require4 = require('pg-connection-string'),
-    parse = _require4.parse,
     mysql = require('mysql2/promise');
 
 
@@ -102,7 +101,7 @@ var Eventstore = function (_EventEmitter) {
         var url = _ref2.url,
             namespace = _ref2.namespace;
 
-        var _parse, host, port, user, password, database, connection, createUuidToBinFunction, createUuidFromBinFunction, query;
+        var _getParts, host, port, user, password, database, connection, createUuidToBinFunction, createUuidFromBinFunction, query;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -127,7 +126,7 @@ var Eventstore = function (_EventEmitter) {
 
                 this.namespace = 'store_' + limitAlphanumeric(namespace);
 
-                _parse = parse(url), host = _parse.host, port = _parse.port, user = _parse.user, password = _parse.password, database = _parse.database;
+                _getParts = new DsnParser(url).getParts(), host = _getParts.host, port = _getParts.port, user = _getParts.user, password = _getParts.password, database = _getParts.database;
 
 
                 this.pool = mysql.createPool({
@@ -491,8 +490,11 @@ var Eventstore = function (_EventEmitter) {
                 rows = _ref12[0];
 
 
-                for (_i = 0; _i < rows.length; _i++) {
-                  events[_i].metadata.position = Number(rows[_i].position);
+                // We only get the ID of the first inserted row, but since it's all in a
+                // single INSERT statement, the database guarantees that the positions are
+                // sequential, so we easily calculate them by ourselves.
+                for (_i = 0; _i < events.length; _i++) {
+                  events[_i].metadata.position = Number(rows[0].position) + _i;
                 }
 
                 return _context6.abrupt('return', events);
