@@ -300,8 +300,11 @@ class Eventstore extends EventEmitter {
 
       const [ rows ] = await connection.execute('SELECT LAST_INSERT_ID() AS position;');
 
-      for (let i = 0; i < rows.length; i++) {
-        events[i].metadata.position = Number(rows[i].position);
+      // We only get the ID of the first inserted row, but since it's all in a
+      // single INSERT statement, the database guarantees that the positions are
+      // sequential, so we easily calculate them by ourselves.
+      for (let i = 0; i < events.length; i++) {
+        events[i].metadata.position = Number(rows[0].position) + i;
       }
 
       return events;

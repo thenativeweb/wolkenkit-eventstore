@@ -21,6 +21,7 @@ The following table lists all currently supported databases:
 Database               | Package
 -----------------------|--------------------
 PostgreSQL             | `wolkenkit-eventstore/postgres`
+SQL Server             | `wolkenkit-eventstore/sqlserver`
 MariaDB                | `wolkenkit-eventstore/mariadb`
 MySQL                  | `wolkenkit-eventstore/mysql`
 MongoDB (experimental) | `wolkenkit-eventstore/mongodb`
@@ -199,6 +200,8 @@ To build this module use [roboter](https://www.npmjs.com/package/roboter).
 ```shell
 $ npx roboter
 ```
+
+Please note that wolkenkit-eventstore uses the [Microsoft SQL Server on Linux Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/) to run SQL Server for the tests. To run this image you need to assign at least 3.25 GByte of RAM to Docker for Mac or Docker for Windows.
 
 ## License
 

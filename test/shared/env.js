@@ -13,7 +13,10 @@ const env = {
   MYSQL_URL_PERFORMANCE: process.env.MYSQL_URL_PERFORMANCE || 'mysql://wolkenkit:wolkenkit@local.wolkenkit.io:3312/wolkenkit',
   POSTGRES_URL_UNITS: process.env.POSTGRES_URL_UNITS || 'pg://wolkenkit:wolkenkit@local.wolkenkit.io:5433/wolkenkit',
   POSTGRES_URL_INTEGRATION: process.env.POSTGRES_URL_INTEGRATION || 'pg://wolkenkit:wolkenkit@local.wolkenkit.io:5434/wolkenkit',
-  POSTGRES_URL_PERFORMANCE: process.env.POSTGRES_URL_PERFORMANCE || 'pg://wolkenkit:wolkenkit@local.wolkenkit.io:5435/wolkenkit'
+  POSTGRES_URL_PERFORMANCE: process.env.POSTGRES_URL_PERFORMANCE || 'pg://wolkenkit:wolkenkit@local.wolkenkit.io:5435/wolkenkit',
+  SQLSERVER_URL_UNITS: process.env.SQLSERVER_URL_UNITS || 'mssql://SA:Wolkenkit123@local.wolkenkit.io:1433/wolkenkit',
+  SQLSERVER_URL_INTEGRATION: process.env.SQLSERVER_URL_UNITS || 'mssql://SA:Wolkenkit123@local.wolkenkit.io:1434/wolkenkit',
+  SQLSERVER_URL_PERFORMANCE: process.env.SQLSERVER_URL_UNITS || 'mssql://SA:Wolkenkit123@local.wolkenkit.io:1435/wolkenkit'
 };
 /* eslint-enable no-process-env */
 

@@ -17,7 +17,8 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
     namespace = uuid();
   });
 
-  teardown(async () => {
+  teardown(async function () {
+    this.timeout(20000);
     await eventstore.destroy();
   });
 
@@ -576,6 +577,36 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
       assert.that(aggregateEvents.length).is.equalTo(2);
       assert.that(aggregateEvents[0].name).is.equalTo('started');
       assert.that(aggregateEvents[1].name).is.equalTo('joined');
+    });
+
+    test('returns events with updated positions.', async () => {
+      const eventStarted = new Event({
+        context: { name: 'planning' },
+        aggregate: { name: 'peerGroup', id: uuid() },
+        name: 'started',
+        data: { initiator: 'Jane Doe', destination: 'Riva' },
+        metadata: { correlationId: uuid(), causationId: uuid() }
+      });
+
+      const eventJoined = new Event({
+        context: { name: 'planning' },
+        aggregate: { name: 'peerGroup', id: eventStarted.aggregate.id },
+        name: 'joined',
+        data: { participant: 'Jane Doe' },
+        metadata: { correlationId: uuid(), causationId: uuid() }
+      });
+
+      eventStarted.metadata.revision = 1;
+      eventJoined.metadata.revision = 2;
+
+      await eventstore.initialize({ url, namespace });
+      const savedEvents = await eventstore.saveEvents({ events: [ eventStarted, eventJoined ]});
+
+      assert.that(savedEvents.length).is.equalTo(2);
+      assert.that(savedEvents[0].name).is.equalTo('started');
+      assert.that(savedEvents[0].metadata.position).is.equalTo(1);
+      assert.that(savedEvents[1].name).is.equalTo('joined');
+      assert.that(savedEvents[1].metadata.position).is.equalTo(2);
     });
 
     test('correctly handles undefined and null.', async () => {
