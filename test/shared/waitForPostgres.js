@@ -1,6 +1,6 @@
 'use strict';
 
-const { parse } = require('pg-connection-string'),
+const DsnParser = require('dsn-parser'),
       pg = require('pg'),
       retry = require('async-retry');
 
@@ -9,12 +9,14 @@ const waitForPostgres = async function ({ url }) {
     throw new Error('Url is missing.');
   }
 
-  const pool = new pg.Pool(parse(url));
+  const { host, port, user, password, database } = new DsnParser(url).getParts();
+
+  const pool = new pg.Pool({ host, port, user, password, database });
 
   await retry(async () => {
-    const database = await pool.connect();
+    const connection = await pool.connect();
 
-    database.release();
+    connection.release();
   });
 
   await pool.end();

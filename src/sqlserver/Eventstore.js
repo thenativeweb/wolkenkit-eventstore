@@ -4,10 +4,10 @@ const { EventEmitter } = require('events'),
       { PassThrough } = require('stream');
 
 const cloneDeep = require('lodash/cloneDeep'),
+      DsnParser = require('dsn-parser'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
-      { parse } = require('pg-connection-string'),
       { Request, TYPES } = require('tedious');
 
 const createPool = require('./createPool'),
@@ -30,7 +30,8 @@ class Eventstore extends EventEmitter {
 
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
-    const { host, port, user, password, database, encrypt = false } = parse(url);
+    const { host, port, user, password, database, params } = new DsnParser(url).getParts();
+    const encrypt = params.encrypt || false;
 
     this.pool = createPool({
       host,

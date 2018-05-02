@@ -4,10 +4,10 @@ const { EventEmitter } = require('events'),
       { PassThrough } = require('stream');
 
 const cloneDeep = require('lodash/cloneDeep'),
+      DsnParser = require('dsn-parser'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
-      { parse } = require('pg-connection-string'),
       mysql = require('mysql2/promise');
 
 const omitByDeep = require('../omitByDeep');
@@ -29,7 +29,7 @@ class Eventstore extends EventEmitter {
 
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
-    const { host, port, user, password, database } = parse(url);
+    const { host, port, user, password, database } = new DsnParser(url).getParts();
 
     this.pool = mysql.createPool({
       host,
