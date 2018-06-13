@@ -629,6 +629,40 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
       assert.that(aggregateEvents.length).is.equalTo(1);
       assert.that(aggregateEvents[0].data).is.equalTo({ initiator: null });
     });
+
+    test('throws an error if the event\'s revision is missing.', async () => {
+      const event = new Event({
+        context: { name: 'planning' },
+        aggregate: { name: 'peerGroup', id: uuid() },
+        name: 'started',
+        data: { initiator: 'Jane Doe', destination: 'Riva' },
+        metadata: { correlationId: uuid(), causationId: uuid() }
+      });
+
+      await eventstore.initialize({ url, namespace });
+
+      await assert.that(async () => {
+        await eventstore.saveEvents({ events: event });
+      }).is.throwingAsync('Revision is missing.');
+    });
+
+    test('throws an error if the event\'s revision is less than 1.', async () => {
+      const event = new Event({
+        context: { name: 'planning' },
+        aggregate: { name: 'peerGroup', id: uuid() },
+        name: 'started',
+        data: { initiator: 'Jane Doe', destination: 'Riva' },
+        metadata: { correlationId: uuid(), causationId: uuid() }
+      });
+
+      event.metadata.revision = 0;
+
+      await eventstore.initialize({ url, namespace });
+
+      await assert.that(async () => {
+        await eventstore.saveEvents({ events: event });
+      }).is.throwingAsync('Revision must not be less than 1.');
+    });
   });
 
   suite('markEventsAsPublished', () => {

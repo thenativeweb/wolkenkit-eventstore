@@ -254,6 +254,16 @@ class Eventstore extends EventEmitter {
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
 
+      if (!event.metadata) {
+        throw new Error('Metadata are missing.');
+      }
+      if (event.metadata.revision === undefined) {
+        throw new Error('Revision is missing.');
+      }
+      if (event.metadata.revision < 1) {
+        throw new Error('Revision must not be less than 1.');
+      }
+
       placeholders.push('(UuidToBin(?), ?, ?, ?)');
       values.push(event.aggregate.id, event.metadata.revision, JSON.stringify(event), event.metadata.published);
     }

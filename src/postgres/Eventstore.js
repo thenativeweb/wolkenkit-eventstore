@@ -238,8 +238,6 @@ class Eventstore extends EventEmitter {
 
     events = cloneDeep(flatten([ events ]));
 
-    const connection = await this.getDatabase();
-
     const placeholders = [],
           values = [];
 
@@ -247,9 +245,21 @@ class Eventstore extends EventEmitter {
       const base = 4 * i + 1,
             event = events[i];
 
+      if (!event.metadata) {
+        throw new Error('Metadata are missing.');
+      }
+      if (event.metadata.revision === undefined) {
+        throw new Error('Revision is missing.');
+      }
+      if (event.metadata.revision < 1) {
+        throw new Error('Revision must not be less than 1.');
+      }
+
       placeholders.push(`($${base}, $${base + 1}, $${base + 2}, $${base + 3})`);
       values.push(event.aggregate.id, event.metadata.revision, event, event.metadata.published);
     }
+
+    const connection = await this.getDatabase();
 
     const text = `
       INSERT INTO "${this.namespace}_events"

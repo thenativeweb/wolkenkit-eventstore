@@ -40,7 +40,7 @@ const waitForSqlServer = async function ({ url }) {
 
   const config = {
     server: host,
-    options: { port },
+    options: { port, encrypt: false },
     userName: user,
     password,
     database: 'master'

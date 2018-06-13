@@ -90,7 +90,7 @@ const event = await eventstore.getLastEvent(aggregateId);
 
 ### Saving events
 
-To save events use the `saveEvents` function and hand over an array of events you want to save. To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module:
+To save events use the `saveEvents` function and hand over an array of events you want to save. To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module, and add a `revision` property to the event's `metadata` property:
 
 ```javascript
 const eventStarted = new Event(...);
@@ -103,6 +103,8 @@ const savedEvents = await eventstore.saveEvents({
   events: [ eventStarted, eventJoined ]
 });
 ```
+
+*Please note that the `revision` starts at `1`, not – as you may expect – at `0`.*
 
 The assignment from the given events to their appropriate aggregates is done using the events' information. The `revision` of the events *must* be given in their `metadata` section.
 
