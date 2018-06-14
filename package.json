@@ -27,7 +27,7 @@
   "dependencies": {
     "async-retry": "1.2.1",
     "babel-runtime": "6.26.0",
-    "commands-events": "1.0.2",
+    "commands-events": "1.0.3",
     "dsn-parser": "1.0.1",
     "limit-alphanumeric": "1.0.0",
     "lodash": "4.17.10",
@@ -43,7 +43,7 @@
     "assertthat": "1.0.0",
     "flaschenpost": "1.1.1",
     "measure-time": "3.1.1",
-    "processenv": "1.0.0",
+    "processenv": "1.0.1",
     "roboter": "1.0.4",
     "shelljs": "0.8.2",
     "streamtoarray": "1.0.0"
