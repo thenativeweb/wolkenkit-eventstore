@@ -267,6 +267,14 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Events are missing.');
 
               case 2:
+                if (!(Array.isArray(events) && events.length === 0)) {
+                  _context5.next = 4;
+                  break;
+                }
+
+                throw new Error('Events are missing.');
+
+              case 4:
 
                 events = cloneDeep(flatten([events]));
 
@@ -274,6 +282,16 @@ var Eventstore = function (_EventEmitter) {
 
 
                 events.forEach(function (event) {
+                  if (!event.metadata) {
+                    throw new Error('Metadata are missing.');
+                  }
+                  if (event.metadata.revision === undefined) {
+                    throw new Error('Revision is missing.');
+                  }
+                  if (event.metadata.revision < 1) {
+                    throw new Error('Revision must not be less than 1.');
+                  }
+
                   if (eventsInDatabase.find(function (eventInDatabase) {
                     return event.aggregate.id === eventInDatabase.aggregate.id && event.metadata.revision === eventInDatabase.metadata.revision;
                   })) {
@@ -292,7 +310,7 @@ var Eventstore = function (_EventEmitter) {
 
                 return _context5.abrupt('return', events);
 
-              case 6:
+              case 8:
               case 'end':
                 return _context5.stop();
             }

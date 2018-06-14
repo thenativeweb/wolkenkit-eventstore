@@ -414,35 +414,77 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Events are missing.');
 
               case 2:
+                if (!(Array.isArray(events) && events.length === 0)) {
+                  _context6.next = 4;
+                  break;
+                }
+
+                throw new Error('Events are missing.');
+
+              case 4:
 
                 events = cloneDeep(flatten([events]));
 
-                _context6.next = 5;
+                _context6.next = 7;
                 return this.getDatabase();
 
-              case 5:
+              case 7:
                 connection = _context6.sent;
                 placeholders = [], values = [];
+                i = 0;
 
-
-                for (i = 0; i < events.length; i++) {
-                  event = events[i];
-
-
-                  placeholders.push('(UuidToBin(?), ?, ?, ?)');
-                  values.push(event.aggregate.id, event.metadata.revision, (0, _stringify2.default)(event), event.metadata.published);
+              case 10:
+                if (!(i < events.length)) {
+                  _context6.next = 23;
+                  break;
                 }
 
-                text = '\n      INSERT INTO ' + this.namespace + '_events\n        (aggregateId, revision, event, hasBeenPublished)\n      VALUES\n        ' + placeholders.join(',') + ';\n    ';
-                _context6.prev = 9;
-                _context6.next = 12;
-                return connection.execute(text, values);
+                event = events[i];
 
-              case 12:
-                _context6.next = 14;
-                return connection.execute('SELECT LAST_INSERT_ID() AS position;');
+                if (event.metadata) {
+                  _context6.next = 14;
+                  break;
+                }
+
+                throw new Error('Metadata are missing.');
 
               case 14:
+                if (!(event.metadata.revision === undefined)) {
+                  _context6.next = 16;
+                  break;
+                }
+
+                throw new Error('Revision is missing.');
+
+              case 16:
+                if (!(event.metadata.revision < 1)) {
+                  _context6.next = 18;
+                  break;
+                }
+
+                throw new Error('Revision must not be less than 1.');
+
+              case 18:
+
+                placeholders.push('(UuidToBin(?), ?, ?, ?)');
+                values.push(event.aggregate.id, event.metadata.revision, (0, _stringify2.default)(event), event.metadata.published);
+
+              case 20:
+                i++;
+                _context6.next = 10;
+                break;
+
+              case 23:
+                text = '\n      INSERT INTO ' + this.namespace + '_events\n        (aggregateId, revision, event, hasBeenPublished)\n      VALUES\n        ' + placeholders.join(',') + ';\n    ';
+                _context6.prev = 24;
+                _context6.next = 27;
+                return connection.execute(text, values);
+
+              case 27:
+                _context6.next = 29;
+                return connection.execute('SELECT LAST_INSERT_ID() AS position;');
+
+              case 29:
                 _ref11 = _context6.sent;
                 _ref12 = (0, _slicedToArray3.default)(_ref11, 1);
                 rows = _ref12[0];
@@ -457,32 +499,32 @@ var Eventstore = function (_EventEmitter) {
 
                 return _context6.abrupt('return', events);
 
-              case 21:
-                _context6.prev = 21;
-                _context6.t0 = _context6['catch'](9);
+              case 36:
+                _context6.prev = 36;
+                _context6.t0 = _context6['catch'](24);
 
                 if (!(_context6.t0.code === 'ER_DUP_ENTRY' && _context6.t0.sqlMessage.endsWith('for key \'aggregateId\''))) {
-                  _context6.next = 25;
+                  _context6.next = 40;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 25:
+              case 40:
                 throw _context6.t0;
 
-              case 26:
-                _context6.prev = 26;
+              case 41:
+                _context6.prev = 41;
 
                 connection.release();
-                return _context6.finish(26);
+                return _context6.finish(41);
 
-              case 29:
+              case 44:
               case 'end':
                 return _context6.stop();
             }
           }
-        }, _callee6, this, [[9, 21, 26, 29]]);
+        }, _callee6, this, [[24, 36, 41, 44]]);
       }));
 
       function saveEvents(_x5) {

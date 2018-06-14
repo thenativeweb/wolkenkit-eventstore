@@ -410,7 +410,7 @@ var Eventstore = function (_EventEmitter) {
       var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref8) {
         var events = _ref8.events;
 
-        var connection, placeholders, values, i, base, event, text, result, _i;
+        var placeholders, values, i, base, event, connection, text, result, _i;
 
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
@@ -424,31 +424,73 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Events are missing.');
 
               case 2:
+                if (!(Array.isArray(events) && events.length === 0)) {
+                  _context7.next = 4;
+                  break;
+                }
+
+                throw new Error('Events are missing.');
+
+              case 4:
 
                 events = cloneDeep(flatten([events]));
 
-                _context7.next = 5;
-                return this.getDatabase();
-
-              case 5:
-                connection = _context7.sent;
                 placeholders = [], values = [];
+                i = 0;
 
-
-                for (i = 0; i < events.length; i++) {
-                  base = 4 * i + 1, event = events[i];
-
-
-                  placeholders.push('($' + base + ', $' + (base + 1) + ', $' + (base + 2) + ', $' + (base + 3) + ')');
-                  values.push(event.aggregate.id, event.metadata.revision, event, event.metadata.published);
+              case 7:
+                if (!(i < events.length)) {
+                  _context7.next = 20;
+                  break;
                 }
 
+                base = 4 * i + 1, event = events[i];
+
+                if (event.metadata) {
+                  _context7.next = 11;
+                  break;
+                }
+
+                throw new Error('Metadata are missing.');
+
+              case 11:
+                if (!(event.metadata.revision === undefined)) {
+                  _context7.next = 13;
+                  break;
+                }
+
+                throw new Error('Revision is missing.');
+
+              case 13:
+                if (!(event.metadata.revision < 1)) {
+                  _context7.next = 15;
+                  break;
+                }
+
+                throw new Error('Revision must not be less than 1.');
+
+              case 15:
+
+                placeholders.push('($' + base + ', $' + (base + 1) + ', $' + (base + 2) + ', $' + (base + 3) + ')');
+                values.push(event.aggregate.id, event.metadata.revision, event, event.metadata.published);
+
+              case 17:
+                i++;
+                _context7.next = 7;
+                break;
+
+              case 20:
+                _context7.next = 22;
+                return this.getDatabase();
+
+              case 22:
+                connection = _context7.sent;
                 text = '\n      INSERT INTO "' + this.namespace + '_events"\n        ("aggregateId", "revision", "event", "hasBeenPublished")\n      VALUES\n        ' + placeholders.join(',') + ' RETURNING position;\n    ';
-                _context7.prev = 9;
-                _context7.next = 12;
+                _context7.prev = 24;
+                _context7.next = 27;
                 return connection.query({ name: 'save events ' + events.length, text: text, values: values });
 
-              case 12:
+              case 27:
                 result = _context7.sent;
 
 
@@ -458,32 +500,32 @@ var Eventstore = function (_EventEmitter) {
 
                 return _context7.abrupt('return', events);
 
-              case 17:
-                _context7.prev = 17;
-                _context7.t0 = _context7['catch'](9);
+              case 32:
+                _context7.prev = 32;
+                _context7.t0 = _context7['catch'](24);
 
                 if (!(_context7.t0.code === '23505' && _context7.t0.detail.startsWith('Key ("aggregateId", revision)'))) {
-                  _context7.next = 21;
+                  _context7.next = 36;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 21:
+              case 36:
                 throw _context7.t0;
 
-              case 22:
-                _context7.prev = 22;
+              case 37:
+                _context7.prev = 37;
 
                 connection.release();
-                return _context7.finish(22);
+                return _context7.finish(37);
 
-              case 25:
+              case 40:
               case 'end':
                 return _context7.stop();
             }
           }
-        }, _callee7, this, [[9, 17, 22, 25]]);
+        }, _callee7, this, [[24, 32, 37, 40]]);
       }));
 
       function saveEvents(_x5) {

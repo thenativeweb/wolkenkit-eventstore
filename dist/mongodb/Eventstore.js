@@ -431,23 +431,56 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Events are missing.');
 
               case 2:
+                if (!(Array.isArray(events) && events.length === 0)) {
+                  _context6.next = 4;
+                  break;
+                }
+
+                throw new Error('Events are missing.');
+
+              case 4:
 
                 events = cloneDeep(flatten([events]));
 
-                _context6.prev = 3;
+                _context6.prev = 5;
                 i = 0;
 
-              case 5:
+              case 7:
                 if (!(i < events.length)) {
-                  _context6.next = 17;
+                  _context6.next = 25;
                   break;
                 }
 
                 event = events[i];
-                _context6.next = 9;
+
+                if (event.metadata) {
+                  _context6.next = 11;
+                  break;
+                }
+
+                throw new Error('Metadata are missing.');
+
+              case 11:
+                if (!(event.metadata.revision === undefined)) {
+                  _context6.next = 13;
+                  break;
+                }
+
+                throw new Error('Revision is missing.');
+
+              case 13:
+                if (!(event.metadata.revision < 1)) {
+                  _context6.next = 15;
+                  break;
+                }
+
+                throw new Error('Revision must not be less than 1.');
+
+              case 15:
+                _context6.next = 17;
                 return this.getNextSequence('events');
 
-              case 9:
+              case 17:
                 seq = _context6.sent;
 
 
@@ -458,41 +491,41 @@ var Eventstore = function (_EventEmitter) {
 
                 // Use cloned events here to hinder MongoDB from adding an _id property to
                 // the original event objects.
-                _context6.next = 14;
+                _context6.next = 22;
                 return this.collections.events.insertOne(cloneDeep(event));
 
-              case 14:
+              case 22:
                 i++;
-                _context6.next = 5;
+                _context6.next = 7;
                 break;
 
-              case 17:
-                _context6.next = 24;
+              case 25:
+                _context6.next = 32;
                 break;
 
-              case 19:
-                _context6.prev = 19;
-                _context6.t0 = _context6['catch'](3);
+              case 27:
+                _context6.prev = 27;
+                _context6.t0 = _context6['catch'](5);
 
                 if (!(_context6.t0.code === 11000 && _context6.t0.message.indexOf('_aggregateId_revision') !== -1)) {
-                  _context6.next = 23;
+                  _context6.next = 31;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 23:
+              case 31:
                 throw _context6.t0;
 
-              case 24:
+              case 32:
                 return _context6.abrupt('return', events);
 
-              case 25:
+              case 33:
               case 'end':
                 return _context6.stop();
             }
           }
-        }, _callee6, this, [[3, 19]]);
+        }, _callee6, this, [[5, 27]]);
       }));
 
       function saveEvents(_x6) {
