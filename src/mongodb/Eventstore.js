@@ -214,6 +214,9 @@ class Eventstore extends EventEmitter {
     if (!events) {
       throw new Error('Events are missing.');
     }
+    if (Array.isArray(events) && events.length === 0) {
+      throw new Error('Events are missing.');
+    }
 
     events = cloneDeep(flatten([ events ]));
 

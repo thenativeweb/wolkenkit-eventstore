@@ -548,6 +548,12 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
       assert.that(aggregateEvents[0].name).is.equalTo('started');
     });
 
+    test('throws an error if events is an empty array.', async () => {
+      await assert.that(async () => {
+        await eventstore.saveEvents({ events: []});
+      }).is.throwingAsync('Events are missing.');
+    });
+
     test('saves multiple events.', async () => {
       const eventStarted = new Event({
         context: { name: 'planning' },
