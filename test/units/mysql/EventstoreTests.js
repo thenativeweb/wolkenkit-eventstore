@@ -10,7 +10,6 @@ const env = require('../../shared/env'),
 suite('mysql/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.MYSQL_URL_UNITS,
-    nonExistentUrl: 'mysql://localhost/non-existent',
 
     async startContainer () {
       shell.exec('docker start mysql-units');

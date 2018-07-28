@@ -16,7 +16,11 @@ const omitByDeep = require('../omitByDeep');
 
 class Eventstore extends EventEmitter {
   async getDatabase () {
-    const database = await this.pool.connect();
+    const database = await retry(async () => {
+      const connection = await this.pool.connect();
+
+      return connection;
+    });
 
     return database;
   }
@@ -33,6 +37,13 @@ class Eventstore extends EventEmitter {
 
     const { host, port, user, password, database } = new DsnParser(url).getParts();
 
+    this.pool = new pg.Pool({ host, port, user, password, database });
+    this.pool.on('error', () => {
+      this.emit('disconnect');
+    });
+
+    const connection = await this.getDatabase();
+
     const disconnectWatcher = new pg.Client({ host, port, user, password, database });
 
     disconnectWatcher.on('error', () => {
@@ -43,13 +54,6 @@ class Eventstore extends EventEmitter {
         this.emit('disconnect');
       });
     });
-
-    this.pool = new pg.Pool({ host, port, user, password, database });
-    this.pool.on('error', () => {
-      this.emit('disconnect');
-    });
-
-    const connection = await this.getDatabase();
 
     try {
       await retry(async () => {

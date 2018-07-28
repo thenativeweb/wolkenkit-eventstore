@@ -10,7 +10,7 @@ const waitForMongo = async function ({ url }) {
 
   await retry(async () => {
     /* eslint-disable id-length */
-    const client = await MongoClient.connect(url, { w: 1 });
+    const client = await MongoClient.connect(url, { w: 1, useNewUrlParser: true });
     /* eslint-enable id-length */
 
     await client.close();

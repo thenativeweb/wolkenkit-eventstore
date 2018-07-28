@@ -8,7 +8,8 @@ const cloneDeep = require('lodash/cloneDeep'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
-      { MongoClient } = require('mongodb');
+      { MongoClient } = require('mongodb'),
+      retry = require('async-retry');
 
 const omitByDeep = require('../omitByDeep');
 
@@ -32,7 +33,11 @@ class Eventstore extends EventEmitter {
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
     /* eslint-disable id-length */
-    this.client = await MongoClient.connect(url, { w: 1 });
+    this.client = await retry(async () => {
+      const connection = await MongoClient.connect(url, { w: 1, useNewUrlParser: true });
+
+      return connection;
+    });
     /* eslint-enable id-length */
 
     const databaseName = parse(url).pathname.substring(1);

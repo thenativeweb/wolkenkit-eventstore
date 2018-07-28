@@ -10,7 +10,6 @@ const env = require('../../shared/env'),
 suite('mariadb/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.MARIA_URL_UNITS,
-    nonExistentUrl: 'mariadb://localhost/non-existent',
 
     async startContainer () {
       shell.exec('docker start mariadb-units');

@@ -10,7 +10,6 @@ const env = require('../../shared/env'),
 suite('postgres/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.POSTGRES_URL_UNITS,
-    nonExistentUrl: 'pg://localhost/non-existent',
 
     async startContainer () {
       shell.exec('docker start postgres-units');

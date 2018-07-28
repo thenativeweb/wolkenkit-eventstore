@@ -10,7 +10,6 @@ const env = require('../../shared/env'),
 suite('mongodb/Eventstore', () => {
   getTestsFor(Eventstore, {
     url: env.MONGO_URL_UNITS,
-    nonExistentUrl: 'mongodb://non-existent.thenativeweb/non-existent',
 
     async startContainer () {
       shell.exec('docker start mongodb-units');

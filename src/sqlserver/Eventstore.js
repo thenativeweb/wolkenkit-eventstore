@@ -8,14 +8,19 @@ const cloneDeep = require('lodash/cloneDeep'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
-      { Request, TYPES } = require('tedious');
+      { Request, TYPES } = require('tedious'),
+      retry = require('async-retry');
 
 const createPool = require('./createPool'),
       omitByDeep = require('../omitByDeep');
 
 class Eventstore extends EventEmitter {
   async getDatabase () {
-    const database = await this.pool.acquire().promise;
+    const database = await retry(async () => {
+      const connection = await this.pool.acquire().promise;
+
+      return connection;
+    });
 
     return database;
   }

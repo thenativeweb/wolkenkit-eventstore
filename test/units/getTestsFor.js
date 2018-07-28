@@ -8,7 +8,7 @@ const assert = require('assertthat'),
       uuid = require('uuidv4');
 
 /* eslint-disable mocha/max-top-level-suites */
-const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startContainer, stopContainer }) {
+const getTestsFor = function (Eventstore, { url, type, startContainer, stopContainer }) {
   let eventstore,
       namespace;
 
@@ -73,14 +73,6 @@ const getTestsFor = function (Eventstore, { url, type, nonExistentUrl, startCont
         await assert.that(async () => {
           await eventstore.initialize({ url });
         }).is.throwingAsync('Namespace is missing.');
-      });
-    }
-
-    if (type !== 'inmemory') {
-      test('returns an error if the database is not reachable.', async () => {
-        await assert.that(async () => {
-          await eventstore.initialize({ url: nonExistentUrl, namespace });
-        }).is.throwingAsync();
       });
     }
 
