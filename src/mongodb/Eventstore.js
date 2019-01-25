@@ -55,7 +55,7 @@ class Eventstore extends EventEmitter {
     await this.collections.events.ensureIndex({ 'aggregate.id': 1 }, { name: `${this.namespace}_aggregateId` });
     await this.collections.events.ensureIndex({ 'aggregate.id': 1, 'metadata.revision': 1 }, { unique: true, name: `${this.namespace}_aggregateId_revision` });
     await this.collections.events.ensureIndex({ 'metadata.position': 1 }, { unique: true, name: `${this.namespace}_position` });
-    await this.collections.snapshots.ensureIndex({ 'aggregate.id': 1 }, { unique: true });
+    await this.collections.snapshots.ensureIndex({ aggregateId: 1 }, { unique: true });
 
     try {
       await this.collections.counters.insertOne({ _id: 'events', seq: 0 });
