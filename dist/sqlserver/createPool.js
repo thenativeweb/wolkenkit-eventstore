@@ -1,11 +1,5 @@
 'use strict';
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 var _require = require('tedious'),
     Connection = _require.Connection,
     _require2 = require('tarn'),
@@ -24,28 +18,31 @@ var createPool = function createPool(_ref) {
   if (!host) {
     throw new Error('Host is missing.');
   }
+
   if (!port) {
     throw new Error('Port is missing.');
   }
+
   if (!user) {
     throw new Error('User is missing.');
   }
+
   if (!password) {
     throw new Error('Password is missing.');
   }
+
   if (!database) {
     throw new Error('Database is missing.');
   }
+
   if (encrypt === undefined) {
     throw new Error('Encrypt is missing.');
   }
 
-  onError = onError || function () {
-    // Intentionally left blank.
+  onError = onError || function () {// Intentionally left blank.
   };
 
-  onDisconnect = onDisconnect || function () {
-    // Intentionally left blank.
+  onDisconnect = onDisconnect || function () {// Intentionally left blank.
   };
 
   var pool = new Pool({
@@ -55,23 +52,24 @@ var createPool = function createPool(_ref) {
     createTimeoutMillis: 1000,
     idleTimeoutMillis: 1000,
     propagateCreateError: true,
-
     validate: function validate(connection) {
       return !connection.closed;
     },
     create: function create() {
-      return new _promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         var connection = new Connection({
           server: host,
-          options: { port: port, encrypt: encrypt },
+          options: {
+            port: port,
+            encrypt: encrypt
+          },
           userName: user,
           password: password,
           database: database
         });
-
-        var handleConnect = void 0,
-            handleEnd = void 0,
-            handleError = void 0,
+        var handleConnect,
+            handleEnd,
+            handleError,
             hasBeenConnected = false;
 
         var unsubscribe = function unsubscribe() {
@@ -87,7 +85,6 @@ var createPool = function createPool(_ref) {
         handleConnect = function handleConnect(err) {
           if (err) {
             unsubscribe();
-
             return reject(err);
           }
 
@@ -98,7 +95,6 @@ var createPool = function createPool(_ref) {
 
         handleError = function handleError(err) {
           unsubscribe();
-
           onError(err);
         };
 
@@ -124,11 +120,9 @@ var createPool = function createPool(_ref) {
 
       connection.removeAllListeners('end');
       connection.removeAllListeners('error');
-
       connection.close();
     }
   });
-
   return pool;
 };
 
