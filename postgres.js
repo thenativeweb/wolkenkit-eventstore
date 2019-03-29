@@ -1,6 +1,6 @@
 'use strict';
 
-const Eventstore = require('./dist/postgres/Eventstore');
+const Eventstore = require('./lib/postgres/Eventstore');
 
 const eventstore = new Eventstore();
 

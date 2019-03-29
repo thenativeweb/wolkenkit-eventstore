@@ -1,7 +1,7 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/mariadb/Eventstore'),
+      Eventstore = require('../../../lib/mariadb/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
 suite('mariadb/Eventstore', function () {

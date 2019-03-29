@@ -64,7 +64,7 @@ To read the event stream for a given aggregate use the `getEventStream` function
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-const eventStream = await eventstore.getEventStream(aggregateId);
+const eventStream = await eventstore.getEventStream({ aggregateId });
 ```
 
 To limit the number of events returned you may use the `fromRevision` and `toRevision` options:
@@ -72,7 +72,8 @@ To limit the number of events returned you may use the `fromRevision` and `toRev
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';
 
-const eventStream = await eventstore.getEventStream(aggregateId, {
+const eventStream = await eventstore.getEventStream({
+  aggregateId,
   fromRevision: 23,
   toRevision: 42
 });
@@ -90,7 +91,9 @@ const event = await eventstore.getLastEvent(aggregateId);
 
 ### Saving events
 
-To save events use the `saveEvents` function and hand over an array of events you want to save. To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module, and add a `revision` property to the event's `metadata` property:
+To save events use the `saveEvents` function and hand over an array of events you want to save. For each event, you also have to provide a snapshot that represents the state of the aggregate the events refer to.
+
+To create the events use the `Event` constructor function of the [commands-events](https://github.com/thenativeweb/commands-events) module, and add a `revision` property to the event's `metadata` property:
 
 ```javascript
 const eventStarted = new Event(...);
@@ -99,8 +102,19 @@ const eventJoined = new Event(...);
 eventStarted.metadata.revision = 1;
 eventJoined.metadata.revision = 2;
 
+const stateStarted = {
+  // ...
+};
+
+const stateJoined = {
+  // ...
+};
+
 const savedEvents = await eventstore.saveEvents({
-  events: [ eventStarted, eventJoined ]
+  uncommittedEvents: [
+    { event: eventStarted, state: stateStarted },
+    { event: eventJoined, state: stateJoined }
+  ]
 });
 ```
 
@@ -109,6 +123,8 @@ const savedEvents = await eventstore.saveEvents({
 The assignment from the given events to their appropriate aggregates is done using the events' information. The `revision` of the events *must* be given in their `metadata` section.
 
 *Please note that the events are saved within a single atomic transaction. If saving fails for at least one event, the entire transaction is rolled back, so no events are saved at all.*
+
+Whenever the revision of an event is divisible by 100, a snapshot for the appropriate aggregate is written based on the state that is attached to that event.
 
 #### Saving a single event
 
@@ -119,7 +135,15 @@ const eventStarted = new Event(...);
 
 eventStarted.metadata.revision = 1;
 
-const savedEvents = await eventstore.saveEvents({ events: eventStarted });
+const stateStarted = {
+  // ...
+};
+
+const savedEvents = await eventstore.saveEvents({
+  uncommittedEvents: [
+    { event: eventStarted, state: stateStarted }
+  ]
+});
 ```
 
 #### Respecting the event stream order
@@ -164,7 +188,7 @@ const snapshot = await eventstore.getSnapshot(aggregateId);
 
 ### Saving a snapshot
 
-To save a snapshot for an aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
+To manually save a snapshot for an aggregate use the `saveSnapshot` function and hand over the aggregate id, the revision and the state of the aggregate:
 
 ```javascript
 const aggregateId = 'd3152c91-190d-40e6-bf13-91dd76d5f374';

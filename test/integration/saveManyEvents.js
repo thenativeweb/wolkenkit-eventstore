@@ -11,7 +11,7 @@ const batchCount = processenv('BATCH_COUNT'),
       type = processenv('TYPE'),
       url = processenv('URL');
 
-const Eventstore = require(`../../src/${type}/Eventstore`);
+const Eventstore = require(`../../lib/${type}/Eventstore`);
 
 const eventstore = new Eventstore();
 const logger = flaschenpost.getLogger();
@@ -23,7 +23,7 @@ const saveEventBatch = async function (remaining) {
     /* eslint-enable no-process-exit */
   }
 
-  const events = [];
+  const uncommittedEvents = [];
 
   for (let i = 0; i < batchSize; i++) {
     const event = new Event({
@@ -36,11 +36,11 @@ const saveEventBatch = async function (remaining) {
 
     event.metadata.revision = 1;
 
-    events.push(event);
+    uncommittedEvents.push({ event, state: {}});
   }
 
   try {
-    await eventstore.saveEvents({ events });
+    await eventstore.saveEvents({ uncommittedEvents });
   } catch (ex) {
     logger.error('Failed to save events.', { ex });
     /* eslint-disable no-process-exit */

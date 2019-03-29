@@ -3,7 +3,7 @@
 const shell = require('shelljs');
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/sqlserver/Eventstore'),
+      Eventstore = require('../../../lib/sqlserver/Eventstore'),
       getTestsFor = require('../getTestsFor'),
       waitForSqlServer = require('../../shared/waitForSqlServer');
 

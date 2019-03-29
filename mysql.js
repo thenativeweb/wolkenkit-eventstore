@@ -1,6 +1,6 @@
 'use strict';
 
-const Eventstore = require('./dist/mysql/Eventstore');
+const Eventstore = require('./lib/mysql/Eventstore');
 
 const eventstore = new Eventstore();
 

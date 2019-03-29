@@ -1,7 +1,7 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/sqlserver/Eventstore'),
+      Eventstore = require('../../../lib/sqlserver/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
 suite('sqlserver/Eventstore', function () {
