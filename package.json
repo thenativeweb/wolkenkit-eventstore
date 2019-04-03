@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "async-retry": "1.2.3",
-    "commands-events": "thenativeweb/commands-events#313ce3cd1d978fee16c6217d8b1e1c6564d2b99b",
+    "commands-events": "thenativeweb/commands-events#ca11473cfb1de65d65d0342540e33e7acfa4dc78",
     "dsn-parser": "1.0.1",
     "limit-alphanumeric": "1.0.0",
     "lodash": "4.17.11",
@@ -40,7 +40,7 @@
     "pg-query-stream": "2.0.0",
     "tarn": "1.1.4",
     "tedious": "2.6.3",
-    "uuidv4": "3.0.1"
+    "uuidv4": "4.0.0"
   },
   "devDependencies": {
     "assertthat": "2.0.3",
