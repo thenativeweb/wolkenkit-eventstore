@@ -35,16 +35,16 @@ class Eventstore extends EventEmitter {
 
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
-    const { host, port, user, password, database } = new DsnParser(url).getParts();
+    const { host, port, user, password, database, params } = new DsnParser(url).getParts();
 
-    this.pool = new pg.Pool({ host, port, user, password, database });
+    this.pool = new pg.Pool({ host, port, user, password, database, ssl: params.ssl === 'true' });
     this.pool.on('error', () => {
       this.emit('disconnect');
     });
 
     const connection = await this.getDatabase();
 
-    const disconnectWatcher = new pg.Client({ host, port, user, password, database });
+    const disconnectWatcher = new pg.Client({ host, port, user, password, database, ssl: params.ssl === 'true' });
 
     disconnectWatcher.on('error', () => {
       this.emit('disconnect');
