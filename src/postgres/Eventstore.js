@@ -44,13 +44,13 @@ class Eventstore extends EventEmitter {
 
     const connection = await this.getDatabase();
 
-    const disconnectWatcher = new pg.Client({ host, port, user, password, database, ssl: params.ssl === 'true' });
+    this.disconnectWatcher = new pg.Client({ host, port, user, password, database, ssl: params.ssl === 'true' });
 
-    disconnectWatcher.on('error', () => {
+    this.disconnectWatcher.on('error', () => {
       this.emit('disconnect');
     });
-    disconnectWatcher.connect(() => {
-      disconnectWatcher.on('end', () => {
+    this.disconnectWatcher.connect(() => {
+      this.disconnectWatcher.on('end', () => {
         this.emit('disconnect');
       });
     });
@@ -454,6 +454,9 @@ class Eventstore extends EventEmitter {
   async destroy () {
     if (this.pool) {
       await this.pool.end();
+    }
+    if (this.disconnectWatcher) {
+      await this.disconnectWatcher.end();
     }
   }
 }

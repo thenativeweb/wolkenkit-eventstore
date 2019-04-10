@@ -1,34 +1,20 @@
 'use strict';
 
-var _regenerator = require('babel-runtime/regenerator');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = require('babel-runtime/helpers/inherits');
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
 var _require = require('events'),
     EventEmitter = _require.EventEmitter,
@@ -45,56 +31,63 @@ var cloneDeep = require('lodash/cloneDeep'),
     QueryStream = require('pg-query-stream'),
     retry = require('async-retry');
 
-
 var omitByDeep = require('../omitByDeep');
 
-var Eventstore = function (_EventEmitter) {
-  (0, _inherits3.default)(Eventstore, _EventEmitter);
+var Eventstore =
+/*#__PURE__*/
+function (_EventEmitter) {
+  (0, _inherits2.default)(Eventstore, _EventEmitter);
 
   function Eventstore() {
-    (0, _classCallCheck3.default)(this, Eventstore);
-    return (0, _possibleConstructorReturn3.default)(this, (Eventstore.__proto__ || (0, _getPrototypeOf2.default)(Eventstore)).apply(this, arguments));
+    (0, _classCallCheck2.default)(this, Eventstore);
+    return (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Eventstore).apply(this, arguments));
   }
 
-  (0, _createClass3.default)(Eventstore, [{
-    key: 'getDatabase',
+  (0, _createClass2.default)(Eventstore, [{
+    key: "getDatabase",
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-        var _this2 = this;
+      var _getDatabase = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee2() {
+        var _this = this;
 
         var database;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
+        return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return retry((0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                return retry(
+                /*#__PURE__*/
+                (0, _asyncToGenerator2.default)(
+                /*#__PURE__*/
+                _regenerator.default.mark(function _callee() {
                   var connection;
-                  return _regenerator2.default.wrap(function _callee$(_context) {
+                  return _regenerator.default.wrap(function _callee$(_context) {
                     while (1) {
                       switch (_context.prev = _context.next) {
                         case 0:
                           _context.next = 2;
-                          return _this2.pool.connect();
+                          return _this.pool.connect();
 
                         case 2:
                           connection = _context.sent;
-                          return _context.abrupt('return', connection);
+                          return _context.abrupt("return", connection);
 
                         case 4:
-                        case 'end':
+                        case "end":
                           return _context.stop();
                       }
                     }
-                  }, _callee, _this2);
+                  }, _callee, this);
                 })));
 
               case 2:
                 database = _context2.sent;
-                return _context2.abrupt('return', database);
+                return _context2.abrupt("return", database);
 
               case 4:
-              case 'end':
+              case "end":
                 return _context2.stop();
             }
           }
@@ -102,118 +95,128 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getDatabase() {
-        return _ref.apply(this, arguments);
+        return _getDatabase.apply(this, arguments);
       }
 
       return getDatabase;
     }()
   }, {
-    key: 'initialize',
+    key: "initialize",
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(_ref3) {
-        var _this3 = this;
+      var _initialize = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee4(_ref2) {
+        var _this2 = this;
 
-        var url = _ref3.url,
-            namespace = _ref3.namespace;
+        var url, namespace, _getParts, host, port, user, password, database, connection;
 
-        var _getParts, host, port, user, password, database, connection, disconnectWatcher;
-
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                url = _ref2.url, namespace = _ref2.namespace;
+
                 if (url) {
-                  _context4.next = 2;
+                  _context4.next = 3;
                   break;
                 }
 
                 throw new Error('Url is missing.');
 
-              case 2:
+              case 3:
                 if (namespace) {
-                  _context4.next = 4;
+                  _context4.next = 5;
                   break;
                 }
 
                 throw new Error('Namespace is missing.');
 
-              case 4:
-
-                this.namespace = 'store_' + limitAlphanumeric(namespace);
-
+              case 5:
+                this.namespace = "store_".concat(limitAlphanumeric(namespace));
                 _getParts = new DsnParser(url).getParts(), host = _getParts.host, port = _getParts.port, user = _getParts.user, password = _getParts.password, database = _getParts.database;
-
-
-                this.pool = new pg.Pool({ host: host, port: port, user: user, password: password, database: database });
-                this.pool.on('error', function () {
-                  _this3.emit('disconnect');
+                this.pool = new pg.Pool({
+                  host: host,
+                  port: port,
+                  user: user,
+                  password: password,
+                  database: database
                 });
-
-                _context4.next = 10;
+                this.pool.on('error', function () {
+                  _this2.emit('disconnect');
+                });
+                _context4.next = 11;
                 return this.getDatabase();
 
-              case 10:
+              case 11:
                 connection = _context4.sent;
-                disconnectWatcher = new pg.Client({ host: host, port: port, user: user, password: password, database: database });
-
-
-                disconnectWatcher.on('error', function () {
-                  _this3.emit('disconnect');
+                this.disconnectWatcher = new pg.Client({
+                  host: host,
+                  port: port,
+                  user: user,
+                  password: password,
+                  database: database
                 });
-                disconnectWatcher.connect(function () {
-                  disconnectWatcher.on('end', function () {
-                    _this3.emit('disconnect');
+                this.disconnectWatcher.on('error', function () {
+                  _this2.emit('disconnect');
+                });
+                this.disconnectWatcher.connect(function () {
+                  _this2.disconnectWatcher.on('end', function () {
+                    _this2.emit('disconnect');
                   });
                 });
-
-                _context4.prev = 14;
-                _context4.next = 17;
-                return retry((0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-                  return _regenerator2.default.wrap(function _callee3$(_context3) {
+                _context4.prev = 15;
+                _context4.next = 18;
+                return retry(
+                /*#__PURE__*/
+                (0, _asyncToGenerator2.default)(
+                /*#__PURE__*/
+                _regenerator.default.mark(function _callee3() {
+                  return _regenerator.default.wrap(function _callee3$(_context3) {
                     while (1) {
                       switch (_context3.prev = _context3.next) {
                         case 0:
                           _context3.next = 2;
-                          return connection.query('\n          CREATE TABLE IF NOT EXISTS "' + _this3.namespace + '_events" (\n            "position" bigserial NOT NULL,\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "event" jsonb NOT NULL,\n            "hasBeenPublished" boolean NOT NULL,\n\n            CONSTRAINT "' + _this3.namespace + '_events_pk" PRIMARY KEY("position"),\n            CONSTRAINT "' + _this3.namespace + '_aggregateId_revision" UNIQUE ("aggregateId", "revision")\n          );\n          CREATE TABLE IF NOT EXISTS "' + _this3.namespace + '_snapshots" (\n            "aggregateId" uuid NOT NULL,\n            "revision" integer NOT NULL,\n            "state" jsonb NOT NULL,\n\n            CONSTRAINT "' + _this3.namespace + '_snapshots_pk" PRIMARY KEY("aggregateId", "revision")\n          );\n        ');
+                          return connection.query("\n          CREATE TABLE IF NOT EXISTS \"".concat(_this2.namespace, "_events\" (\n            \"position\" bigserial NOT NULL,\n            \"aggregateId\" uuid NOT NULL,\n            \"revision\" integer NOT NULL,\n            \"event\" jsonb NOT NULL,\n            \"hasBeenPublished\" boolean NOT NULL,\n\n            CONSTRAINT \"").concat(_this2.namespace, "_events_pk\" PRIMARY KEY(\"position\"),\n            CONSTRAINT \"").concat(_this2.namespace, "_aggregateId_revision\" UNIQUE (\"aggregateId\", \"revision\")\n          );\n          CREATE TABLE IF NOT EXISTS \"").concat(_this2.namespace, "_snapshots\" (\n            \"aggregateId\" uuid NOT NULL,\n            \"revision\" integer NOT NULL,\n            \"state\" jsonb NOT NULL,\n\n            CONSTRAINT \"").concat(_this2.namespace, "_snapshots_pk\" PRIMARY KEY(\"aggregateId\", \"revision\")\n          );\n        "));
 
                         case 2:
-                        case 'end':
+                        case "end":
                           return _context3.stop();
                       }
                     }
-                  }, _callee3, _this3);
+                  }, _callee3, this);
                 })), {
                   retries: 3,
                   minTimeout: 100,
                   factor: 1
                 });
 
-              case 17:
-                _context4.prev = 17;
-
+              case 18:
+                _context4.prev = 18;
                 connection.release();
-                return _context4.finish(17);
+                return _context4.finish(18);
 
-              case 20:
-              case 'end':
+              case 21:
+              case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[14,, 17, 20]]);
+        }, _callee4, this, [[15,, 18, 21]]);
       }));
 
       function initialize(_x) {
-        return _ref4.apply(this, arguments);
+        return _initialize.apply(this, arguments);
       }
 
       return initialize;
     }()
   }, {
-    key: 'getLastEvent',
+    key: "getLastEvent",
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(aggregateId) {
+      var _getLastEvent = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee5(aggregateId) {
         var connection, result, event;
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
+        return _regenerator.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -234,7 +237,7 @@ var Eventstore = function (_EventEmitter) {
                 _context5.next = 8;
                 return connection.query({
                   name: 'get last event',
-                  text: '\n          SELECT "event", "position"\n            FROM "' + this.namespace + '_events"\n            WHERE "aggregateId" = $1\n            ORDER BY "revision" DESC\n            LIMIT 1\n        ',
+                  text: "\n          SELECT \"event\", \"position\"\n            FROM \"".concat(this.namespace, "_events\"\n            WHERE \"aggregateId\" = $1\n            ORDER BY \"revision\" DESC\n            LIMIT 1\n        "),
                   values: [aggregateId]
                 });
 
@@ -246,24 +249,20 @@ var Eventstore = function (_EventEmitter) {
                   break;
                 }
 
-                return _context5.abrupt('return');
+                return _context5.abrupt("return");
 
               case 11:
                 event = Event.wrap(result.rows[0].event);
-
-
                 event.metadata.position = Number(result.rows[0].position);
-
-                return _context5.abrupt('return', event);
+                return _context5.abrupt("return", event);
 
               case 14:
                 _context5.prev = 14;
-
                 connection.release();
                 return _context5.finish(14);
 
               case 17:
-              case 'end':
+              case "end":
                 return _context5.stop();
             }
           }
@@ -271,17 +270,19 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getLastEvent(_x2) {
-        return _ref6.apply(this, arguments);
+        return _getLastEvent.apply(this, arguments);
       }
 
       return getLastEvent;
     }()
   }, {
-    key: 'getEventStream',
+    key: "getEventStream",
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(aggregateId, options) {
+      var _getEventStream = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee6(aggregateId, options) {
         var fromRevision, toRevision, connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee6$(_context6) {
+        return _regenerator.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
@@ -293,9 +294,7 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Aggregate id is missing.');
 
               case 2:
-
                 options = options || {};
-
                 fromRevision = options.fromRevision || 1;
                 toRevision = options.toRevision || Math.pow(2, 31) - 1;
 
@@ -312,9 +311,10 @@ var Eventstore = function (_EventEmitter) {
 
               case 9:
                 connection = _context6.sent;
-                passThrough = new PassThrough({ objectMode: true });
-                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "aggregateId" = $1\n            AND "revision" >= $2\n            AND "revision" <= $3\n          ORDER BY "revision"', [aggregateId, fromRevision, toRevision]));
-                onData = void 0, onEnd = void 0, onError = void 0;
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
+                eventStream = connection.query(new QueryStream("\n        SELECT \"event\", \"position\", \"hasBeenPublished\"\n          FROM \"".concat(this.namespace, "_events\"\n          WHERE \"aggregateId\" = $1\n            AND \"revision\" >= $2\n            AND \"revision\" <= $3\n          ORDER BY \"revision\""), [aggregateId, fromRevision, toRevision]));
 
                 unsubscribe = function unsubscribe() {
                   connection.release();
@@ -325,10 +325,8 @@ var Eventstore = function (_EventEmitter) {
 
                 onData = function onData(data) {
                   var event = Event.wrap(data.event);
-
                   event.metadata.position = Number(data.position);
                   event.metadata.published = data.hasBeenPublished;
-
                   passThrough.write(event);
                 };
 
@@ -346,11 +344,10 @@ var Eventstore = function (_EventEmitter) {
                 eventStream.on('data', onData);
                 eventStream.on('end', onEnd);
                 eventStream.on('error', onError);
+                return _context6.abrupt("return", passThrough);
 
-                return _context6.abrupt('return', passThrough);
-
-              case 21:
-              case 'end':
+              case 20:
+              case "end":
                 return _context6.stop();
             }
           }
@@ -358,17 +355,19 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getEventStream(_x3, _x4) {
-        return _ref7.apply(this, arguments);
+        return _getEventStream.apply(this, arguments);
       }
 
       return getEventStream;
     }()
   }, {
-    key: 'getUnpublishedEventStream',
+    key: "getUnpublishedEventStream",
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
+      var _getUnpublishedEventStream = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee7() {
         var connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee7$(_context7) {
+        return _regenerator.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
@@ -377,9 +376,10 @@ var Eventstore = function (_EventEmitter) {
 
               case 2:
                 connection = _context7.sent;
-                passThrough = new PassThrough({ objectMode: true });
-                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position", "hasBeenPublished"\n          FROM "' + this.namespace + '_events"\n          WHERE "hasBeenPublished" = false\n          ORDER BY "position"'));
-                onData = void 0, onEnd = void 0, onError = void 0;
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
+                eventStream = connection.query(new QueryStream("\n        SELECT \"event\", \"position\", \"hasBeenPublished\"\n          FROM \"".concat(this.namespace, "_events\"\n          WHERE \"hasBeenPublished\" = false\n          ORDER BY \"position\"")));
 
                 unsubscribe = function unsubscribe() {
                   connection.release();
@@ -390,7 +390,6 @@ var Eventstore = function (_EventEmitter) {
 
                 onData = function onData(data) {
                   var event = Event.wrap(data.event);
-
                   event.metadata.position = Number(data.position);
                   event.metadata.published = data.hasBeenPublished;
                   passThrough.write(event);
@@ -410,11 +409,10 @@ var Eventstore = function (_EventEmitter) {
                 eventStream.on('data', onData);
                 eventStream.on('end', onEnd);
                 eventStream.on('error', onError);
+                return _context7.abrupt("return", passThrough);
 
-                return _context7.abrupt('return', passThrough);
-
-              case 14:
-              case 'end':
+              case 13:
+              case "end":
                 return _context7.stop();
             }
           }
@@ -422,224 +420,227 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getUnpublishedEventStream() {
-        return _ref8.apply(this, arguments);
+        return _getUnpublishedEventStream.apply(this, arguments);
       }
 
       return getUnpublishedEventStream;
     }()
   }, {
-    key: 'saveEvents',
+    key: "saveEvents",
     value: function () {
-      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref9) {
-        var events = _ref9.events;
+      var _saveEvents = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee8(_ref4) {
+        var events, placeholders, values, i, base, event, connection, text, result, _i;
 
-        var placeholders, values, i, base, event, connection, text, result, _i;
-
-        return _regenerator2.default.wrap(function _callee8$(_context8) {
+        return _regenerator.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
+                events = _ref4.events;
+
                 if (events) {
-                  _context8.next = 2;
+                  _context8.next = 3;
                   break;
                 }
 
                 throw new Error('Events are missing.');
 
-              case 2:
+              case 3:
                 if (!(Array.isArray(events) && events.length === 0)) {
-                  _context8.next = 4;
+                  _context8.next = 5;
                   break;
                 }
 
                 throw new Error('Events are missing.');
 
-              case 4:
-
+              case 5:
                 events = cloneDeep(flatten([events]));
-
                 placeholders = [], values = [];
                 i = 0;
 
-              case 7:
+              case 8:
                 if (!(i < events.length)) {
-                  _context8.next = 20;
+                  _context8.next = 21;
                   break;
                 }
 
                 base = 4 * i + 1, event = events[i];
 
                 if (event.metadata) {
-                  _context8.next = 11;
+                  _context8.next = 12;
                   break;
                 }
 
                 throw new Error('Metadata are missing.');
 
-              case 11:
+              case 12:
                 if (!(event.metadata.revision === undefined)) {
-                  _context8.next = 13;
+                  _context8.next = 14;
                   break;
                 }
 
                 throw new Error('Revision is missing.');
 
-              case 13:
+              case 14:
                 if (!(event.metadata.revision < 1)) {
-                  _context8.next = 15;
+                  _context8.next = 16;
                   break;
                 }
 
                 throw new Error('Revision must not be less than 1.');
 
-              case 15:
-
-                placeholders.push('($' + base + ', $' + (base + 1) + ', $' + (base + 2) + ', $' + (base + 3) + ')');
+              case 16:
+                placeholders.push("($".concat(base, ", $").concat(base + 1, ", $").concat(base + 2, ", $").concat(base + 3, ")"));
                 values.push(event.aggregate.id, event.metadata.revision, event, event.metadata.published);
 
-              case 17:
+              case 18:
                 i++;
-                _context8.next = 7;
+                _context8.next = 8;
                 break;
 
-              case 20:
-                _context8.next = 22;
+              case 21:
+                _context8.next = 23;
                 return this.getDatabase();
 
-              case 22:
+              case 23:
                 connection = _context8.sent;
-                text = '\n      INSERT INTO "' + this.namespace + '_events"\n        ("aggregateId", "revision", "event", "hasBeenPublished")\n      VALUES\n        ' + placeholders.join(',') + ' RETURNING position;\n    ';
-                _context8.prev = 24;
-                _context8.next = 27;
-                return connection.query({ name: 'save events ' + events.length, text: text, values: values });
+                text = "\n      INSERT INTO \"".concat(this.namespace, "_events\"\n        (\"aggregateId\", \"revision\", \"event\", \"hasBeenPublished\")\n      VALUES\n        ").concat(placeholders.join(','), " RETURNING position;\n    ");
+                _context8.prev = 25;
+                _context8.next = 28;
+                return connection.query({
+                  name: "save events ".concat(events.length),
+                  text: text,
+                  values: values
+                });
 
-              case 27:
+              case 28:
                 result = _context8.sent;
-
 
                 for (_i = 0; _i < result.rows.length; _i++) {
                   events[_i].metadata.position = Number(result.rows[_i].position);
                 }
 
-                return _context8.abrupt('return', events);
+                return _context8.abrupt("return", events);
 
-              case 32:
-                _context8.prev = 32;
-                _context8.t0 = _context8['catch'](24);
+              case 33:
+                _context8.prev = 33;
+                _context8.t0 = _context8["catch"](25);
 
                 if (!(_context8.t0.code === '23505' && _context8.t0.detail.startsWith('Key ("aggregateId", revision)'))) {
-                  _context8.next = 36;
+                  _context8.next = 37;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 36:
+              case 37:
                 throw _context8.t0;
 
-              case 37:
-                _context8.prev = 37;
-
+              case 38:
+                _context8.prev = 38;
                 connection.release();
-                return _context8.finish(37);
+                return _context8.finish(38);
 
-              case 40:
-              case 'end':
+              case 41:
+              case "end":
                 return _context8.stop();
             }
           }
-        }, _callee8, this, [[24, 32, 37, 40]]);
+        }, _callee8, this, [[25, 33, 38, 41]]);
       }));
 
       function saveEvents(_x5) {
-        return _ref10.apply(this, arguments);
+        return _saveEvents.apply(this, arguments);
       }
 
       return saveEvents;
     }()
   }, {
-    key: 'markEventsAsPublished',
+    key: "markEventsAsPublished",
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(_ref11) {
-        var aggregateId = _ref11.aggregateId,
-            fromRevision = _ref11.fromRevision,
-            toRevision = _ref11.toRevision;
-        var connection;
-        return _regenerator2.default.wrap(function _callee9$(_context9) {
+      var _markEventsAsPublished = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee9(_ref5) {
+        var aggregateId, fromRevision, toRevision, connection;
+        return _regenerator.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
+                aggregateId = _ref5.aggregateId, fromRevision = _ref5.fromRevision, toRevision = _ref5.toRevision;
+
                 if (aggregateId) {
-                  _context9.next = 2;
+                  _context9.next = 3;
                   break;
                 }
 
                 throw new Error('Aggregate id is missing.');
 
-              case 2:
+              case 3:
                 if (fromRevision) {
-                  _context9.next = 4;
+                  _context9.next = 5;
                   break;
                 }
 
                 throw new Error('From revision is missing.');
 
-              case 4:
+              case 5:
                 if (toRevision) {
-                  _context9.next = 6;
+                  _context9.next = 7;
                   break;
                 }
 
                 throw new Error('To revision is missing.');
 
-              case 6:
+              case 7:
                 if (!(fromRevision > toRevision)) {
-                  _context9.next = 8;
+                  _context9.next = 9;
                   break;
                 }
 
                 throw new Error('From revision is greater than to revision.');
 
-              case 8:
-                _context9.next = 10;
+              case 9:
+                _context9.next = 11;
                 return this.getDatabase();
 
-              case 10:
+              case 11:
                 connection = _context9.sent;
-                _context9.prev = 11;
-                _context9.next = 14;
+                _context9.prev = 12;
+                _context9.next = 15;
                 return connection.query({
                   name: 'mark events as published',
-                  text: '\n          UPDATE "' + this.namespace + '_events"\n            SET "hasBeenPublished" = true\n            WHERE "aggregateId" = $1\n              AND "revision" >= $2\n              AND "revision" <= $3\n        ',
+                  text: "\n          UPDATE \"".concat(this.namespace, "_events\"\n            SET \"hasBeenPublished\" = true\n            WHERE \"aggregateId\" = $1\n              AND \"revision\" >= $2\n              AND \"revision\" <= $3\n        "),
                   values: [aggregateId, fromRevision, toRevision]
                 });
 
-              case 14:
-                _context9.prev = 14;
-
+              case 15:
+                _context9.prev = 15;
                 connection.release();
-                return _context9.finish(14);
+                return _context9.finish(15);
 
-              case 17:
-              case 'end':
+              case 18:
+              case "end":
                 return _context9.stop();
             }
           }
-        }, _callee9, this, [[11,, 14, 17]]);
+        }, _callee9, this, [[12,, 15, 18]]);
       }));
 
       function markEventsAsPublished(_x6) {
-        return _ref12.apply(this, arguments);
+        return _markEventsAsPublished.apply(this, arguments);
       }
 
       return markEventsAsPublished;
     }()
   }, {
-    key: 'getSnapshot',
+    key: "getSnapshot",
     value: function () {
-      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(aggregateId) {
+      var _getSnapshot = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee10(aggregateId) {
         var connection, result;
-        return _regenerator2.default.wrap(function _callee10$(_context10) {
+        return _regenerator.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
@@ -660,7 +661,7 @@ var Eventstore = function (_EventEmitter) {
                 _context10.next = 8;
                 return connection.query({
                   name: 'get snapshot',
-                  text: '\n          SELECT "state", "revision"\n            FROM "' + this.namespace + '_snapshots"\n            WHERE "aggregateId" = $1\n            ORDER BY "revision" DESC\n            LIMIT 1\n        ',
+                  text: "\n          SELECT \"state\", \"revision\"\n            FROM \"".concat(this.namespace, "_snapshots\"\n            WHERE \"aggregateId\" = $1\n            ORDER BY \"revision\" DESC\n            LIMIT 1\n        "),
                   values: [aggregateId]
                 });
 
@@ -672,22 +673,21 @@ var Eventstore = function (_EventEmitter) {
                   break;
                 }
 
-                return _context10.abrupt('return');
+                return _context10.abrupt("return");
 
               case 11:
-                return _context10.abrupt('return', {
+                return _context10.abrupt("return", {
                   revision: result.rows[0].revision,
                   state: result.rows[0].state
                 });
 
               case 12:
                 _context10.prev = 12;
-
                 connection.release();
                 return _context10.finish(12);
 
               case 15:
-              case 'end':
+              case "end":
                 return _context10.stop();
             }
           }
@@ -695,96 +695,95 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getSnapshot(_x7) {
-        return _ref13.apply(this, arguments);
+        return _getSnapshot.apply(this, arguments);
       }
 
       return getSnapshot;
     }()
   }, {
-    key: 'saveSnapshot',
+    key: "saveSnapshot",
     value: function () {
-      var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(_ref14) {
-        var aggregateId = _ref14.aggregateId,
-            revision = _ref14.revision,
-            state = _ref14.state;
-        var connection;
-        return _regenerator2.default.wrap(function _callee11$(_context11) {
+      var _saveSnapshot = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee11(_ref6) {
+        var aggregateId, revision, state, connection;
+        return _regenerator.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
+                aggregateId = _ref6.aggregateId, revision = _ref6.revision, state = _ref6.state;
+
                 if (aggregateId) {
-                  _context11.next = 2;
+                  _context11.next = 3;
                   break;
                 }
 
                 throw new Error('Aggregate id is missing.');
 
-              case 2:
+              case 3:
                 if (revision) {
-                  _context11.next = 4;
+                  _context11.next = 5;
                   break;
                 }
 
                 throw new Error('Revision is missing.');
 
-              case 4:
+              case 5:
                 if (state) {
-                  _context11.next = 6;
+                  _context11.next = 7;
                   break;
                 }
 
                 throw new Error('State is missing.');
 
-              case 6:
-
+              case 7:
                 state = omitByDeep(state, function (value) {
                   return value === undefined;
                 });
-
-                _context11.next = 9;
+                _context11.next = 10;
                 return this.getDatabase();
 
-              case 9:
+              case 10:
                 connection = _context11.sent;
-                _context11.prev = 10;
-                _context11.next = 13;
+                _context11.prev = 11;
+                _context11.next = 14;
                 return connection.query({
                   name: 'save snapshot',
-                  text: '\n        INSERT INTO "' + this.namespace + '_snapshots" (\n          "aggregateId", revision, state\n        ) VALUES ($1, $2, $3)\n        ON CONFLICT DO NOTHING;\n        ',
+                  text: "\n        INSERT INTO \"".concat(this.namespace, "_snapshots\" (\n          \"aggregateId\", revision, state\n        ) VALUES ($1, $2, $3)\n        ON CONFLICT DO NOTHING;\n        "),
                   values: [aggregateId, revision, state]
                 });
 
-              case 13:
-                _context11.prev = 13;
-
+              case 14:
+                _context11.prev = 14;
                 connection.release();
-                return _context11.finish(13);
+                return _context11.finish(14);
 
-              case 16:
-              case 'end':
+              case 17:
+              case "end":
                 return _context11.stop();
             }
           }
-        }, _callee11, this, [[10,, 13, 16]]);
+        }, _callee11, this, [[11,, 14, 17]]);
       }));
 
       function saveSnapshot(_x8) {
-        return _ref15.apply(this, arguments);
+        return _saveSnapshot.apply(this, arguments);
       }
 
       return saveSnapshot;
     }()
   }, {
-    key: 'getReplay',
+    key: "getReplay",
     value: function () {
-      var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(options) {
+      var _getReplay = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee12(options) {
         var fromPosition, toPosition, connection, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee12$(_context12) {
+        return _regenerator.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
                 options = options || {};
-
                 fromPosition = options.fromPosition || 1;
                 toPosition = options.toPosition || Math.pow(2, 31) - 1;
 
@@ -801,9 +800,10 @@ var Eventstore = function (_EventEmitter) {
 
               case 7:
                 connection = _context12.sent;
-                passThrough = new PassThrough({ objectMode: true });
-                eventStream = connection.query(new QueryStream('\n        SELECT "event", "position"\n          FROM "' + this.namespace + '_events"\n          WHERE "position" >= $1\n            AND "position" <= $2\n          ORDER BY "position"', [fromPosition, toPosition]));
-                onData = void 0, onEnd = void 0, onError = void 0;
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
+                eventStream = connection.query(new QueryStream("\n        SELECT \"event\", \"position\"\n          FROM \"".concat(this.namespace, "_events\"\n          WHERE \"position\" >= $1\n            AND \"position\" <= $2\n          ORDER BY \"position\""), [fromPosition, toPosition]));
 
                 unsubscribe = function unsubscribe() {
                   connection.release();
@@ -814,7 +814,6 @@ var Eventstore = function (_EventEmitter) {
 
                 onData = function onData(data) {
                   var event = Event.wrap(data.event);
-
                   event.metadata.position = Number(data.position);
                   passThrough.write(event);
                 };
@@ -833,11 +832,10 @@ var Eventstore = function (_EventEmitter) {
                 eventStream.on('data', onData);
                 eventStream.on('end', onEnd);
                 eventStream.on('error', onError);
+                return _context12.abrupt("return", passThrough);
 
-                return _context12.abrupt('return', passThrough);
-
-              case 19:
-              case 'end':
+              case 18:
+              case "end":
                 return _context12.stop();
             }
           }
@@ -845,16 +843,18 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getReplay(_x9) {
-        return _ref16.apply(this, arguments);
+        return _getReplay.apply(this, arguments);
       }
 
       return getReplay;
     }()
   }, {
-    key: 'destroy',
+    key: "destroy",
     value: function () {
-      var _ref17 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13() {
-        return _regenerator2.default.wrap(function _callee13$(_context13) {
+      var _destroy = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee13() {
+        return _regenerator.default.wrap(function _callee13$(_context13) {
           while (1) {
             switch (_context13.prev = _context13.next) {
               case 0:
@@ -867,7 +867,16 @@ var Eventstore = function (_EventEmitter) {
                 return this.pool.end();
 
               case 3:
-              case 'end':
+                if (!this.disconnectWatcher) {
+                  _context13.next = 6;
+                  break;
+                }
+
+                _context13.next = 6;
+                return this.disconnectWatcher.end();
+
+              case 6:
+              case "end":
                 return _context13.stop();
             }
           }
@@ -875,7 +884,7 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function destroy() {
-        return _ref17.apply(this, arguments);
+        return _destroy.apply(this, arguments);
       }
 
       return destroy;

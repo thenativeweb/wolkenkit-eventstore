@@ -1,6 +1,6 @@
 {
   "name": "wolkenkit-eventstore",
-  "version": "2.5.0",
+  "version": "2.5.2",
   "description": "wolkenkit-eventstore is an open-source eventstore for Node.js that is used by wolkenkit.",
   "contributors": [
     {
@@ -22,6 +22,10 @@
     {
       "name": "René Viering",
       "email": "rene.viering@gmail.com"
+    },
+    {
+      "name": "Adam Koleszar",
+      "email": "madfist@gmail.com"
     }
   ],
   "dependencies": {

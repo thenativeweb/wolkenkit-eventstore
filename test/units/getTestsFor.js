@@ -40,6 +40,7 @@ const getTestsFor = function (Eventstore, { url, type, startContainer, stopConta
         eventstore.once('disconnect', async () => {
           try {
             await startContainer();
+            await eventstore.initialize({ url, namespace });
           } catch (ex) {
             return reject(ex);
           }
@@ -861,6 +862,31 @@ const getTestsFor = function (Eventstore, { url, type, startContainer, stopConta
         revision: 10,
         state
       });
+    });
+
+    test('saves multiple snapshots.', async () => {
+      const state = {
+        initiator: 'Jane Doe',
+        destination: 'Riva',
+        participants: [ 'Jane Doe' ]
+      };
+
+      const aggregateIds = [ uuid(), uuid(), uuid() ];
+
+      await eventstore.initialize({ url, namespace });
+
+      for (const aggregateId of aggregateIds) {
+        await eventstore.saveSnapshot({ aggregateId, revision: 10, state });
+      }
+
+      for (const aggregateId of aggregateIds) {
+        const snapshot = await eventstore.getSnapshot(aggregateId);
+
+        assert.that(snapshot).is.equalTo({
+          revision: 10,
+          state
+        });
+      }
     });
 
     test('correctly handles null, undefined and empty arrays.', async () => {

@@ -1,34 +1,20 @@
 'use strict';
 
-var _regenerator = require('babel-runtime/regenerator');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = require('babel-runtime/helpers/createClass');
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = require('babel-runtime/helpers/inherits');
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
 var _require = require('events'),
     EventEmitter = _require.EventEmitter,
@@ -46,168 +32,201 @@ var cloneDeep = require('lodash/cloneDeep'),
     MongoClient = _require5.MongoClient,
     retry = require('async-retry');
 
-
 var omitByDeep = require('../omitByDeep');
 
-var Eventstore = function (_EventEmitter) {
-  (0, _inherits3.default)(Eventstore, _EventEmitter);
+var Eventstore =
+/*#__PURE__*/
+function (_EventEmitter) {
+  (0, _inherits2.default)(Eventstore, _EventEmitter);
 
   function Eventstore() {
-    (0, _classCallCheck3.default)(this, Eventstore);
+    var _this;
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (Eventstore.__proto__ || (0, _getPrototypeOf2.default)(Eventstore)).call(this));
-
+    (0, _classCallCheck2.default)(this, Eventstore);
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Eventstore).call(this));
     _this.client = undefined;
     _this.db = undefined;
     _this.collections = {};
     return _this;
   }
 
-  (0, _createClass3.default)(Eventstore, [{
-    key: 'initialize',
+  (0, _createClass2.default)(Eventstore, [{
+    key: "initialize",
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref) {
+      var _initialize = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee2(_ref) {
         var _this2 = this;
 
-        var url = _ref.url,
-            namespace = _ref.namespace;
-        var databaseName;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
+        var url, namespace, databaseName;
+        return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                url = _ref.url, namespace = _ref.namespace;
+
                 if (url) {
-                  _context2.next = 2;
+                  _context2.next = 3;
                   break;
                 }
 
                 throw new Error('Url is missing.');
 
-              case 2:
+              case 3:
                 if (namespace) {
-                  _context2.next = 4;
+                  _context2.next = 5;
                   break;
                 }
 
                 throw new Error('Namespace is missing.');
 
-              case 4:
-
-                this.namespace = 'store_' + limitAlphanumeric(namespace);
-
+              case 5:
+                this.namespace = "store_".concat(limitAlphanumeric(namespace));
                 /* eslint-disable id-length */
-                _context2.next = 7;
-                return retry((0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+
+                _context2.next = 8;
+                return retry(
+                /*#__PURE__*/
+                (0, _asyncToGenerator2.default)(
+                /*#__PURE__*/
+                _regenerator.default.mark(function _callee() {
                   var connection;
-                  return _regenerator2.default.wrap(function _callee$(_context) {
+                  return _regenerator.default.wrap(function _callee$(_context) {
                     while (1) {
                       switch (_context.prev = _context.next) {
                         case 0:
                           _context.next = 2;
-                          return MongoClient.connect(url, { w: 1, useNewUrlParser: true });
+                          return MongoClient.connect(url, {
+                            w: 1,
+                            useNewUrlParser: true
+                          });
 
                         case 2:
                           connection = _context.sent;
-                          return _context.abrupt('return', connection);
+                          return _context.abrupt("return", connection);
 
                         case 4:
-                        case 'end':
+                        case "end":
                           return _context.stop();
                       }
                     }
-                  }, _callee, _this2);
+                  }, _callee, this);
                 })));
 
-              case 7:
+              case 8:
                 this.client = _context2.sent;
 
                 /* eslint-enable id-length */
-
                 databaseName = parse(url).pathname.substring(1);
-
-
                 this.db = this.client.db(databaseName);
-
                 this.db.on('close', function () {
                   _this2.emit('disconnect');
                 });
+                this.collections.events = this.db.collection("".concat(namespace, "_events"));
+                this.collections.snapshots = this.db.collection("".concat(namespace, "_snapshots"));
+                this.collections.counters = this.db.collection("".concat(namespace, "_counters"));
+                _context2.next = 17;
+                return this.collections.events.ensureIndex({
+                  'aggregate.id': 1
+                }, {
+                  name: "".concat(this.namespace, "_aggregateId")
+                });
 
-                this.collections.events = this.db.collection(namespace + '_events');
-                this.collections.snapshots = this.db.collection(namespace + '_snapshots');
-                this.collections.counters = this.db.collection(namespace + '_counters');
+              case 17:
+                _context2.next = 19;
+                return this.collections.events.ensureIndex({
+                  'aggregate.id': 1,
+                  'metadata.revision': 1
+                }, {
+                  unique: true,
+                  name: "".concat(this.namespace, "_aggregateId_revision")
+                });
 
-                _context2.next = 16;
-                return this.collections.events.ensureIndex({ 'aggregate.id': 1 }, { name: this.namespace + '_aggregateId' });
+              case 19:
+                _context2.next = 21;
+                return this.collections.events.ensureIndex({
+                  'metadata.position': 1
+                }, {
+                  unique: true,
+                  name: "".concat(this.namespace, "_position")
+                });
 
-              case 16:
-                _context2.next = 18;
-                return this.collections.events.ensureIndex({ 'aggregate.id': 1, 'metadata.revision': 1 }, { unique: true, name: this.namespace + '_aggregateId_revision' });
+              case 21:
+                _context2.next = 23;
+                return this.collections.snapshots.ensureIndex({
+                  aggregateId: 1
+                }, {
+                  unique: true
+                });
 
-              case 18:
-                _context2.next = 20;
-                return this.collections.events.ensureIndex({ 'metadata.position': 1 }, { unique: true, name: this.namespace + '_position' });
+              case 23:
+                _context2.prev = 23;
+                _context2.next = 26;
+                return this.collections.counters.insertOne({
+                  _id: 'events',
+                  seq: 0
+                });
 
-              case 20:
-                _context2.next = 22;
-                return this.collections.snapshots.ensureIndex({ 'aggregate.id': 1 }, { unique: true });
-
-              case 22:
-                _context2.prev = 22;
-                _context2.next = 25;
-                return this.collections.counters.insertOne({ _id: 'events', seq: 0 });
-
-              case 25:
-                _context2.next = 32;
+              case 26:
+                _context2.next = 33;
                 break;
 
-              case 27:
-                _context2.prev = 27;
-                _context2.t0 = _context2['catch'](22);
+              case 28:
+                _context2.prev = 28;
+                _context2.t0 = _context2["catch"](23);
 
                 if (!(_context2.t0.code === 11000 && _context2.t0.message.includes('_counters index: _id_ dup key'))) {
-                  _context2.next = 31;
+                  _context2.next = 32;
                   break;
                 }
 
-                return _context2.abrupt('return');
-
-              case 31:
-                throw _context2.t0;
+                return _context2.abrupt("return");
 
               case 32:
-              case 'end':
+                throw _context2.t0;
+
+              case 33:
+              case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[22, 27]]);
+        }, _callee2, this, [[23, 28]]);
       }));
 
       function initialize(_x) {
-        return _ref2.apply(this, arguments);
+        return _initialize.apply(this, arguments);
       }
 
       return initialize;
     }()
   }, {
-    key: 'getNextSequence',
+    key: "getNextSequence",
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(name) {
+      var _getNextSequence = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee3(name) {
         var counter;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
+        return _regenerator.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return this.collections.counters.findOneAndUpdate({ _id: name }, {
-                  $inc: { seq: 1 }
-                }, { returnOriginal: false });
+                return this.collections.counters.findOneAndUpdate({
+                  _id: name
+                }, {
+                  $inc: {
+                    seq: 1
+                  }
+                }, {
+                  returnOriginal: false
+                });
 
               case 2:
                 counter = _context3.sent;
-                return _context3.abrupt('return', counter.value.seq);
+                return _context3.abrupt("return", counter.value.seq);
 
               case 4:
-              case 'end':
+              case "end":
                 return _context3.stop();
             }
           }
@@ -215,17 +234,19 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getNextSequence(_x2) {
-        return _ref4.apply(this, arguments);
+        return _getNextSequence.apply(this, arguments);
       }
 
       return getNextSequence;
     }()
   }, {
-    key: 'getLastEvent',
+    key: "getLastEvent",
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(aggregateId) {
+      var _getLastEvent = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee4(aggregateId) {
         var events;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -241,8 +262,12 @@ var Eventstore = function (_EventEmitter) {
                 return this.collections.events.find({
                   'aggregate.id': aggregateId
                 }, {
-                  fields: { _id: 0 },
-                  sort: { 'metadata.revision': -1 },
+                  fields: {
+                    _id: 0
+                  },
+                  sort: {
+                    'metadata.revision': -1
+                  },
                   limit: 1
                 }).toArray();
 
@@ -254,13 +279,13 @@ var Eventstore = function (_EventEmitter) {
                   break;
                 }
 
-                return _context4.abrupt('return');
+                return _context4.abrupt("return");
 
               case 7:
-                return _context4.abrupt('return', Event.wrap(events[0]));
+                return _context4.abrupt("return", Event.wrap(events[0]));
 
               case 8:
-              case 'end':
+              case "end":
                 return _context4.stop();
             }
           }
@@ -268,17 +293,19 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getLastEvent(_x3) {
-        return _ref5.apply(this, arguments);
+        return _getLastEvent.apply(this, arguments);
       }
 
       return getLastEvent;
     }()
   }, {
-    key: 'getEventStream',
+    key: "getEventStream",
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(aggregateId, options) {
+      var _getEventStream = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee5(aggregateId, options) {
         var fromRevision, toRevision, passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
+        return _regenerator.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -290,9 +317,7 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('Aggregate id is missing.');
 
               case 2:
-
                 options = options || {};
-
                 fromRevision = options.fromRevision || 1;
                 toRevision = options.toRevision || Math.pow(2, 31) - 1;
 
@@ -304,14 +329,27 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('From revision is greater than to revision.');
 
               case 7:
-                passThrough = new PassThrough({ objectMode: true });
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
                 eventStream = this.collections.events.find({
-                  $and: [{ 'aggregate.id': aggregateId }, { 'metadata.revision': { $gte: fromRevision } }, { 'metadata.revision': { $lte: toRevision } }]
+                  $and: [{
+                    'aggregate.id': aggregateId
+                  }, {
+                    'metadata.revision': {
+                      $gte: fromRevision
+                    }
+                  }, {
+                    'metadata.revision': {
+                      $lte: toRevision
+                    }
+                  }]
                 }, {
-                  fields: { _id: 0 },
+                  fields: {
+                    _id: 0
+                  },
                   sort: 'metadata.revision'
                 }).stream();
-                onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
                   eventStream.removeListener('data', onData);
@@ -325,9 +363,7 @@ var Eventstore = function (_EventEmitter) {
 
                 onEnd = function onEnd() {
                   unsubscribe();
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -336,9 +372,7 @@ var Eventstore = function (_EventEmitter) {
                 onError = function onError(err) {
                   unsubscribe();
                   passThrough.emit('error', err);
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -347,11 +381,10 @@ var Eventstore = function (_EventEmitter) {
                 eventStream.on('data', onData);
                 eventStream.on('end', onEnd);
                 eventStream.on('error', onError);
+                return _context5.abrupt("return", passThrough);
 
-                return _context5.abrupt('return', passThrough);
-
-              case 18:
-              case 'end':
+              case 17:
+              case "end":
                 return _context5.stop();
             }
           }
@@ -359,28 +392,33 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getEventStream(_x4, _x5) {
-        return _ref6.apply(this, arguments);
+        return _getEventStream.apply(this, arguments);
       }
 
       return getEventStream;
     }()
   }, {
-    key: 'getUnpublishedEventStream',
+    key: "getUnpublishedEventStream",
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
+      var _getUnpublishedEventStream = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee6() {
         var passThrough, eventStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee6$(_context6) {
+        return _regenerator.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                passThrough = new PassThrough({ objectMode: true });
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
                 eventStream = this.collections.events.find({
                   'metadata.published': false
                 }, {
-                  fields: { _id: 0 },
+                  fields: {
+                    _id: 0
+                  },
                   sort: 'metadata.position'
                 }).stream();
-                onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
                   eventStream.removeListener('data', onData);
@@ -394,9 +432,7 @@ var Eventstore = function (_EventEmitter) {
 
                 onEnd = function onEnd() {
                   unsubscribe();
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -405,9 +441,7 @@ var Eventstore = function (_EventEmitter) {
                 onError = function onError(err) {
                   unsubscribe();
                   passThrough.emit('error', err);
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call eventStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -416,11 +450,10 @@ var Eventstore = function (_EventEmitter) {
                 eventStream.on('data', onData);
                 eventStream.on('end', onEnd);
                 eventStream.on('error', onError);
+                return _context6.abrupt("return", passThrough);
 
-                return _context6.abrupt('return', passThrough);
-
-              case 11:
-              case 'end':
+              case 10:
+              case "end":
                 return _context6.stop();
             }
           }
@@ -428,176 +461,176 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getUnpublishedEventStream() {
-        return _ref7.apply(this, arguments);
+        return _getUnpublishedEventStream.apply(this, arguments);
       }
 
       return getUnpublishedEventStream;
     }()
   }, {
-    key: 'saveEvents',
+    key: "saveEvents",
     value: function () {
-      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(_ref8) {
-        var events = _ref8.events;
-        var i, event, seq;
-        return _regenerator2.default.wrap(function _callee7$(_context7) {
+      var _saveEvents = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee7(_ref3) {
+        var events, i, event, seq;
+        return _regenerator.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
+                events = _ref3.events;
+
                 if (events) {
-                  _context7.next = 2;
+                  _context7.next = 3;
                   break;
                 }
 
                 throw new Error('Events are missing.');
 
-              case 2:
+              case 3:
                 if (!(Array.isArray(events) && events.length === 0)) {
-                  _context7.next = 4;
+                  _context7.next = 5;
                   break;
                 }
 
                 throw new Error('Events are missing.');
 
-              case 4:
-
+              case 5:
                 events = cloneDeep(flatten([events]));
-
-                _context7.prev = 5;
+                _context7.prev = 6;
                 i = 0;
 
-              case 7:
+              case 8:
                 if (!(i < events.length)) {
-                  _context7.next = 25;
+                  _context7.next = 26;
                   break;
                 }
 
                 event = events[i];
 
                 if (event.metadata) {
-                  _context7.next = 11;
+                  _context7.next = 12;
                   break;
                 }
 
                 throw new Error('Metadata are missing.');
 
-              case 11:
+              case 12:
                 if (!(event.metadata.revision === undefined)) {
-                  _context7.next = 13;
+                  _context7.next = 14;
                   break;
                 }
 
                 throw new Error('Revision is missing.');
 
-              case 13:
+              case 14:
                 if (!(event.metadata.revision < 1)) {
-                  _context7.next = 15;
+                  _context7.next = 16;
                   break;
                 }
 
                 throw new Error('Revision must not be less than 1.');
 
-              case 15:
-                _context7.next = 17;
+              case 16:
+                _context7.next = 18;
                 return this.getNextSequence('events');
 
-              case 17:
+              case 18:
                 seq = _context7.sent;
-
-
                 event.data = omitByDeep(event.data, function (value) {
                   return value === undefined;
                 });
-                event.metadata.position = seq;
-
-                // Use cloned events here to hinder MongoDB from adding an _id property to
+                event.metadata.position = seq; // Use cloned events here to hinder MongoDB from adding an _id property to
                 // the original event objects.
-                _context7.next = 22;
+
+                _context7.next = 23;
                 return this.collections.events.insertOne(cloneDeep(event));
 
-              case 22:
+              case 23:
                 i++;
-                _context7.next = 7;
+                _context7.next = 8;
                 break;
 
-              case 25:
-                _context7.next = 32;
+              case 26:
+                _context7.next = 33;
                 break;
 
-              case 27:
-                _context7.prev = 27;
-                _context7.t0 = _context7['catch'](5);
+              case 28:
+                _context7.prev = 28;
+                _context7.t0 = _context7["catch"](6);
 
                 if (!(_context7.t0.code === 11000 && _context7.t0.message.indexOf('_aggregateId_revision') !== -1)) {
-                  _context7.next = 31;
+                  _context7.next = 32;
                   break;
                 }
 
                 throw new Error('Aggregate id and revision already exist.');
 
-              case 31:
+              case 32:
                 throw _context7.t0;
 
-              case 32:
-                return _context7.abrupt('return', events);
-
               case 33:
-              case 'end':
+                return _context7.abrupt("return", events);
+
+              case 34:
+              case "end":
                 return _context7.stop();
             }
           }
-        }, _callee7, this, [[5, 27]]);
+        }, _callee7, this, [[6, 28]]);
       }));
 
       function saveEvents(_x6) {
-        return _ref9.apply(this, arguments);
+        return _saveEvents.apply(this, arguments);
       }
 
       return saveEvents;
     }()
   }, {
-    key: 'markEventsAsPublished',
+    key: "markEventsAsPublished",
     value: function () {
-      var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(_ref10) {
-        var aggregateId = _ref10.aggregateId,
-            fromRevision = _ref10.fromRevision,
-            toRevision = _ref10.toRevision;
-        return _regenerator2.default.wrap(function _callee8$(_context8) {
+      var _markEventsAsPublished = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee8(_ref4) {
+        var aggregateId, fromRevision, toRevision;
+        return _regenerator.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
+                aggregateId = _ref4.aggregateId, fromRevision = _ref4.fromRevision, toRevision = _ref4.toRevision;
+
                 if (aggregateId) {
-                  _context8.next = 2;
+                  _context8.next = 3;
                   break;
                 }
 
                 throw new Error('Aggregate id is missing.');
 
-              case 2:
+              case 3:
                 if (fromRevision) {
-                  _context8.next = 4;
+                  _context8.next = 5;
                   break;
                 }
 
                 throw new Error('From revision is missing.');
 
-              case 4:
+              case 5:
                 if (toRevision) {
-                  _context8.next = 6;
+                  _context8.next = 7;
                   break;
                 }
 
                 throw new Error('To revision is missing.');
 
-              case 6:
+              case 7:
                 if (!(fromRevision > toRevision)) {
-                  _context8.next = 8;
+                  _context8.next = 9;
                   break;
                 }
 
                 throw new Error('From revision is greater than to revision.');
 
-              case 8:
-                _context8.next = 10;
+              case 9:
+                _context8.next = 11;
                 return this.collections.events.update({
                   'aggregate.id': aggregateId,
                   'metadata.revision': {
@@ -612,8 +645,8 @@ var Eventstore = function (_EventEmitter) {
                   multi: true
                 });
 
-              case 10:
-              case 'end':
+              case 11:
+              case "end":
                 return _context8.stop();
             }
           }
@@ -621,17 +654,19 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function markEventsAsPublished(_x7) {
-        return _ref11.apply(this, arguments);
+        return _markEventsAsPublished.apply(this, arguments);
       }
 
       return markEventsAsPublished;
     }()
   }, {
-    key: 'getSnapshot',
+    key: "getSnapshot",
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(aggregateId) {
+      var _getSnapshot = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee9(aggregateId) {
         var snapshot;
-        return _regenerator2.default.wrap(function _callee9$(_context9) {
+        return _regenerator.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
@@ -644,8 +679,14 @@ var Eventstore = function (_EventEmitter) {
 
               case 2:
                 _context9.next = 4;
-                return this.collections.snapshots.findOne({ aggregateId: aggregateId }, {
-                  fields: { _id: 0, revision: 1, state: 1 }
+                return this.collections.snapshots.findOne({
+                  aggregateId: aggregateId
+                }, {
+                  fields: {
+                    _id: 0,
+                    revision: 1,
+                    state: 1
+                  }
                 });
 
               case 4:
@@ -656,13 +697,13 @@ var Eventstore = function (_EventEmitter) {
                   break;
                 }
 
-                return _context9.abrupt('return');
+                return _context9.abrupt("return");
 
               case 7:
-                return _context9.abrupt('return', snapshot);
+                return _context9.abrupt("return", snapshot);
 
               case 8:
-              case 'end':
+              case "end":
                 return _context9.stop();
             }
           }
@@ -670,52 +711,52 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getSnapshot(_x8) {
-        return _ref12.apply(this, arguments);
+        return _getSnapshot.apply(this, arguments);
       }
 
       return getSnapshot;
     }()
   }, {
-    key: 'saveSnapshot',
+    key: "saveSnapshot",
     value: function () {
-      var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(_ref13) {
-        var aggregateId = _ref13.aggregateId,
-            revision = _ref13.revision,
-            state = _ref13.state;
-        return _regenerator2.default.wrap(function _callee10$(_context10) {
+      var _saveSnapshot = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee10(_ref5) {
+        var aggregateId, revision, state;
+        return _regenerator.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
+                aggregateId = _ref5.aggregateId, revision = _ref5.revision, state = _ref5.state;
+
                 if (aggregateId) {
-                  _context10.next = 2;
+                  _context10.next = 3;
                   break;
                 }
 
                 throw new Error('Aggregate id is missing.');
 
-              case 2:
+              case 3:
                 if (revision) {
-                  _context10.next = 4;
+                  _context10.next = 5;
                   break;
                 }
 
                 throw new Error('Revision is missing.');
 
-              case 4:
+              case 5:
                 if (state) {
-                  _context10.next = 6;
+                  _context10.next = 7;
                   break;
                 }
 
                 throw new Error('State is missing.');
 
-              case 6:
-
+              case 7:
                 state = omitByDeep(state, function (value) {
                   return value === undefined;
                 });
-
-                _context10.next = 9;
+                _context10.next = 10;
                 return this.collections.snapshots.update({
                   aggregateId: aggregateId
                 }, {
@@ -726,8 +767,8 @@ var Eventstore = function (_EventEmitter) {
                   upsert: true
                 });
 
-              case 9:
-              case 'end':
+              case 10:
+              case "end":
                 return _context10.stop();
             }
           }
@@ -735,22 +776,23 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function saveSnapshot(_x9) {
-        return _ref14.apply(this, arguments);
+        return _saveSnapshot.apply(this, arguments);
       }
 
       return saveSnapshot;
     }()
   }, {
-    key: 'getReplay',
+    key: "getReplay",
     value: function () {
-      var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(options) {
+      var _getReplay = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee11(options) {
         var fromPosition, toPosition, passThrough, replayStream, onData, onEnd, onError, unsubscribe;
-        return _regenerator2.default.wrap(function _callee11$(_context11) {
+        return _regenerator.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
                 options = options || {};
-
                 fromPosition = options.fromPosition || 1;
                 toPosition = options.toPosition || Math.pow(2, 31) - 1;
 
@@ -762,14 +804,25 @@ var Eventstore = function (_EventEmitter) {
                 throw new Error('From position is greater than to position.');
 
               case 5:
-                passThrough = new PassThrough({ objectMode: true });
+                passThrough = new PassThrough({
+                  objectMode: true
+                });
                 replayStream = this.collections.events.find({
-                  $and: [{ 'metadata.position': { $gte: fromPosition } }, { 'metadata.position': { $lte: toPosition } }]
+                  $and: [{
+                    'metadata.position': {
+                      $gte: fromPosition
+                    }
+                  }, {
+                    'metadata.position': {
+                      $lte: toPosition
+                    }
+                  }]
                 }, {
-                  fields: { _id: 0 },
+                  fields: {
+                    _id: 0
+                  },
                   sort: 'metadata.position'
                 }).stream();
-                onData = void 0, onEnd = void 0, onError = void 0;
 
                 unsubscribe = function unsubscribe() {
                   replayStream.removeListener('data', onData);
@@ -783,9 +836,7 @@ var Eventstore = function (_EventEmitter) {
 
                 onEnd = function onEnd() {
                   unsubscribe();
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -794,9 +845,7 @@ var Eventstore = function (_EventEmitter) {
                 onError = function onError(err) {
                   unsubscribe();
                   passThrough.emit('error', err);
-                  passThrough.end();
-
-                  // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
+                  passThrough.end(); // In the PostgreSQL eventstore, we call replayStream.end() here. In MongoDB,
                   // this function apparently is not implemented. This note is just for
                   // informational purposes to ensure that you are aware that the two
                   // implementations differ here.
@@ -805,11 +854,10 @@ var Eventstore = function (_EventEmitter) {
                 replayStream.on('data', onData);
                 replayStream.on('end', onEnd);
                 replayStream.on('error', onError);
+                return _context11.abrupt("return", passThrough);
 
-                return _context11.abrupt('return', passThrough);
-
-              case 16:
-              case 'end':
+              case 15:
+              case "end":
                 return _context11.stop();
             }
           }
@@ -817,16 +865,18 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function getReplay(_x10) {
-        return _ref15.apply(this, arguments);
+        return _getReplay.apply(this, arguments);
       }
 
       return getReplay;
     }()
   }, {
-    key: 'destroy',
+    key: "destroy",
     value: function () {
-      var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
-        return _regenerator2.default.wrap(function _callee12$(_context12) {
+      var _destroy = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee12() {
+        return _regenerator.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
@@ -839,7 +889,7 @@ var Eventstore = function (_EventEmitter) {
                 return this.client.close(true);
 
               case 3:
-              case 'end':
+              case "end":
                 return _context12.stop();
             }
           }
@@ -847,7 +897,7 @@ var Eventstore = function (_EventEmitter) {
       }));
 
       function destroy() {
-        return _ref16.apply(this, arguments);
+        return _destroy.apply(this, arguments);
       }
 
       return destroy;
