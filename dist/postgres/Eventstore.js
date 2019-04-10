@@ -108,7 +108,7 @@ function (_EventEmitter) {
       _regenerator.default.mark(function _callee4(_ref2) {
         var _this2 = this;
 
-        var url, namespace, _getParts, host, port, user, password, database, connection, disconnectWatcher;
+        var url, namespace, _getParts, host, port, user, password, database, connection;
 
         return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -149,18 +149,18 @@ function (_EventEmitter) {
 
               case 11:
                 connection = _context4.sent;
-                disconnectWatcher = new pg.Client({
+                this.disconnectWatcher = new pg.Client({
                   host: host,
                   port: port,
                   user: user,
                   password: password,
                   database: database
                 });
-                disconnectWatcher.on('error', function () {
+                this.disconnectWatcher.on('error', function () {
                   _this2.emit('disconnect');
                 });
-                disconnectWatcher.connect(function () {
-                  disconnectWatcher.on('end', function () {
+                this.disconnectWatcher.connect(function () {
+                  _this2.disconnectWatcher.on('end', function () {
                     _this2.emit('disconnect');
                   });
                 });
@@ -867,6 +867,15 @@ function (_EventEmitter) {
                 return this.pool.end();
 
               case 3:
+                if (!this.disconnectWatcher) {
+                  _context13.next = 6;
+                  break;
+                }
+
+                _context13.next = 6;
+                return this.disconnectWatcher.end();
+
+              case 6:
               case "end":
                 return _context13.stop();
             }
