@@ -3,15 +3,15 @@
 const { EventEmitter } = require('events'),
       { PassThrough } = require('stream');
 
-const cloneDeep = require('lodash/cloneDeep'),
+const boolean = require('boolean'),
+      cloneDeep = require('lodash/cloneDeep'),
       DsnParser = require('dsn-parser'),
       { Event } = require('commands-events'),
       flatten = require('lodash/flatten'),
       limitAlphanumeric = require('limit-alphanumeric'),
       pg = require('pg'),
       QueryStream = require('pg-query-stream'),
-      retry = require('async-retry'),
-      boolean = require('boolean');
+      retry = require('async-retry');
 
 const omitByDeep = require('../omitByDeep');
 
@@ -37,7 +37,7 @@ class Eventstore extends EventEmitter {
     this.namespace = `store_${limitAlphanumeric(namespace)}`;
 
     const { host, port, user, password, database, params } = new DsnParser(url).getParts();
-    const ssl = boolean(params.ssl)
+    const ssl = boolean(params.ssl);
 
     this.pool = new pg.Pool({ host, port, user, password, database, ssl });
     this.pool.on('error', () => {
@@ -46,7 +46,7 @@ class Eventstore extends EventEmitter {
 
     const connection = await this.getDatabase();
 
-    const disconnectWatcher = new pg.Client({ host, port, user, password, database, ssl });
+    this.disconnectWatcher = new pg.Client({ host, port, user, password, database, ssl });
 
     this.disconnectWatcher.on('error', () => {
       this.emit('disconnect');
