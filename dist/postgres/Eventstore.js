@@ -21,7 +21,8 @@ var _require = require('events'),
     _require2 = require('stream'),
     PassThrough = _require2.PassThrough;
 
-var cloneDeep = require('lodash/cloneDeep'),
+var boolean = require('boolean'),
+    cloneDeep = require('lodash/cloneDeep'),
     DsnParser = require('dsn-parser'),
     _require3 = require('commands-events'),
     Event = _require3.Event,
@@ -108,7 +109,7 @@ function (_EventEmitter) {
       _regenerator.default.mark(function _callee4(_ref2) {
         var _this2 = this;
 
-        var url, namespace, _getParts, host, port, user, password, database, connection;
+        var url, namespace, _getParts, host, port, user, password, database, params, ssl, connection;
 
         return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -133,28 +134,31 @@ function (_EventEmitter) {
 
               case 5:
                 this.namespace = "store_".concat(limitAlphanumeric(namespace));
-                _getParts = new DsnParser(url).getParts(), host = _getParts.host, port = _getParts.port, user = _getParts.user, password = _getParts.password, database = _getParts.database;
+                _getParts = new DsnParser(url).getParts(), host = _getParts.host, port = _getParts.port, user = _getParts.user, password = _getParts.password, database = _getParts.database, params = _getParts.params;
+                ssl = boolean(params.ssl);
                 this.pool = new pg.Pool({
                   host: host,
                   port: port,
                   user: user,
                   password: password,
-                  database: database
+                  database: database,
+                  ssl: ssl
                 });
                 this.pool.on('error', function () {
                   _this2.emit('disconnect');
                 });
-                _context4.next = 11;
+                _context4.next = 12;
                 return this.getDatabase();
 
-              case 11:
+              case 12:
                 connection = _context4.sent;
                 this.disconnectWatcher = new pg.Client({
                   host: host,
                   port: port,
                   user: user,
                   password: password,
-                  database: database
+                  database: database,
+                  ssl: ssl
                 });
                 this.disconnectWatcher.on('error', function () {
                   _this2.emit('disconnect');
@@ -164,8 +168,8 @@ function (_EventEmitter) {
                     _this2.emit('disconnect');
                   });
                 });
-                _context4.prev = 15;
-                _context4.next = 18;
+                _context4.prev = 16;
+                _context4.next = 19;
                 return retry(
                 /*#__PURE__*/
                 (0, _asyncToGenerator2.default)(
@@ -190,17 +194,17 @@ function (_EventEmitter) {
                   factor: 1
                 });
 
-              case 18:
-                _context4.prev = 18;
+              case 19:
+                _context4.prev = 19;
                 connection.release();
-                return _context4.finish(18);
+                return _context4.finish(19);
 
-              case 21:
+              case 22:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[15,, 18, 21]]);
+        }, _callee4, this, [[16,, 19, 22]]);
       }));
 
       function initialize(_x) {
