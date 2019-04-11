@@ -39,6 +39,7 @@
   "dependencies": {
     "async-retry": "1.2.3",
     "babel-runtime": "6.26.0",
+    "boolean": "^1.0.0",
     "commands-events": "1.0.4",
     "dsn-parser": "1.0.1",
     "limit-alphanumeric": "1.0.0",
