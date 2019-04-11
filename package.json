@@ -1,6 +1,6 @@
 {
   "name": "wolkenkit-eventstore",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "wolkenkit-eventstore is an open-source eventstore for Node.js that is used by wolkenkit.",
   "contributors": [
     {
@@ -26,10 +26,19 @@
     {
       "name": "Adam Koleszar",
       "email": "madfist@gmail.com"
+    },
+    {
+      "name": "Manfred Mjka",
+      "email": "manfred.mjka@sclable.com"
+    },
+    {
+      "name": "Lorenz Leutgeb",
+      "email": "lorenz.leutgeb@sclable.com"
     }
   ],
   "dependencies": {
     "async-retry": "1.2.3",
+    "boolean": "1.0.0",
     "commands-events": "thenativeweb/commands-events#ca11473cfb1de65d65d0342540e33e7acfa4dc78",
     "dsn-parser": "1.0.1",
     "limit-alphanumeric": "1.0.0",

@@ -40,6 +40,7 @@ const getTestsFor = function (Eventstore, { url, type, startContainer, stopConta
         eventstore.once('disconnect', async () => {
           try {
             await startContainer();
+            await eventstore.initialize({ url, namespace });
           } catch (ex) {
             return reject(ex);
           }
