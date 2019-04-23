@@ -1,6 +1,6 @@
 'use strict';
 
-const Eventstore = require('./dist/mongodb/Eventstore');
+const Eventstore = require('./lib/mongodb/Eventstore');
 
 const eventstore = new Eventstore();
 

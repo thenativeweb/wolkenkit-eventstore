@@ -3,7 +3,7 @@
 const shell = require('shelljs');
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/mysql/Eventstore'),
+      Eventstore = require('../../../lib/mysql/Eventstore'),
       getTestsFor = require('../getTestsFor'),
       waitForMaria = require('../../shared/waitForMysql');
 

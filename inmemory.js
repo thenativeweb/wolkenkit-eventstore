@@ -1,6 +1,6 @@
 'use strict';
 
-const Eventstore = require('./dist/inmemory/Eventstore');
+const Eventstore = require('./lib/inmemory/Eventstore');
 
 const eventstore = new Eventstore();
 

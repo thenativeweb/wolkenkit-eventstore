@@ -1,7 +1,7 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/mongodb/Eventstore'),
+      Eventstore = require('../../../lib/mongodb/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
 suite('mongodb/Eventstore', function () {

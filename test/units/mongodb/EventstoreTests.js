@@ -3,7 +3,7 @@
 const shell = require('shelljs');
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/mongodb/Eventstore'),
+      Eventstore = require('../../../lib/mongodb/Eventstore'),
       getTestsFor = require('../getTestsFor'),
       waitForMongo = require('../../shared/waitForMongo');
 

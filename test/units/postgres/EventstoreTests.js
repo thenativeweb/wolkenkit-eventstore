@@ -3,7 +3,7 @@
 const shell = require('shelljs');
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/postgres/Eventstore'),
+      Eventstore = require('../../../lib/postgres/Eventstore'),
       getTestsFor = require('../getTestsFor'),
       waitForPostgres = require('../../shared/waitForPostgres');
 

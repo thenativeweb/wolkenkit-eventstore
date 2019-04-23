@@ -32,7 +32,7 @@ const getEventsForAggregateId = function ({ aggregateId, batchCount, batchSize }
 
       event.metadata.revision = i * batchSize + j + 1;
 
-      batches[i].push(event);
+      batches[i].push({ event, state: {}});
     }
   }
 
@@ -74,9 +74,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
       const getElapsed = measureTime();
 
       for (let i = 0; i < batches.length; i++) {
-        const events = batches[i];
+        const uncommittedEvents = batches[i];
 
-        await eventstore.saveEvents({ events });
+        await eventstore.saveEvents({ uncommittedEvents });
       }
 
       const elapsed = getElapsed();
@@ -105,9 +105,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
       const getElapsed = measureTime();
 
       for (let i = 0; i < batches.length; i++) {
-        const events = batches[i];
+        const uncommittedEvents = batches[i];
 
-        await eventstore.saveEvents({ events });
+        await eventstore.saveEvents({ uncommittedEvents });
       }
 
       const elapsed = getElapsed();
@@ -134,9 +134,9 @@ const getTestsFor = function (Eventstore, { url, type }) {
       const getElapsed = measureTime();
 
       for (let i = 0; i < batches.length; i++) {
-        const events = batches[i];
+        const uncommittedEvents = batches[i];
 
-        await eventstore.saveEvents({ events });
+        await eventstore.saveEvents({ uncommittedEvents });
       }
 
       const elapsed = getElapsed();
@@ -165,14 +165,14 @@ const getTestsFor = function (Eventstore, { url, type }) {
       });
 
       for (let i = 0; i < batches.length; i++) {
-        const events = batches[i];
+        const uncommittedEvents = batches[i];
 
-        await eventstore.saveEvents({ events });
+        await eventstore.saveEvents({ uncommittedEvents });
       }
 
       const getElapsed = measureTime();
 
-      const eventStream = await eventstore.getEventStream(aggregateId);
+      const eventStream = await eventstore.getEventStream({ aggregateId });
 
       await new Promise((resolve, reject) => {
         eventStream.once('end', () => {
@@ -209,14 +209,14 @@ const getTestsFor = function (Eventstore, { url, type }) {
       });
 
       for (let i = 0; i < batches.length; i++) {
-        const events = batches[i];
+        const uncommittedEvents = batches[i];
 
-        await eventstore.saveEvents({ events });
+        await eventstore.saveEvents({ uncommittedEvents });
       }
 
       const getElapsed = measureTime();
 
-      const eventStream = await eventstore.getEventStream(aggregateId);
+      const eventStream = await eventstore.getEventStream({ aggregateId });
 
       await new Promise((resolve, reject) => {
         eventStream.once('end', () => {

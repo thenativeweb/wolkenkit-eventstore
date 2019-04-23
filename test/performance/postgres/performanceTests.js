@@ -1,7 +1,7 @@
 'use strict';
 
 const env = require('../../shared/env'),
-      Eventstore = require('../../../src/postgres/Eventstore'),
+      Eventstore = require('../../../lib/postgres/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
 suite('postgres/Eventstore', function () {

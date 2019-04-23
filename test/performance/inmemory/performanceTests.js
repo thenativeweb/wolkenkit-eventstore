@@ -1,6 +1,6 @@
 'use strict';
 
-const Eventstore = require('../../../src/inmemory/Eventstore'),
+const Eventstore = require('../../../lib/inmemory/Eventstore'),
       getTestsFor = require('../getTestsFor');
 
 suite('inmemory/Eventstore', function () {
