@@ -18,14 +18,14 @@ const eventstore = require('wolkenkit-eventstore/postgres');
 
 The following table lists all currently supported databases:
 
-Database               | Package
------------------------|--------------------
-PostgreSQL             | `wolkenkit-eventstore/postgres`
-SQL Server             | `wolkenkit-eventstore/sqlserver`
-MariaDB                | `wolkenkit-eventstore/mariadb`
-MySQL                  | `wolkenkit-eventstore/mysql`
-MongoDB (experimental) | `wolkenkit-eventstore/mongodb`
-In-memory              | `wolkenkit-eventstore/inmemory`
+| Database               | Package                          |
+| ---------------------- | -------------------------------- |
+| PostgreSQL             | `wolkenkit-eventstore/postgres`  |
+| SQL Server             | `wolkenkit-eventstore/sqlserver` |
+| MariaDB                | `wolkenkit-eventstore/mariadb`   |
+| MySQL                  | `wolkenkit-eventstore/mysql`     |
+| MongoDB (experimental) | `wolkenkit-eventstore/mongodb`   |
+| In-memory              | `wolkenkit-eventstore/inmemory`  |
 
 Once you have created a reference, you need to initialize the instance by running the `initialize` function. Hand over the connection string to your database as well as a namespace:
 
@@ -118,11 +118,11 @@ const savedEvents = await eventstore.saveEvents({
 });
 ```
 
-*Please note that the `revision` starts at `1`, not – as you may expect – at `0`.*
+_Please note that the `revision` starts at `1`, not – as you may expect – at `0`._
 
-The assignment from the given events to their appropriate aggregates is done using the events' information. The `revision` of the events *must* be given in their `metadata` section.
+The assignment from the given events to their appropriate aggregates is done using the events' information. The `revision` of the events _must_ be given in their `metadata` section.
 
-*Please note that the events are saved within a single atomic transaction. If saving fails for at least one event, the entire transaction is rolled back, so no events are saved at all.*
+_Please note that the events are saved within a single atomic transaction. If saving fails for at least one event, the entire transaction is rolled back, so no events are saved at all._
 
 Whenever the revision of an event is divisible by 100, a snapshot for the appropriate aggregate is written based on the state that is attached to that event.
 
@@ -152,7 +152,7 @@ Every event is automatically assigned a position within the entire event stream.
 
 The position is available when fetching the event stream using the `getEventStream` function, or after having called `saveEvents` on the saved events that are returned.
 
-*Please note that the event store guarantees that the positions are monotonically increasing, but they may have gaps, i.e. some positions may be missing. This may happen, e.g. when saving events failed and had to be retried.*
+_Please note that the event store guarantees that the positions are monotonically increasing, but they may have gaps, i.e. some positions may be missing. This may happen, e.g. when saving events failed and had to be retried._
 
 ### Reading unpublished events
 
@@ -200,7 +200,7 @@ const state = {
 await eventstore.saveSnapshot({ aggregateId, revision, state });
 ```
 
-*Please note that if a snapshot was already saved for the given aggregate id and revision, this function does nothing.*
+_Please note that if a snapshot was already saved for the given aggregate id and revision, this function does nothing._
 
 ### Getting a replay
 
