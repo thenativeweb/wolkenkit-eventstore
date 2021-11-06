@@ -34,6 +34,10 @@
     {
       "name": "Lorenz Leutgeb",
       "email": "lorenz.leutgeb@sclable.com"
+    },
+    {
+      "name": "Mykhailo Lozynskyy",
+      "email": "lozynskyy.m@gmail.com"
     }
   ],
   "dependencies": {
@@ -45,7 +49,7 @@
     "lodash": "4.17.15",
     "mongodb": "3.2.3",
     "mysql2": "1.5.3",
-    "pg": "7.9.0",
+    "pg": "8.7.1",
     "pg-query-stream": "2.0.0",
     "tarn": "1.1.5",
     "tedious": "2.6.3",
