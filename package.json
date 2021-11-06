@@ -46,7 +46,7 @@
     "commands-events": "thenativeweb/commands-events#ca11473cfb1de65d65d0342540e33e7acfa4dc78",
     "dsn-parser": "1.0.1",
     "limit-alphanumeric": "1.0.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.21",
     "mongodb": "3.2.3",
     "mysql2": "1.5.3",
     "pg": "8.7.1",
