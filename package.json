@@ -61,7 +61,7 @@
     "flaschenpost": "2.0.0",
     "measure-time": "3.1.1",
     "processenv": "1.1.0",
-    "roboter": "4.0.4",
+    "roboter": "13.2.1",
     "shelljs": "0.8.3",
     "streamtoarray": "1.1.0"
   },
